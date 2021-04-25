@@ -1,29 +1,69 @@
-let uiData = {
+import shortId from "shortid";
+
+export default {
     navMenu: [
         {
+            id: shortId.generate(),
+            icon: 'home'
+        },
+        {
+            id: shortId.generate(),
             icon: 'video_library',
             menuList: [
-                'Delphi视频',
-                'Java视频'
+
+                {
+                    id: shortId.generate(),
+                    bel: 'Delphi视频',
+                    name: 'delphi'
+                },
+                {
+                    id: shortId.generate(),
+                    bel: 'Java视频', name: 'java'
+                },
+
             ]
         }, {
+            id: shortId.generate(),
             icon: 'library_books',
             menuList: [
-                'Delphi文档',
-                'Java文档',
-                'PDF电子书'
+                {
+                    id: shortId.generate(),
+                    bel: 'Delphi文档', name: 'delphi'
+                },
+                {
+                    id: shortId.generate(),
+                    bel: 'Java文档', name: 'java'
+                },
+
             ]
         }, {
+            id: shortId.generate(),
             icon: 'wb_cloudy',
+
             menuList: [
-                '世纪互联',
-                '百度网盘'
+
+                {
+                    id: shortId.generate(),
+                    bel: '世纪互联', name: 'oneDrive'
+                },
+                {
+                    id: shortId.generate(),
+                    bel: '百度网盘', name: 'baidu'
+                },
             ]
         }, {
+            id: shortId.generate(),
             icon: 'help',
             menuList: [
-                '关于作者',
-                '检查更新'
+                {
+                    id: shortId.generate(),
+                    bel: '关于作者', name: 'about', href: 'html/about.html'
+                },
+                {
+                    id: shortId.generate(),
+                    bel: '检查更新',
+                    name: 'update'
+                },  //name是用于获取树形菜单的key
             ]
         }
 
@@ -109,7 +149,8 @@ let uiData = {
 
                     }
                 ]
-            },{
+            }
+            /*,{
                 label: 'Web编程',
                 children: [
                     {
@@ -124,7 +165,7 @@ let uiData = {
 
                     }
                 ]
-            }
+            }*/
         ],
         delphi: [
             {
@@ -157,5 +198,3 @@ let uiData = {
     }
 }
 
-
-export default uiData

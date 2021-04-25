@@ -18,7 +18,6 @@
                 </q-card>
 
             </div>
-            <!-- <layout-footer/>-->
         </q-scroll-area>
 
     </div>
@@ -27,13 +26,9 @@
 </template>
 
 <script>
-
-    import LayoutFooter from "@/components/LayoutFooter.vue";
     import Carousel from "@/components/Carousel";
-
     export default {
         components: {
-            LayoutFooter,
             Carousel
         },
         data() {

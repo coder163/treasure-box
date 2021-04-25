@@ -13,9 +13,6 @@
 import Home from "./views/Home";
 
 import LayoutHeader from './components/LayoutHeader.vue';
-
-import LayoutFooter from "./components/LayoutFooter.vue";
-
 import Carousel from "@/components/Carousel";
 
 export default {
@@ -24,7 +21,6 @@ export default {
     // QBacktop,
     Home,
     LayoutHeader,
-    LayoutFooter,
     Carousel
   },
   data() {

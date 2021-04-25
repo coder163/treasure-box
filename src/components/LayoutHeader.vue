@@ -1,16 +1,12 @@
 <template>
-    <div>
-        <q-header>
+        <q-header id="header">
             <q-toolbar class="shadow-2 ">
                 <img alt="Vue logo" src="@/assets/logo.png" width="23">
-
-                <div class="text-weight-bold">编程宝盒</div>
+                <div class="text-weight-bold">码农宝典</div>
                 <q-space class="q-electron-drag" style="height:50px ;"/>
-
 
                 <q-btn flat v-for="item in menu" :key="item.id" :to="item.icon==='home'?'/':''">
                     <q-icon :name="item.icon"/>
-
                     <q-menu transition-show="flip-right" transition-hide="flip-left">
                         <q-list>
                             <q-item clickable v-for=" l in item.menuList" :key="l.id">
@@ -24,142 +20,71 @@
                 </q-btn>
 
                 <!-- 最小化、最大化和关闭 -->
-                <q-btn dense flat icon="minimize" @click="minimize()"/>
-                <q-btn dense flat icon="crop_square" @click="maximize()"/>
-                <q-btn dense flat icon="close" @click="close()"/>
+                <q-btn dense flat icon="minimize" @click="windowOperation('minimize')"/>
+                <q-btn dense flat icon="crop_square" @click="windowOperation('maximize')"/>
+                <q-btn dense flat icon="close" @click="windowOperation('close')"/>
             </q-toolbar>
 
         </q-header>
-        <!-- :state="state" -->
-<!--        <layout-side :treeData="treeData"/>-->
-    </div>
 </template>
 
-<script>
-    import LayoutSide from "@/components/LayoutSide.vue";
-
+<script lang="ts">
+    //装饰器组件
+    import { Component, Vue } from 'vue-property-decorator';
     const {ipcRenderer: ipc} = require("electron");
-    import shortId from 'shortid'
+    //此注释可兼容js
+    // @ts-ignore
     import config from '@/config'
-
-    export default {
-        components: {
-            LayoutSide
-        },
-        data() {
-            return {
-                state: true,
-                treeData: config.docs['java'],
-                menu: [
-                    {
-                        id: shortId.generate(),
-                        icon: 'home'
-                    },
-                    {
-                        id: shortId.generate(),
-                        icon: 'video_library',
-                        menuList: [
-
-                            {
-                                id: shortId.generate(),
-                                bel: 'Delphi视频', name: 'delphi'
-                            },
-                            {
-                                id: shortId.generate(),
-                                bel: 'Java视频', name: 'java'
-                            },
-
-                        ]
-                    }, {
-                        id: shortId.generate(),
-                        icon: 'library_books',
-                        menuList: [
-                            {
-                                id: shortId.generate(),
-                                bel: 'Delphi文档', name: 'delphi'
-                            },
-                            {
-                                id: shortId.generate(),
-                                bel: 'Java文档', name: 'java'
-                            },
-
-                        ]
-                    }, {
-                        id: shortId.generate(),
-                        icon: 'wb_cloudy',
-
-                        menuList: [
-
-                            {
-                                id: shortId.generate(),
-                                bel: '世纪互联', name: 'oneDrive'
-                            },
-                            {
-                                id: shortId.generate(),
-                                bel: '百度网盘', name: 'baidu'
-                            },
-                        ]
-                    }, {
-                        id: shortId.generate(),
-                        icon: 'help',
-                        menuList: [
-                            {
-                                id: shortId.generate(),
-                                bel: '关于作者', name: 'about', href: 'html/about.html'
-                            },
-                            {
-                                id: shortId.generate(),
-                                bel: '检查更新',
-                                name: 'update'
-                            },  //name是用于获取树形菜单的key
-                        ]
-                    }
-
-                ]
-            }
-        },
-        //生命周期方法
-        mounted() {
-
-        },
-        watch: {
-            $router() {
-
-            }
-        },
-        methods: {
-            selectMenu(l) {
-                if (l.name === 'update') {
-                    this.$router.push(`/update`,
-                        onComplete => {
-                        },
-                        onAbort => {
-                        })
-                    return;
-                }
-                //每个分类的默认首页
-                let indexPath = encodeURIComponent(`html/${l.name}/index.html`)+"/"+l.name;
-                // console.log('默认首页跳转：', indexPath)
-                this.$router.push(`/content/${indexPath}`,
-                    onComplete => {
-                    },
-                    onAbort => {
-                    })
-
-            },
-            minimize() {
-
-                ipc.send("minimize");
-            },
-            maximize() {
-                ipc.send("maximize");
-            },
-            close() {
-                ipc.send("close");
-            }
-        },
+    /**
+     * 顶部导航菜单
+     */
+    interface NavMenu{
+        id: string,
+        bel: string,
+        name: string
+        menuList:Array<NavMenu>
     }
-</script>
 
-<style>
+    @Component({
+        // 其他组件列表
+    })
+    export default class LayoutHeader extends Vue {
+        // 初始数据可以直接声明为实例的 property
+        public state:boolean=true;
+
+        public treeData:Array<NavMenu>= config.docs['java']
+
+        public menu =config.navMenu
+
+        // 组件方法也可以直接声明为实例的方法
+        windowOperation (operation:string): void {
+            ipc.send(operation)
+        }
+        selectMenu(menu:NavMenu):void{
+
+            if (menu.name === 'update') {
+                if (this.$router.currentRoute.path !== '/update') {
+                    this.$router.push(`/update`)
+                }
+                return;
+            }
+            //每个分类的默认首页
+            let encode=encodeURIComponent(`html/${menu.name}/index.html`)+"/"+menu.name
+
+            let indexPath = `/content/${encode}`;
+
+            if (this.$router.currentRoute.path !== indexPath) {
+                console.log('LayoutHeader-默认首页跳转：',indexPath);
+                this.$router.push(indexPath)
+            }
+
+
+        }
+    }
+
+</script >
+
+<style lang="sass">
+    #header
+        font-weight: normal
 </style>

@@ -1,6 +1,4 @@
 module.exports = {
-
-
     pluginOptions: {
         electronBuilder: {
             nodeIntegration: true,
@@ -52,7 +50,7 @@ module.exports = {
         performance: {
             hints:'warning',
             //入口起点的最大体积 整数类型（以字节为单位）
-            maxEntrypointSize: 500000,
+            maxEntrypointSize: 10000000,
             //生成文件的最大体积 整数类型（以字节为单位 3000k）
             maxAssetSize: 30000000,
             //只给出 js 文件的性能提示

@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import VueRouter, {RouteConfig} from 'vue-router'
 import Home from '../views/Home.vue'
-import {RawLocation} from "vue-router/types/router";
-
 // @ts-ignore
 import Content from '../views/Content'
 
