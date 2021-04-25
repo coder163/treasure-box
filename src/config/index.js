@@ -1,3 +1,4 @@
+// @ts-ignore
 import shortId from "shortid";
 
 export default {

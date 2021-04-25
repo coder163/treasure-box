@@ -80,6 +80,7 @@ app.on('ready', async () => {
     //   }
     // }
     createWindow()
+    require('./main/video')
 })
 
 

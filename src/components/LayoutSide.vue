@@ -33,7 +33,7 @@
     // @ts-ignore
     import config from '@/config'
 
-    import {Component, Vue, Watch, Prop, Ref} from 'vue-property-decorator';
+    import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
     import {Route} from "vue-router";
 
     @Component({})

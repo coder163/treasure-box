@@ -18,7 +18,6 @@ router.afterEach((to,from)=>{
 })
 
 
-
 //解决路由重复（即当前路径多次点击报错，不影响页面效果）
 /*import VueRouter, {RawLocation} from 'vue-router'
 

@@ -5,12 +5,12 @@
             <q-separator/>
         </div>
 
-                <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
-                               :style="{'height': (isIndex?(wHeight-300):(wHeight-80))+'px','margin-left': '31px'} ">
-                    <markdown :file-path="filePath"/>
-                </q-scroll-area>
+        <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
+                       :style="{'height': (isIndex?(wHeight-300):(wHeight-80))+'px','margin-left': '31px'} ">
+            <markdown :file-path="filePath"/>
+        </q-scroll-area>
 
-                <LayoutSide  :type="this.$route.params.type"/>
+        <LayoutSide :type="this.$route.params.type"/>
     </div>
 </template>
 
@@ -18,8 +18,6 @@
     import {Component, Vue, Watch} from 'vue-property-decorator';
     import {Route} from "vue-router";
 
-    // @ts-ignore
-    import config from '@/config'
 
     import Carousel from "@/components/Carousel.vue";
 
@@ -29,7 +27,7 @@
     import LayoutSide from "@/components/LayoutSide.vue";
 
     @Component({
-        components: {Carousel,Markdown,LayoutSide},
+        components: {Carousel, Markdown, LayoutSide},
 
     })
     export default class Content extends Vue {
@@ -54,8 +52,9 @@
             width: '9px',
             opacity: 0.2
         }
+
         //第一次渲染监听和深度监听{ immediate: true, deep: true }，默认都是false
-        @Watch('$route',{ immediate: true, deep: true })
+        @Watch('$route', {immediate: true, deep: true})
         onRouteChange(newVal: Route, oldVal: Route) {
 
             this.filePath = this.$route.params.filePath;
@@ -63,10 +62,10 @@
             // console.log(this.filePath,this.$route.params.type)
 
 
-
         }
+
         //钩子函数
-        private  mounted() {
+        private mounted() {
             // console.log('内容显示页：', this.filePath, this.$route.params.type)
 
             let $vue = this;

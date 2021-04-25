@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import VueRouter, {RouteConfig} from 'vue-router'
 import Home from '../views/Home.vue'
-// @ts-ignore
-import Content from '../views/Content'
+
+import Content from '../views/Content.vue'
 
 Vue.use(VueRouter)
 
@@ -12,7 +12,8 @@ const routes: Array<RouteConfig> = [
         path: '/',
         name: 'Home',
         component: Home,
-        redirect:'/content/html%2Fjava%2Findex.html/java'
+        // redirect:'/content/html%2Fjava%2Findex.html/java'
+        redirect:'/update'
     }, {
         path: '/content/:filePath/:type',
         name: 'Content',
