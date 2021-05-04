@@ -2,22 +2,32 @@
 
     <div>
         <q-drawer v-model="drawer" show-if-above :width="200" :breakpoint="400">
-            <!--滚动条-->
-            <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
-                           style="height: calc(100% - 150px); margin-top: 150px; ">
-                <!--树形菜单-->
-                <q-tree ref="tree" :nodes="treeData" :selected.sync="key" accordion node-key="label"/>
-            </q-scroll-area>
+
             <!--人物头像-->
             <q-img class="absolute-top text-center" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
+                <!-- TODO 此处代码在用户登录之后才可以显示，否则默认只显示背景图即可-->
                 <div class="absolute-bottom bg-transparent">
                     <q-avatar size="60px" class="q-mb-sm ">
-                        <img src="https://cdn.quasar.dev/img/boy-avatar.png" alt="舞动的代码">
+<!--                       -->
+<!--                      <img :src="user.headImgUrl" alt="舞动的代码">-->
+<!--                      <q-img spinner-color="white" :src="user.headImgUrl" alt="舞动的代码"></q-img>-->
+                      <q-img
+                          :src="user.headImgUrl"
+                          spinner-color="red"
+                      />
+                      {{user.headImgUrl}}
                     </q-avatar>
-                    <div>舞动的代码</div>
+                    <div>{{ user.nickName}}</div>
                 </div>
             </q-img>
-            <!--左右隐藏显示-->
+          <!--滚动条-->
+          <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
+                         style="height: calc(100% - 150px); margin-top: 150px; ">
+            <!--树形菜单-->
+            <q-tree ref="tree" :nodes="treeData" :selected.sync="key" accordion node-key="label"/>
+          </q-scroll-area>
+
+          <!--左右隐藏显示-->
             <div class="q-mini-drawer-hide absolute" style="top: 50%;right:0">
                 <q-btn dense unelevated icon="arrow_left" @click="drawer = false"></q-btn>
             </div>
@@ -35,6 +45,8 @@
 
     import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
     import {Route} from "vue-router";
+    import {ipcRenderer} from "electron";
+
 
     @Component({})
     export default class LayoutSide extends Vue {
@@ -44,6 +56,11 @@
 
         private drawer: boolean = false;
 
+        public user={
+          nickName:'',
+
+          headImgUrl:'https://cdn.quasar.dev/img/boy-avatar.png'
+        }
         private treeData = config.docs[this.$route.params.type]
 
         private thumbStyle = {
@@ -103,6 +120,17 @@
             }
         }
 
+      private mounted() {
+          let _this=this;
+
+          ipcRenderer.on('login-info',(event, userInfo)=>{
+            console.log('用户登录',userInfo)
+            let {nickName,headImgUrl} = userInfo;
+
+            _this.user.headImgUrl = headImgUrl;
+            _this.user.nickName = nickName;
+          })
+      }
     }
 
 </script>

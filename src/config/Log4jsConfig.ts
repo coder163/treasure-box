@@ -10,9 +10,10 @@ import { app } from 'electron'
 let configDir :string = './logs';
 
 //生产环境下使用userData目录
-if (process.env.NODE_ENV !== 'development') {
-     configDir = app.getPath('userData');
-}
+// if (process.env.NODE_ENV !== 'development') {
+//      configDir = app.getPath('userData');
+// }
+console.log(configDir)
 //
 const path=require('path');
 // console.log(path.join('/configDir'))

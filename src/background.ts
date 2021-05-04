@@ -1,7 +1,10 @@
 'use strict'
 
 
+import {logger} from "@/config/Log4jsConfig";
+
 const path = require('path');
+const fs = require('fs');
 import { app, protocol, BrowserWindow, Menu, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 // import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
@@ -21,10 +24,6 @@ async function createWindow() {
         // show: false,
         frame: false,//添加这一行采用无边框窗口
         webPreferences: {
-            // Use pluginOptions.nodeIntegration, leave this alone
-            // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-            // nodeIntegration: (process.env
-            //     .ELECTRON_NODE_INTEGRATION as unknown) as boolean
             javascript: true,
             plugins: true,
             nodeIntegration: true, // 是否集成 Nodejs
@@ -35,56 +34,38 @@ async function createWindow() {
         }
 
     })
-
     Menu.setApplicationMenu(null) //取消菜单栏
-
+    win.webContents.openDevTools()
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
         await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
-        if (!process.env.IS_TEST)
-        win.webContents.openDevTools()
+        // if (!process.env.IS_TEST)
+        // win.webContents.openDevTools()
     } else {
         createProtocol('app')
         // Load the index.html when not in development
-        win.loadURL('app://./index.html')
+       await win.loadURL('app://./index.html')
     }
-
-
 }
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') {
+        console.log('window-all-closed')
         app.quit()
     }
 })
 
 app.on('activate', () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-    // if (isDevelopment && !process.env.IS_TEST) {
-    //   // Install Vue Devtools
-    //   try {
-    //     await installExtension(VUEJS_DEVTOOLS)
-    //   } catch (e) {
-    //     console.error('Vue Devtools failed to install:', e.toString())
-    //   }
-    // }
-    createWindow()
+    await createWindow()
     require('./main/video')
+    // console.log('************************************',__dirname)
 })
 
-
-// Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
     if (process.platform === 'win32') {
         process.on('message', (data) => {
@@ -98,6 +79,7 @@ if (isDevelopment) {
         })
     }
 }
+
 
 //窗口最小化
 ipcMain.on('minimize', function () {
@@ -115,4 +97,22 @@ ipcMain.on('maximize', function () {
 ipcMain.on('close', function (e) {
 
     win.destroy()
+
+    app.quit();
 })
+
+//登录
+ipcMain.on('login', function (event,isLogin) {
+
+    // console.log(isLogin)
+    win.webContents.send('is-login', isLogin);
+
+
+});
+
+//登录成功
+ipcMain.on('login-user', function (event, userinfo) {
+    console.log('用户登录成功',userinfo)
+    win.webContents.send('login-info', userinfo);
+
+});

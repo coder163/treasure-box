@@ -4,36 +4,45 @@ import shortId from "shortid";
 export default {
     navMenu: [
         {
-            id: shortId.generate(),
-            icon: 'home'
+            id:shortId.generate(),
+            icon: 'account_circle',
+            name:'login'
         },
+        // {
+        //     id: shortId.generate(),
+        //     icon: 'home',
+        //     name: 'home'
+        // },
+        // {
+        //     id: shortId.generate(),
+        //     icon: 'video_library',
+        //     menuList: [
+        //
+        //         {
+        //             id: shortId.generate(),
+        //             bel: 'Delphi视频',
+        //             name: 'delphi'
+        //         },
+        //         {
+        //             id: shortId.generate(),
+        //             bel: 'Java视频', name: 'java'
+        //         },
+        //
+        //     ]
+        // },
+
         {
             id: shortId.generate(),
-            icon: 'video_library',
-            menuList: [
-
-                {
-                    id: shortId.generate(),
-                    bel: 'Delphi视频',
-                    name: 'delphi'
-                },
-                {
-                    id: shortId.generate(),
-                    bel: 'Java视频', name: 'java'
-                },
-
-            ]
-        }, {
-            id: shortId.generate(),
             icon: 'library_books',
+
             menuList: [
                 {
                     id: shortId.generate(),
-                    bel: 'Delphi文档', name: 'delphi'
+                    bel: 'Delphi', name: 'delphi'
                 },
                 {
                     id: shortId.generate(),
-                    bel: 'Java文档', name: 'java'
+                    bel: 'Java', name: 'java'
                 },
 
             ]
@@ -52,7 +61,13 @@ export default {
                     bel: '百度网盘', name: 'baidu'
                 },
             ]
-        }, {
+        },
+        // {
+        //     id:shortId.generate(),
+        //     icon: 'settings',
+        //     name:'setting'
+        // },
+        {
             id: shortId.generate(),
             icon: 'help',
             menuList: [

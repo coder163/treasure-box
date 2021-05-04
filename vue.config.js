@@ -5,7 +5,7 @@ module.exports = {
             extraResources: ["public/html/**/*"],
             builderOptions: {
                 "appId": "com.coder163",
-                "productName": "代码宝盒",//项目名，也是生成的安装文件名，即aDemo.exe
+                "productName": "码农宝典",//项目名，也是生成的安装文件名，即aDemo.exe
                 "copyright": "Copyright © 2021",//版权信息
                 directories: {
                     output: 'build' // 打包产物的位置

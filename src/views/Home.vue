@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-        <!--TODO 布局没想好，暂时不要了-->
+        <!--TODO 布局没想好，暂时不要了而且轮播图好像没有世纪作用-->
         <carousel/>
         <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"  :style="{'height': wHeight-280+'px','margin-left': '31px'} ">
             <div class="text-h5">最近更新</div>
