@@ -7,7 +7,7 @@
       <q-space class="q-electron-drag" style="height:50px ;"/>
 
       <q-btn flat v-for="item in menu" :key="item.id" @click="topMenuSelect(item)">
-        <q-icon :name="item.icon" v-if="item.name!=='login'"/>
+        <q-icon :name="item.icon" />
         <q-menu transition-show="flip-right" transition-hide="flip-left">
           <q-list>
             <q-item clickable v-for=" l in item.menuList" :key="l.id">
@@ -63,7 +63,7 @@ export default class LayoutHeader extends Vue {
         break
       case 'login':
         //发送事件至主窗口，Content页面嵌入登录，监听到主进程消息后显示登录窗口
-        ipc.send('login', true)
+        ipc.send('login')
         break;
 
     }

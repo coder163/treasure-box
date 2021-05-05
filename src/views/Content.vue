@@ -1,6 +1,7 @@
 <template>
   <div id="content">
-    <!--    <login/>-->
+
+    <login/>
 
     <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
                    :style="{'height': (wHeight-80)+'px','margin-left': '31px'} ">
