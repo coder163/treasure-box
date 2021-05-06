@@ -6,7 +6,8 @@
 
       <q-space class="q-electron-drag" style="height:50px ;"/>
 
-      <q-btn flat v-for="item in menu" :key="item.id" @click="topMenuSelect(item)">
+      <q-btn  flat v-for="item in menu" :key="item.id" @click="topMenuSelect(item)" >
+
         <q-icon :name="item.icon" />
         <q-menu transition-show="flip-right" transition-hide="flip-left">
           <q-list>
@@ -19,6 +20,8 @@
           </q-list>
         </q-menu>
       </q-btn>
+
+
 
       <!-- 最小化、最大化和关闭 -->
       <q-btn dense flat icon="minimize" @click="windowOperation('minimize')"/>
@@ -35,11 +38,15 @@ import {Component, Vue} from 'vue-property-decorator';
 //此注释可兼容js
 // @ts-ignore
 import config from '@/config'
-import {INavMenu} from '@/domain'
+import {INavMenu, StatusCode} from '@/domain'
+import {UserDaoImpl} from '@/db/indexedDB'
+import Api from '@/api'
 
 const {ipcRenderer: ipc} = require("electron");
 
 
+let userDaoImpl: UserDaoImpl = new UserDaoImpl();
+let api = new Api();
 @Component({
   // 其他组件列表
 })
@@ -51,23 +58,26 @@ export default class LayoutHeader extends Vue {
 
   public menu = config.navMenu
 
+  private isLogin: boolean = false;
+
   // 组件方法也可以直接声明为实例的方法
   windowOperation(operation: string): void {
     ipc.send(operation)
   }
-
+  private  mounted() {
+  }
   topMenuSelect(menu: INavMenu): void {
     switch (menu.name) {
       case 'home':
         location.href = '#/';
         break
       case 'login':
-        //发送事件至主窗口，Content页面嵌入登录，监听到主进程消息后显示登录窗口
-        ipc.send('login')
+
         break;
 
     }
   }
+
 
   /**
    * 顶部菜单的点击事件

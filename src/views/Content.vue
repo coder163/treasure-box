@@ -1,15 +1,16 @@
 <template>
   <div id="content">
 
-    <login/>
+      <login/>
+        <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
+                       :style="{'height': (wHeight-80)+'px','margin-left': '31px'} ">
 
-    <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
-                   :style="{'height': (wHeight-80)+'px','margin-left': '31px'} ">
+          <markdown :file-path="filePath"/>
+        </q-scroll-area>
 
-      <markdown :file-path="filePath"/>
-    </q-scroll-area>
+        <LayoutSide :type="this.$route.params.type"/>
 
-    <LayoutSide :type="this.$route.params.type"/>
+<!--    <button @click="test()">测试按钮</button>-->
   </div>
 </template>
 
@@ -69,6 +70,8 @@ export default class Content extends Vue {
         false
     );
 
+  }
+  test(){
   }
 }
 

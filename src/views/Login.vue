@@ -13,7 +13,7 @@
             <q-tooltip>不想登录了?</q-tooltip>
           </q-btn>
         </q-bar>
-        <q-card-section>
+        <q-card-section  >
           <q-img :src="qrcode"/>
         </q-card-section>
       </q-card>
@@ -26,48 +26,77 @@ import {Component, Vue} from 'vue-property-decorator';
 import {ipcRenderer} from "electron";
 import axios from 'axios'
 
+import {StatusCode} from '@/domain'
+
+import dbDexie, {UserDaoImpl} from '@/db/indexedDB'
+import Api from '@/api'
+
+let userDaoImpl: UserDaoImpl = new UserDaoImpl();
+
+let api = new Api();
+
 @Component({
   components: {},
 })
 export default class Content extends Vue {
   // @Prop({required: true} )
   private persistent: boolean = false
-
+  //默认为空
   private qrcode: string = '/erweima.png';
+
+  private user: any;
 
   closeDialog(): void {
     this.persistent = false
-
   }
 
   async showDialog() {
-    let _this = this;
-
-    //TODO 此处获取二维码的url需要改为真实的
-    await axios.get('http://281244ia88.qicp.vip/getTicket').then(resp => {
-      _this.qrcode = resp.data.url;
-
+    console.log(this.user)
+    //没有本地存储或者本地有数据，但是远程没有查询到，表示取消关注了,此时需要修改数据库内容
+    if (this.user === undefined || ((await api.getUserByOid(this.user.openid)).status === StatusCode.UNSUBSCRIBE)) {
+      let ticket = await api.getTicket();
+      console.log('ticket', ticket)
+      //刷新二维码
+      this.qrcode = ticket.url;
+      //展示二维码之后开始轮询服务器
       let beforeTime: number = Date.now();
+      let _this = this;
+      let intervalHandle =setInterval(async () => {
+        let userInfo = await api.userinfo(ticket.id);
+        console.log('userInfo', userInfo,_this.persistent)
+        //正确响应或者窗口关闭或者超时
+        if ((userInfo.status === StatusCode.SUCCESS) || !_this.persistent || Date.now()-beforeTime>1000*60) {
+            if ((this.user === undefined) && (userInfo.status === StatusCode.SUCCESS)) {
+              userDaoImpl.add({'id': '1001', 'uid': ticket.id, 'openid': userInfo.info.oid});
+              this.user = userInfo;
+              ipcRenderer.send('login-info',this.user.info);
+            } else if((this.user !== undefined) && (userInfo.status === StatusCode.SUCCESS)) {
+              userDaoImpl.update({'id': '1001', 'uid': ticket.id, 'openid': userInfo.info.oid});
+              this.user = userInfo;
+              ipcRenderer.send('login-info',this.user.info);
+            }
+          _this.persistent = false
+          clearInterval(intervalHandle);
+        }
+      }, 3000);
 
-      let intervalHandle = setInterval(async () => {
-        await  axios.get(`http://281244ia88.qicp.vip/userinfo?uid=${resp.data.id}`).then(resp => {
-          //正确响应或者窗口关闭或者超时
-          if ((resp.data.status === 200) || !_this.persistent || (Date.now()-beforeTime>1000*60)) {
-            console.log(resp.data);
-            _this.persistent=false
-            clearInterval(intervalHandle);
-          }
-        }).catch(err => {
-          console.log(err);
-        })
-      }, 4000)
-    }).catch(err => {
-      console.log(err);
-    })
+      console.log('---------------', this.user)
+      return
+    }
+
   }
 
   private async mounted() {
+    //页面加载之后查询本地数据库
+    this.user = await userDaoImpl.getFirstUser();
+    // console.log('数据库查询结果', this.user)
 
+    if (this.user !== undefined && ((await api.getUserByOid(this.user.openid)).status !== StatusCode.UNSUBSCRIBE)) {
+      let userTemp = await api.getUserByOid(this.user.openid);
+      console.log('自动登录', userTemp)
+
+
+    }
     let _this = this;
     //登录事件
     ipcRenderer.on('is-login', function () {

@@ -1,4 +1,14 @@
+
+export enum StatusCode {
+
+    ERROR = 404,
+
+    UNSUBSCRIBE = 101,
+
+    SUCCESS = 200,
+}
 export interface IUser {
+
     nickName: string;
 
     headImgUrl: string;

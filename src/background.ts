@@ -104,15 +104,14 @@ ipcMain.on('close', function (e) {
 //登录
 ipcMain.on('login', function () {
 
-    // console.log(isLogin)
+    console.log('login-ing....')
     win.webContents.send('is-login');
 
 
 });
 
 // //登录成功
-// ipcMain.on('login-user', function (event, userinfo) {
-//     console.log('用户登录成功',userinfo)
-//     win.webContents.send('login-info', userinfo);
-//
-// });
+ipcMain.on('login-info', function (event,userInfo) {
+    win.webContents.send('login-success',userInfo);
+
+});

@@ -5,23 +5,16 @@
 
       <!--人物头像-->
       <q-img class="absolute-top text-center" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
-        <!-- TODO 此处代码在用户登录之后才可以显示，否则默认只显示背景图即可-->
+        <!-- 在用户登录之后才可以显示，否则默认只显示背景图即可-->
         <div class="absolute-bottom bg-transparent">
           <q-avatar size="60px" class="q-mb-sm ">
-            <!--                       -->
-            <!--                      <img :src="user.headImgUrl" alt="舞动的代码">-->
-            <!--                      <q-img spinner-color="white" :src="user.headImgUrl" alt="舞动的代码"></q-img>-->
-            <q-img
-                :src="user.headImgUrl"
-                spinner-color="red"
-                fade
-            >
-              <template v-slot:loading>
-                <q-spinner-gears color="white"></q-spinner-gears>
-              </template>
-            </q-img>
+              <q-img spinner-color="white" v-if="user!== ''" :src="user.headImgUrl" ></q-img>
           </q-avatar>
-          <div>{{ user.nickName===''?'未登录':user.nickName }}</div>
+         <div>
+           <q-btn flat icon="account_circle" v-if="user ===''" @click="login">未登录</q-btn>
+           <span v-if="user!==''">{{user.nickName }}</span>
+
+         </div>
         </div>
       </q-img>
       <!--滚动条-->
@@ -50,7 +43,13 @@ import config from '@/config'
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
 import {Route} from "vue-router";
 import {ipcRenderer} from "electron";
+import {StatusCode} from "@/domain";
 
+import {UserDaoImpl} from '@/db/indexedDB'
+import Api from "@/api";
+
+let userDaoImpl: UserDaoImpl = new UserDaoImpl();
+let api = new Api();
 
 @Component({})
 export default class LayoutSide extends Vue {
@@ -60,11 +59,7 @@ export default class LayoutSide extends Vue {
 
   private drawer: boolean = false;
 
-  public user = {
-    nickName: '',
 
-    headImgUrl: 'https://cdn.quasar.dev/img/avatar.png'
-  }
   private treeData = config.docs[this.$route.params.type]
 
   private thumbStyle = {
@@ -87,6 +82,7 @@ export default class LayoutSide extends Vue {
 
   private tree!: object
 
+  private user: any="";
 
   //deep:代表开启深度监控，意思是数据的任何一个属性发生变化，监视函数需要执行
   //immediate:设置为 true ，代表代码一加载  立马执行监视函数
@@ -124,20 +120,31 @@ export default class LayoutSide extends Vue {
     }
   }
 
-  private mounted() {
+  private async mounted() {
     let _this = this;
 
-    ipcRenderer.on('login-info', (event, userInfo) => {
-      console.log('用户登录', userInfo)
-      let {nickName, headImgUrl} = userInfo;
-
-      _this.user.headImgUrl = headImgUrl;
-      _this.user.nickName = nickName;
+    ipcRenderer.on('login-success',  (event,userInfo) => {
+      _this.user = userInfo;
     })
+    await this.refresh()
+
   }
 
 
-  refresh() {
+  async refresh() {
+    let dbuser = await userDaoImpl.getFirstUser();
+
+    // console.log('side数据库查询结果', dbuser)
+
+    if (dbuser !== undefined && ((await api.getUserByOid(dbuser.openid)).status !== StatusCode.UNSUBSCRIBE)) {
+      let userTemp = await api.getUserByOid(dbuser.openid);
+      // console.log('自动登录', userTemp)
+      this.user = userTemp.info
+    }
+  }
+
+  login(){
+    ipcRenderer.send('login')
   }
 }
 

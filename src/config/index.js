@@ -3,11 +3,11 @@ import shortId from "shortid";
 
 export default {
     navMenu: [
-        {
-            id:shortId.generate(),
-            icon: 'account_circle',
-            name:'login'
-        },
+        // {
+        //     id:shortId.generate(),
+        //     icon: 'account_circle',
+        //     name:'login'
+        // },
         // {
         //     id: shortId.generate(),
         //     icon: 'home',
