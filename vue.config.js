@@ -4,6 +4,12 @@ module.exports = {
             nodeIntegration: true,
             extraResources: ["public/html/**/*"],
             builderOptions: {
+                "publish": [
+                    {
+                        "provider": "generic",
+                        "url": "http://281244ia88.qicp.vip/public/",//更新服务器地址,可为空
+                    }
+                ],
                 "appId": "com.coder163",
                 "productName": "码农宝典",//项目名，也是生成的安装文件名，即aDemo.exe
                 "copyright": "Copyright © 2021",//版权信息

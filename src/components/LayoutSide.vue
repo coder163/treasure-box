@@ -126,7 +126,7 @@ export default class LayoutSide extends Vue {
     ipcRenderer.on('login-success',  (event,userInfo) => {
       _this.user = userInfo;
     })
-    await this.refresh()
+    // await this.refresh()
 
   }
 

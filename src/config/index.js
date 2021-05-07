@@ -8,11 +8,11 @@ export default {
         //     icon: 'account_circle',
         //     name:'login'
         // },
-        // {
-        //     id: shortId.generate(),
-        //     icon: 'home',
-        //     name: 'home'
-        // },
+        {
+            id: shortId.generate(),
+            icon: 'home',
+            name: 'home'
+        },
         // {
         //     id: shortId.generate(),
         //     icon: 'video_library',

@@ -1,18 +1,21 @@
 'use strict'
 
 
-import {logger} from "@/config/Log4jsConfig";
+import {app, BrowserWindow, ipcMain, Menu, protocol} from 'electron'
+import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
+// @ts-ignore
+import {autoUpdater, UpdateCheckResult} from 'electron-updater'
+// 引入更新检测的文件
+import Update from '@/main/update';
 
 const path = require('path');
 const fs = require('fs');
-import { app, protocol, BrowserWindow, Menu, ipcMain } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 // import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
-    { scheme: 'app', privileges: { secure: true, standard: true } }
+    {scheme: 'app', privileges: {secure: true, standard: true}}
 ])
 let win: BrowserWindow;
 
@@ -44,7 +47,7 @@ async function createWindow() {
     } else {
         createProtocol('app')
         // Load the index.html when not in development
-       await win.loadURL('app://./index.html')
+        await win.loadURL('app://./index.html')
     }
 }
 
@@ -60,11 +63,6 @@ app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
 
-app.on('ready', async () => {
-    await createWindow()
-    require('./main/video')
-    // console.log('************************************',__dirname)
-})
 
 if (isDevelopment) {
     if (process.platform === 'win32') {
@@ -111,7 +109,24 @@ ipcMain.on('login', function () {
 });
 
 // //登录成功
-ipcMain.on('login-info', function (event,userInfo) {
-    win.webContents.send('login-success',userInfo);
+ipcMain.on('login-info', function (event, userInfo) {
+    win.webContents.send('login-success', userInfo);
 
 });
+
+ipcMain.on('open-update-dialog', () => {
+    // autoUpdater.updateConfigPath=path.join(__dirname, '../dev-app-update.yml')
+
+    autoUpdater.checkForUpdates().then((r:UpdateCheckResult) => {
+        console.log(r)
+    })
+    win.webContents.send('update-dialog');
+})
+
+app.commandLine.appendSwitch('--ignore-certificate-errors', 'true')
+
+app.on('ready', async () => {
+    await createWindow()
+    require('./main/video')
+    Update(win)
+})

@@ -88,15 +88,15 @@ export default class Content extends Vue {
 
   private async mounted() {
     //页面加载之后查询本地数据库
-    this.user = await userDaoImpl.getFirstUser();
-    // console.log('数据库查询结果', this.user)
-
-    if (this.user !== undefined && ((await api.getUserByOid(this.user.openid)).status !== StatusCode.UNSUBSCRIBE)) {
-      let userTemp = await api.getUserByOid(this.user.openid);
-      console.log('自动登录', userTemp)
-
-
-    }
+    // this.user = await userDaoImpl.getFirstUser();
+    // // console.log('数据库查询结果', this.user)
+    //
+    // if (this.user !== undefined && ((await api.getUserByOid(this.user.openid)).status !== StatusCode.UNSUBSCRIBE)) {
+    //   let userTemp = await api.getUserByOid(this.user.openid);
+    //   console.log('自动登录', userTemp)
+    //
+    //
+    // }
     let _this = this;
     //登录事件
     ipcRenderer.on('is-login', function () {

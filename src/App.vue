@@ -52,7 +52,7 @@
     };
 </script>
 
-<style>
+<style lang="sass">
 
 
 </style>

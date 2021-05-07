@@ -2,6 +2,7 @@
   <div id="content">
 
       <login/>
+      <Update/>
         <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
                        :style="{'height': (wHeight-80)+'px','margin-left': '31px'} ">
 
@@ -25,8 +26,10 @@ import LayoutSide from "@/components/LayoutSide.vue";
 
 import Login from '@/views/Login.vue';
 
+import Update from '@/views/Update.vue';
+
 @Component({
-  components: {Markdown, LayoutSide, Login},
+  components: {Markdown, LayoutSide, Login,Update},
 
 })
 export default class Content extends Vue {
