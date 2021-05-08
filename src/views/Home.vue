@@ -1,7 +1,8 @@
 <template>
   <div class="home">
     <!--TODO 布局没想好，暂时不要了而且轮播图好像没有世纪作用-->
-    <carousel/>
+<!--    <carousel/>-->
+
     <!--    <LayoutSide type="java"/>-->
     <!--        <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"  :style="{'height': wHeight-280+'px','margin-left': '31px'} ">
                 <div class="text-h5">最近更新</div>
@@ -31,14 +32,6 @@
 import Carousel from "@/components/Carousel";
 import LayoutSide from "@/components/LayoutSide.vue";
 
-const stringOptions = [
-  'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
-].reduce((acc, opt) => {
-  for (let i = 1; i <= 5; i++) {
-    acc.push(opt + ' ' + i)
-  }
-  return acc
-}, [])
 export default {
   components: {
     Carousel,
@@ -47,11 +40,6 @@ export default {
   data() {
     return {
       wHeight: document.documentElement.clientHeight,
-      model: null,
-      options: [
-        'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
-      ],
-
       thumbStyle: {
         right: '4px',
         borderRadius: '5px',
@@ -70,16 +58,7 @@ export default {
     };
   },
   methods: {
-    filterFn(val, update, abort) {
-      update(() => {
-        const needle = val.toLocaleLowerCase()
-        this.options = stringOptions.filter(v => v.toLocaleLowerCase().indexOf(needle) > -1)
-      })
-    },
 
-    setModel(val) {
-      this.model = val
-    }
   },
   mounted() {
 
@@ -92,8 +71,7 @@ export default {
         },
         false
     );
-    // let div = this.$refs.indexcontent.$el;
-    // div.addEventListener('scroll', this.handleScroll);//监听滚动条
+
   },
 }
 

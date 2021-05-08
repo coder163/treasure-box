@@ -40,5 +40,6 @@ export interface INavMenu {
     id: string,
     bel: string,
     name: string
+    docType:string,
     menuList: Array<INavMenu>
 }

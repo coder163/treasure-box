@@ -1,7 +1,7 @@
 <template>
 
     <carousel-3d
-            height="180"
+            height="150"
             width="460"
             :space="280"
             :perspective="0"
@@ -9,7 +9,7 @@
             autoplay
     >
         <slide v-for="(img, i) in imgs" :index="i" :key="i">
-            <img :src="img"/>
+            <img :src="img" alt=""/>
         </slide>
     </carousel-3d>
 </template>

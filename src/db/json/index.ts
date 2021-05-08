@@ -8,11 +8,11 @@ export default {
         //     icon: 'account_circle',
         //     name:'login'
         // },
-        {
-            id: shortId.generate(),
-            icon: 'home',
-            name: 'home'
-        },
+        // {
+        //     id: shortId.generate(),
+        //     icon: 'home',
+        //     name: 'home'
+        // },
         // {
         //     id: shortId.generate(),
         //     icon: 'video_library',
@@ -34,15 +34,18 @@ export default {
         {
             id: shortId.generate(),
             icon: 'library_books',
-
             menuList: [
                 {
                     id: shortId.generate(),
-                    bel: 'Delphi', name: 'delphi'
+                    bel: 'Delphi',
+                    name: 'delphi',
+                    docType:'delphi'
                 },
                 {
                     id: shortId.generate(),
-                    bel: 'Java', name: 'java'
+                    bel: 'Java',
+                    name: 'java',
+                    docType: 'java'
                 },
 
             ]
@@ -54,11 +57,13 @@ export default {
 
                 {
                     id: shortId.generate(),
-                    bel: '世纪互联', name: 'oneDrive'
+                    bel: '世纪互联',
+                    name: 'oneDrive'
                 },
                 {
                     id: shortId.generate(),
-                    bel: '百度网盘', name: 'baidu'
+                    bel: '百度网盘',
+                    name: 'baidu'
                 },
             ]
         },
@@ -73,12 +78,15 @@ export default {
             menuList: [
                 {
                     id: shortId.generate(),
-                    bel: '关于作者', name: 'about', href: 'html/about.html'
+                    bel: '关于作者',
+                    name: 'about',
+                    href: 'html/about.html'
                 },
                 {
                     id: shortId.generate(),
                     bel: '检查更新',
-                    name: 'update'
+                    name: 'update',
+                    href: '/time-line'
                 },  //name是用于获取树形菜单的key
             ]
         }
@@ -185,7 +193,7 @@ export default {
         ],
         delphi: [
             {
-                label: '基础语法',
+                label: 'Delphi百集',
                 children: [
                     {
                         label: '安装破解',

@@ -7,6 +7,7 @@ import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import {autoUpdater, UpdateCheckResult} from 'electron-updater'
 // 引入更新检测的文件
 import Update from '@/main/update';
+import * as Process from "process";
 
 const path = require('path');
 const fs = require('fs');
@@ -115,7 +116,10 @@ ipcMain.on('login-info', function (event, userInfo) {
 });
 
 ipcMain.on('open-update-dialog', () => {
-    // autoUpdater.updateConfigPath=path.join(__dirname, '../dev-app-update.yml')
+    //测试环境下使用自动更新
+    if (isDevelopment) {
+        autoUpdater.updateConfigPath=path.join(__dirname, '../dev-app-update.yml');
+    }
 
     autoUpdater.checkForUpdates().then((r:UpdateCheckResult) => {
         console.log(r)

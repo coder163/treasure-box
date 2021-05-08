@@ -1,44 +1,37 @@
 <template>
-
-  <div>
-    <q-drawer v-model="drawer" show-if-above :width="200" :breakpoint="400">
-
-      <!--人物头像-->
-      <q-img class="absolute-top text-center" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
-        <!-- 在用户登录之后才可以显示，否则默认只显示背景图即可-->
-        <div class="absolute-bottom bg-transparent">
-          <q-avatar size="60px" class="q-mb-sm ">
-              <q-img spinner-color="white" v-if="user!== ''" :src="user.headImgUrl" ></q-img>
-          </q-avatar>
-         <div>
-           <q-btn flat icon="account_circle" v-if="user ===''" @click="login">未登录</q-btn>
-           <span v-if="user!==''">{{user.nickName }}</span>
-
-         </div>
-        </div>
-      </q-img>
-      <!--滚动条-->
-      <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
-                     style="height: calc(100% - 150px); margin-top: 150px; ">
-        <!--树形菜单-->
-        <q-tree ref="tree" :nodes="treeData" :selected.sync="key" accordion node-key="label"/>
-      </q-scroll-area>
-
-      <!--左右隐藏显示-->
-      <div class="q-mini-drawer-hide absolute" style="top: 50%;right:0">
-        <q-btn dense unelevated icon="arrow_left" @click="drawer = false"></q-btn>
+  <q-drawer v-model="drawer" :mini="mini" show-if-above :width="200" :breakpoint="400">
+    <!--人物头像-->
+    <q-img class="absolute-top text-center" src="https://cdn.quasar.dev/img/material.png"
+           style="height: 150px">
+      <!-- 在用户登录之后才可以显示，否则默认只显示背景图即可-->
+      <div class="absolute-center bg-transparent">
+        <q-btn flat fab-mini @click="clickMini">
+          <!--未登录显示-->
+          <q-icon name="account_circle" :size="mini?'30px':'46px'"/>
+          <!--登录之后显示-->
+          <!--            <q-img :style="{'border-radius': mini?'15px':'23px' , 'width': mini?'30px':'46px'}" src="https://cdn.quasar.dev/img/boy-avatar.png" alt=""/>-->
+        </q-btn>
       </div>
+      <span class="absolute-bottom text-bold text-white" v-if="!mini">{{ user === '' ? '未登录' : '舞动的代码' }}</span>
+    </q-img>
+    <!--滚动条-->
+    <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" style="height: calc(100% - 170px); margin-top: 150px; ">
 
-    </q-drawer>
-    <div class="absolute" v-show="!drawer" style="position:fixed;z-index:99999;top: 50%;left: 0;display: block;">
-      <q-btn dense unelevated icon="arrow_right" @click="drawer = true"></q-btn>
-    </div>
-  </div>
+      <div class="row items-center" v-if="mini">
+        <q-btn flat>
+          <q-icon name="format_list_bulleted" @click="mini=!mini"></q-icon>
+        </q-btn>
+      </div>
+      <!--树形菜单-->
+      <q-tree v-show="!mini" ref="tree" :nodes="$store.getters.getTreeData" :selected.sync="key" accordion node-key="label"/>
+
+    </q-scroll-area>
+  </q-drawer>
 </template>
 
 <script lang="ts">
 // @ts-ignore
-import config from '@/config'
+import config from '@/db/json'
 
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
 import {Route} from "vue-router";
@@ -53,14 +46,22 @@ let api = new Api();
 
 @Component({})
 export default class LayoutSide extends Vue {
-  // !表示有值, 否则 ts 会告警未初始化
-  @Prop({required: true, default: 'java'})
-  private type !: string;
 
-  private drawer: boolean = false;
+/*  //设置为required: true会导致默认值失效
+  @Prop({
+    required: false,
+    default: () => {
+      return 'java'
+    }
+  }) private type !: string;*/
 
+  // !表示有值, 否则 ts 会告警未初始化 required: true,
+  private drawer: boolean = true;
+  //侧边栏mini状态
+  private mini: boolean = true
 
-  private treeData = config.docs[this.$route.params.type]
+  private treeData: any;
+
 
   private thumbStyle = {
     right: '4px',
@@ -80,28 +81,20 @@ export default class LayoutSide extends Vue {
 
   private key: string = 'any'
 
-  private tree!: object
+  private user: any = "";
 
-  private user: any="";
-
-  //deep:代表开启深度监控，意思是数据的任何一个属性发生变化，监视函数需要执行
-  //immediate:设置为 true ，代表代码一加载  立马执行监视函数
+  //deep:代表开启深度监控，意思是数据的任何一个属性发生变化，监视函数需要执行immediate:设置为 true ，代表代码一加载  立马执行监视函数
   @Watch('key', {immediate: false, deep: true})
   onKeyChange(newVal: string, oldVal: string) {
+    //点击了任意一个节点都需要将侧边栏的模式该为展开
+    this.mini = false;
+    //当前点击的key
     let value: string = newVal === null ? oldVal : newVal
-
     // @ts-ignore
     let $node = this.$refs.tree.getNodeByKey(value);
 
     if (($node.href !== undefined)) {
-
-      this.$router.push(`/content/${encodeURIComponent($node.href)}/${this.type}`,
-          // @ts-ignore
-          onComplete => {
-          },
-          onAbort => {
-          })
-
+      this.$router.push(`/content/${encodeURIComponent($node.href)}`)
     } else {
       // @ts-ignore
       this.$refs.tree.setExpanded(value, !this.$refs.tree.isExpanded(value))
@@ -109,21 +102,22 @@ export default class LayoutSide extends Vue {
   }
 
 
+
   @Watch('$route', {immediate: true, deep: true})
   onRouteChange(newVal: Route, oldVal: Route) {
-    // console.log(this.$route.params.type)
     //about界面保持原有树形数据不变
-    if (this.$route.params.type !== 'about') {
+    //@ts-ignore
+    // this.treeData = config.docs[this.type];
 
-      this.treeData = config.docs[this.$route.params.type];
 
-    }
   }
 
   private async mounted() {
-    let _this = this;
 
-    ipcRenderer.on('login-success',  (event,userInfo) => {
+
+    // console.log(this.$store.getters.getTreeData)
+    let _this = this;
+    ipcRenderer.on('login-success', (event, userInfo) => {
       _this.user = userInfo;
     })
     // await this.refresh()
@@ -143,9 +137,18 @@ export default class LayoutSide extends Vue {
     }
   }
 
-  login(){
+  clickMini() {
+    this.mini = !this.mini
+  }
+
+  login() {
     ipcRenderer.send('login')
   }
 }
 
 </script>
+<style lang="sass">
+
+.q-img__content > div
+  padding: 5px 0
+</style>

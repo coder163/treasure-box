@@ -12,10 +12,10 @@ const routes: Array<RouteConfig> = [
         path: '/',
         name: 'Home',
         component: Home,
-        redirect:'/content/html%2Fjava%2Findex.html/java'
+        redirect:'/content/html%2Fjava%2Findex.html'
         // redirect:'/update'
     }, {
-        path: '/content/:filePath/:type',
+        path: '/content/:filePath',
         name: 'Content',
         component: Content
     },{
@@ -30,6 +30,10 @@ const routes: Array<RouteConfig> = [
         path: '/login',
         name: 'Login',
         component: () => import('../views/Login.vue')
+    },{
+        path: '/time-line',
+        name: 'TimeLine',
+        component: () => import('../views/TimeLine.vue')
     }
 ]
 

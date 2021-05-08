@@ -1,69 +1,74 @@
 <template>
-  <q-header id="header" class="q-electron-drag">
-    <q-toolbar class="shadow-2 ">
-      <img alt="logo" src="@/assets/logo.png" width="23">
-      <div class="text-weight-bold">码农宝典</div>
-      <q-space class="q-electron-drag"/>
-      <div style="height: 35px;width:50%;position: absolute;right: 35%;">
-        <q-select
-            color="negative" outlined
-            class="q-electron-drag--exception"
-            use-input
-            dense
-            style=" float: right;width: 360px;height: 35px; line-height: 35px"
-            v-model="model" :options="options"
-            rounded
-            loading
-            @input-value="setModel"
 
-        >
-        </q-select>
-<!--   @filter="filterFn"-->
-        <div class="q-pa-sm-sm" style=" float: right">
-          <q-btn-dropdown :label="label" rounded flat>
-            <q-list>
-              <q-item clickable v-close-popup @click="selectSearchType('文章')">
-                <q-item-section>
-                  <q-item-label>文章</q-item-label>
-                </q-item-section>
-              </q-item>
+  <q-header class="q-electron-drag">
+    <q-toolbar class="row ">
+      <!--logo处理 -->
+      <div class="col-lg-1 col-md-2  gt-sm position-relative" >
+        <img alt="logo" src='@/assets/logo.png' class="float-left" style="height: 25px"/>
+        <span class="text-weight-bold float-left" style="line-height: 25px ">码农宝典</span>
+      </div>
+      <!--中间搜索-->
+      <div class="col-lg-10 col-md-8 col-sm-10 col-xs-8" >
+        <div class="row">
+          <div class="col-md-6 col-sm-7 gt-xs"  >
 
-              <q-item clickable v-close-popup @click="selectSearchType('教程')">
-                <q-item-section>
-                  <q-item-label>教程</q-item-label>
-                </q-item-section>
-              </q-item>
+            <q-btn-dropdown :label="label" rounded flat>
+              <q-list>
+                <q-item clickable v-close-popup @click="selectSearchType('文章')">
+                  <q-item-section>
+                    <q-item-label>文章</q-item-label>
+                  </q-item-section>
+                </q-item>
 
-              <q-item clickable v-close-popup @click="selectSearchType('影视')">
-                <q-item-section>
-                  <q-item-label>影视</q-item-label>
-                </q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+                <q-item clickable v-close-popup @click="selectSearchType('教程')">
+                  <q-item-section>
+                    <q-item-label>教程</q-item-label>
+                  </q-item-section>
+                </q-item>
+
+                <q-item clickable v-close-popup @click="selectSearchType('影视')">
+                  <q-item-section>
+                    <q-item-label>影视</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+
+            <q-select
+                class="q-electron-drag--exception"
+                outlined
+                use-input
+                dense
+                v-model="model" :options="options"
+                rounded
+                style=" float: right;width: 65%;"
+            >
+            </q-select>
+          </div >
+
+          <div class="col-md-6 col-sm-5 text-right"  >
+            <q-btn flat v-for="item in menu" :key="item.id" @click="topMenuSelect(item)">
+              <q-icon :name="item.icon"/>
+              <q-menu transition-show="flip-right" transition-hide="flip-left">
+                <q-list>
+                  <q-item clickable v-for=" l in item.menuList" :key="l.id">
+                    <q-item-section @click="selectMenu(l)">
+                      {{ l.bel }}
+                    </q-item-section>
+                  </q-item>
+                  <q-separator/>
+                </q-list>
+              </q-menu>
+            </q-btn>
+          </div>
         </div>
       </div>
-      <div style="float: right;right:10px;position: absolute">
-        <q-btn flat v-for="item in menu" :key="item.id" @click="topMenuSelect(item)">
-          <q-icon :name="item.icon"/>
-          <q-menu transition-show="flip-right" transition-hide="flip-left">
-            <q-list>
-              <q-item clickable v-for=" l in item.menuList" :key="l.id">
-                <q-item-section @click="selectMenu(l)">
-                  {{ l.bel }}
-                </q-item-section>
-              </q-item>
-              <q-separator/>
-            </q-list>
-          </q-menu>
-        </q-btn>
-        <!-- 最小化、最大化和关闭 -->
-        <q-btn dense flat icon="minimize" @click="windowOperation('minimize')"/>
+      <!--最右侧工具-->
+      <div class="col-lg-1 col-md-2 col-sm-2  col-xs-4 text-right" >
+        <q-btn dense flat icon="minimize" @click="windowOperation('minimize')" />
         <q-btn dense flat icon="crop_square" @click="windowOperation('maximize')"/>
-        <q-btn dense flat icon="close" @click="windowOperation('close')"/>
+        <q-btn dense flat icon="close" @click="windowOperation('close')" />
       </div>
-
-
     </q-toolbar>
 
   </q-header>
@@ -73,13 +78,12 @@
 //装饰器组件
 import {Component, Vue, Watch} from 'vue-property-decorator';
 //此注释可兼容js
-// @ts-ignore
-import config from '@/config'
+import config from '@/db/json'
 import {INavMenu, StatusCode} from '@/domain'
 import {UserDaoImpl} from '@/db/indexedDB'
 import Api from '@/api'
 import {ipcRenderer} from "electron";
-import {Route} from "vue-router";
+
 
 const {ipcRenderer: ipc} = require("electron");
 
@@ -92,37 +96,35 @@ let api = new Api();
 export default class LayoutHeader extends Vue {
   // 初始数据可以直接声明为实例的 property
   public state: boolean = true;
-  private label: string = '类型';
-  public treeData: Array<INavMenu> = config.docs['java']
+  private label: string = '影视';
+  // public treeData: Array<INavMenu> = config.docs['java']
   public menu = config.navMenu
   model = null;
   public options = [
-    'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle',
-    'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle',
-    'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle',
     'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
   ]
 
+  /**
+   * 貌似不太好处理啊
+   */
   @Watch('model', {immediate: true, deep: true})
   onModelChange(newVal: any, oldVal: any) {
-    console.log(newVal)
+    switch (this.label) {
+
+      case '文章':
+        break;
+      case '教程':
+        break;
+      case'影视':
+        break;
+      default:
+        this.triggerWarning()
+
+    }
+    // console.log(newVal)
   }
 
-  setModel(val:string) {
-    console.log(val)
-    // this.model = val
-  }
 
-/*  filterFn(val, update, abort) {
-    update(() => {
-      const needle = val.toLocaleLowerCase()
-      this.options = this.options.filter(v => v.toLocaleLowerCase().indexOf(needle) > -1)
-    })
-  }*/
-
-  select(){
-    console.log('0000000000000000')
-  }
   // 组件方法也可以直接声明为实例的方法
   windowOperation(operation: string): void {
     ipc.send(operation)
@@ -131,10 +133,20 @@ export default class LayoutHeader extends Vue {
   private mounted() {
   }
 
+  triggerWarning() {
+    // @ts-ignore
+    this.$q.notify({
+      type: 'warning',
+      message: `请选择对应的搜索类型！`
+    })
+
+  }
+
   topMenuSelect(menu: INavMenu): void {
     switch (menu.name) {
       case 'home':
         location.href = '#/';
+
         break
 
 
@@ -149,20 +161,19 @@ export default class LayoutHeader extends Vue {
   selectMenu(menu: INavMenu): void {
 
     if (menu.name === 'update') {
-      if (this.$router.currentRoute.path !== '/update') {
-        ipcRenderer.send('open-update-dialog')
-        // this.$router.push('/update')
-      }
-      return;
+      // ipcRenderer.send('open-update-dialog')
+      this.$router.push('/time-line')
+      return
     }
-    //每个分类的默认首页
-    let encode = encodeURIComponent(`html/${menu.name}/index.html`) + "/" + menu.name
+    //每个分类的默认首页，修改树形菜单的类型
+    let encode = encodeURIComponent(`html/${menu.name}/index.html`);
+    if (menu.docType) {
+      this.$store.commit('updateNodeType',menu.docType);
+    }
 
     let indexPath = `/content/${encode}`;
 
-    if (this.$router.currentRoute.path !== indexPath) {
-      this.$router.push(indexPath)
-    }
+    this.$router.push(indexPath)
 
 
   }
@@ -190,17 +201,19 @@ export default class LayoutHeader extends Vue {
   opacity: 0.75
 
 #header
-  font-weight: normal
-
   .q-field--auto-height .q-field__control
-    height: 35px
+    height: 30px
 
   .q-field--auto-height .q-field__control, .q-field--auto-height .q-field__native
-    min-height: 34px
+    min-height: 28px
 
   .q-field__marginal
-    height: 35px
+    height: 30px
+.q-field__native, .q-field__prefix, .q-field__suffix, .q-field__input
+  color: #fff !important
+.q-field--outlined .q-field__control:before
+  //border: 1px solid #fff !important
+.q-field--outlined .q-field__control:after
+  //border: 1px solid #fff !important
 
-  .q-field__native, .q-field__prefix, .q-field__suffix, .q-field__input
-    color: #fff3e0
 </style>

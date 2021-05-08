@@ -1,17 +1,16 @@
 <template>
   <div id="content">
 
-      <login/>
-      <Update/>
-        <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
-                       :style="{'height': (wHeight-80)+'px','margin-left': '31px'} ">
+    <login/>
+    <Update/>
+    <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle"
+                   :style="{'height': (wHeight-80)+'px','margin-left': '31px'} ">
 
-          <markdown :file-path="filePath"/>
-        </q-scroll-area>
+      <markdown :file-path="filePath"/>
+    </q-scroll-area>
 
-        <LayoutSide :type="this.$route.params.type"/>
+    <layout-side />
 
-<!--    <button @click="test()">测试按钮</button>-->
   </div>
 </template>
 
@@ -29,7 +28,7 @@ import Login from '@/views/Login.vue';
 import Update from '@/views/Update.vue';
 
 @Component({
-  components: {Markdown, LayoutSide, Login,Update},
+  components: {Markdown, LayoutSide, Login, Update},
 
 })
 export default class Content extends Vue {
@@ -37,6 +36,7 @@ export default class Content extends Vue {
   private wHeight: number = document.documentElement.clientHeight
 
   private filePath: string = this.$route.params.filePath
+
   private thumbStyle = {
     right: '4px',
     borderRadius: '5px',
@@ -58,7 +58,8 @@ export default class Content extends Vue {
 
     this.filePath = this.$route.params.filePath;
 
-    // console.log(this.filePath,this.$route.params.type)
+    // @ts-ignore
+    this.$store.commit('updateTreeData', this.$store.getters.getNodeType);
   }
 
   //钩子函数
@@ -74,8 +75,7 @@ export default class Content extends Vue {
     );
 
   }
-  test(){
-  }
+
 }
 
 

@@ -19,19 +19,22 @@ router.afterEach((to,from)=>{
 
 
 //解决路由重复（即当前路径多次点击报错，不影响页面效果）
-/*import VueRouter, {RawLocation} from 'vue-router'
+import VueRouter, {RawLocation} from 'vue-router'
+
+import store from './store'
 
 const originalPush = VueRouter.prototype.push
 
 VueRouter.prototype.push = function push(location:RawLocation) {
   // @ts-ignore
   return originalPush.call(this, location).catch(err => err)
-}*/
+}
 
 
 
 
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')
