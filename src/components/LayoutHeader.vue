@@ -3,15 +3,14 @@
   <q-header class="q-electron-drag">
     <q-toolbar class="row ">
       <!--logo处理 -->
-      <div class="col-lg-1 col-md-2  gt-sm position-relative" >
+      <div class="col-lg-1 col-md-2  gt-sm position-relative">
         <img alt="logo" src='@/assets/logo.png' class="float-left" style="height: 25px"/>
         <span class="text-weight-bold float-left" style="line-height: 25px ">码农宝典</span>
       </div>
       <!--中间搜索-->
-      <div class="col-lg-10 col-md-8 col-sm-10 col-xs-8" >
+      <div class="col-lg-10 col-md-8 col-sm-10 col-xs-8">
         <div class="row">
-          <div class="col-md-6 col-sm-7 gt-xs"  >
-
+          <div class="col-md-6 col-sm-7 gt-xs">
             <q-btn-dropdown :label="label" rounded flat>
               <q-list>
                 <q-item clickable v-close-popup @click="selectSearchType('文章')">
@@ -44,9 +43,9 @@
                 style=" float: right;width: 65%;"
             >
             </q-select>
-          </div >
+          </div>
 
-          <div class="col-md-6 col-sm-5 text-right"  >
+          <div class="col-md-6 col-sm-5 text-right">
             <q-btn flat v-for="item in menu" :key="item.id" @click="topMenuSelect(item)">
               <q-icon :name="item.icon"/>
               <q-menu transition-show="flip-right" transition-hide="flip-left">
@@ -64,10 +63,10 @@
         </div>
       </div>
       <!--最右侧工具-->
-      <div class="col-lg-1 col-md-2 col-sm-2  col-xs-4 text-right" >
-        <q-btn dense flat icon="minimize" @click="windowOperation('minimize')" />
+      <div class="col-lg-1 col-md-2 col-sm-2  col-xs-4 text-right">
+        <q-btn dense flat icon="minimize" @click="windowOperation('minimize')"/>
         <q-btn dense flat icon="crop_square" @click="windowOperation('maximize')"/>
-        <q-btn dense flat icon="close" @click="windowOperation('close')" />
+        <q-btn dense flat icon="close" @click="windowOperation('close')"/>
       </div>
     </q-toolbar>
 
@@ -160,15 +159,15 @@ export default class LayoutHeader extends Vue {
    */
   selectMenu(menu: INavMenu): void {
 
-    if (menu.name === 'update') {
-      // ipcRenderer.send('open-update-dialog')
-      this.$router.push('/time-line')
+    if (menu.docType === undefined) {
+
+      this.$router.push(menu.href)
       return
     }
     //每个分类的默认首页，修改树形菜单的类型
     let encode = encodeURIComponent(`html/${menu.name}/index.html`);
     if (menu.docType) {
-      this.$store.commit('updateNodeType',menu.docType);
+      this.$store.commit('updateNodeType', menu.docType);
     }
 
     let indexPath = `/content/${encode}`;
@@ -209,11 +208,13 @@ export default class LayoutHeader extends Vue {
 
   .q-field__marginal
     height: 30px
+
 .q-field__native, .q-field__prefix, .q-field__suffix, .q-field__input
   color: #fff !important
+
 .q-field--outlined .q-field__control:before
-  //border: 1px solid #fff !important
+//border: 1px solid #fff !important
 .q-field--outlined .q-field__control:after
-  //border: 1px solid #fff !important
+//border: 1px solid #fff !important
 
 </style>

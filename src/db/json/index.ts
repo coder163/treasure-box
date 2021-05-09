@@ -3,33 +3,25 @@ import shortId from "shortid";
 
 export default {
     navMenu: [
-        // {
-        //     id:shortId.generate(),
-        //     icon: 'account_circle',
-        //     name:'login'
-        // },
-        // {
-        //     id: shortId.generate(),
-        //     icon: 'home',
-        //     name: 'home'
-        // },
-        // {
-        //     id: shortId.generate(),
-        //     icon: 'video_library',
-        //     menuList: [
-        //
-        //         {
-        //             id: shortId.generate(),
-        //             bel: 'Delphi视频',
-        //             name: 'delphi'
-        //         },
-        //         {
-        //             id: shortId.generate(),
-        //             bel: 'Java视频', name: 'java'
-        //         },
-        //
-        //     ]
-        // },
+
+
+        {
+            id: shortId.generate(),
+            icon: 'video_library',
+            menuList: [
+
+                {
+                    id: shortId.generate(),
+                    bel: 'Delphi视频',
+                    name: 'delphi'
+                },
+                {
+                    id: shortId.generate(),
+                    bel: 'Java视频', name: 'java'
+                },
+
+            ]
+        },
 
         {
             id: shortId.generate(),
@@ -38,8 +30,10 @@ export default {
                 {
                     id: shortId.generate(),
                     bel: 'Delphi',
+                    //此字段为路由跳转时使用的动态名称
                     name: 'delphi',
-                    docType:'delphi'
+                    //此字段为判断是否属于树形菜单中文档的依据
+                    docType: 'delphi'
                 },
                 {
                     id: shortId.generate(),
@@ -67,11 +61,11 @@ export default {
                 },
             ]
         },
-        // {
-        //     id:shortId.generate(),
-        //     icon: 'settings',
-        //     name:'setting'
-        // },
+        {
+            id:shortId.generate(),
+            icon: 'settings',
+            name:'setting'
+        },
         {
             id: shortId.generate(),
             icon: 'help',
@@ -80,14 +74,16 @@ export default {
                     id: shortId.generate(),
                     bel: '关于作者',
                     name: 'about',
-                    href: 'html/about.html'
+                    //此种为md文件，但又不是树形菜单中的文档
+                    href: `/content/${encodeURIComponent('html/about/index.html')}`
                 },
                 {
                     id: shortId.generate(),
                     bel: '检查更新',
                     name: 'update',
+                    //vue组件的路由名称
                     href: '/time-line'
-                },  //name是用于获取树形菜单的key
+                },
             ]
         }
 

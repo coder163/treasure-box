@@ -3,8 +3,12 @@
         <layout-header/>
         <!-- 内容 -->
         <q-page-container>
+            <layout-side />
+          <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" :style="{'height': (winHeight-50)+'px','margin-left': '31px'} ">
             <router-view/>
+          </q-scroll-area>
         </q-page-container>
+      <login/>
     </q-layout>
 
 </template>
@@ -12,11 +16,12 @@
 <script>
 
     import LayoutHeader from './components/LayoutHeader.vue';
-
+    import LayoutSide from "@/components/LayoutSide.vue";
+    import Login from '@/views/Login.vue'
     export default {
         name: "LayoutDefault",
         components: {
-            LayoutHeader,
+            LayoutHeader,LayoutSide,Login
         },
         data() {
             return {

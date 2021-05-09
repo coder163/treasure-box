@@ -8,26 +8,19 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     // 驱动应用的数据源
     state: {
-        //@ts-ignore
-        treeData: config.docs['java'],
-
         nodeType: 'java'
     },
     getters: {
         getTreeData(state) {
-            return state.treeData;
+            // @ts-ignore
+            return config.docs[state.nodeType];
         },
         getNodeType(state) {
-
-
             return state.nodeType
         }
     },
     mutations: {
-        updateTreeData(state, payload = 'java') {
-            // @ts-ignore
-            state.treeData = config.docs[payload];
-        },
+
         updateNodeType(state, payload = 'java') {
             state.nodeType = payload;
 

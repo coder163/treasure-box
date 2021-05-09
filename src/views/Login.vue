@@ -13,7 +13,7 @@
             <q-tooltip>不想登录了?</q-tooltip>
           </q-btn>
         </q-bar>
-        <q-card-section  >
+        <q-card-section>
           <q-img :src="qrcode"/>
         </q-card-section>
       </q-card>
@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
 import {ipcRenderer} from "electron";
 import axios from 'axios'
 
@@ -30,6 +30,7 @@ import {StatusCode} from '@/domain'
 
 import dbDexie, {UserDaoImpl} from '@/db/indexedDB'
 import Api from '@/api'
+import {Route} from "vue-router";
 
 let userDaoImpl: UserDaoImpl = new UserDaoImpl();
 
@@ -39,7 +40,7 @@ let api = new Api();
   components: {},
 })
 export default class Content extends Vue {
-  // @Prop({required: true} )
+  // @Prop({required: false})
   private persistent: boolean = false
   //默认为空
   private qrcode: string = '/erweima.png';
@@ -51,9 +52,9 @@ export default class Content extends Vue {
   }
 
   async showDialog() {
-    console.log(this.user)
+    // console.log(this.user)
     //没有本地存储或者本地有数据，但是远程没有查询到，表示取消关注了,此时需要修改数据库内容
-    if (this.user === undefined || ((await api.getUserByOid(this.user.openid)).status === StatusCode.UNSUBSCRIBE)) {
+    /*if (this.user === undefined || ((await api.getUserByOid(this.user.openid)).status === StatusCode.UNSUBSCRIBE)) {
       let ticket = await api.getTicket();
       console.log('ticket', ticket)
       //刷新二维码
@@ -82,9 +83,10 @@ export default class Content extends Vue {
 
       console.log('---------------', this.user)
       return
-    }
+    }*/
 
   }
+
 
   private async mounted() {
     //页面加载之后查询本地数据库
@@ -97,6 +99,7 @@ export default class Content extends Vue {
     //
     //
     // }
+
     let _this = this;
     //登录事件
     ipcRenderer.on('is-login', function () {

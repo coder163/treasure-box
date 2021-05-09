@@ -27,7 +27,7 @@ const routes: Array<RouteConfig> = [
         name: 'Player',
         component: () => import('../views/Player.vue')
     },{
-        path: '/login',
+        path: '/login/:persistent',
         name: 'Login',
         component: () => import('../views/Login.vue')
     },{

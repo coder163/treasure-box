@@ -41,5 +41,6 @@ export interface INavMenu {
     bel: string,
     name: string
     docType:string,
+    href:string,
     menuList: Array<INavMenu>
 }

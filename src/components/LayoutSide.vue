@@ -5,20 +5,27 @@
            style="height: 150px">
       <!-- 在用户登录之后才可以显示，否则默认只显示背景图即可-->
       <div class="absolute-center bg-transparent">
-        <q-btn flat fab-mini @click="clickMini">
+        <q-btn flat fab-mini @click="mini?login():clickMini()" >
           <!--未登录显示-->
           <q-icon name="account_circle" :size="mini?'30px':'46px'"/>
           <!--登录之后显示-->
           <!--            <q-img :style="{'border-radius': mini?'15px':'23px' , 'width': mini?'30px':'46px'}" src="https://cdn.quasar.dev/img/boy-avatar.png" alt=""/>-->
         </q-btn>
       </div>
-      <span class="absolute-bottom text-bold text-white" v-if="!mini">{{ user === '' ? '未登录' : '舞动的代码' }}</span>
+      <span class="absolute-bottom" v-if="!mini">
+
+        <q-btn flat class=" text-bold text-white" v-if="user === '' " @click="login">未登录</q-btn>
+
+        <!--        <span v-if="user !== ''"  class=" text-bold text-white">舞动的代码</span>-->
+
+      </span>
     </q-img>
     <!--滚动条-->
-    <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" style="height: calc(100% - 170px); margin-top: 150px; ">
+    <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" style="height: calc(100% - 150px); margin-top: 150px; ">
 
       <div class="row items-center" v-if="mini">
         <q-btn flat>
+          <!--          <span style="font-size: 12px" @click="mini=!mini">目录</span>-->
           <q-icon name="format_list_bulleted" @click="mini=!mini"></q-icon>
         </q-btn>
       </div>
@@ -38,6 +45,7 @@ import {Route} from "vue-router";
 import {ipcRenderer} from "electron";
 import {StatusCode} from "@/domain";
 
+
 import {UserDaoImpl} from '@/db/indexedDB'
 import Api from "@/api";
 
@@ -47,20 +55,12 @@ let api = new Api();
 @Component({})
 export default class LayoutSide extends Vue {
 
-/*  //设置为required: true会导致默认值失效
-  @Prop({
-    required: false,
-    default: () => {
-      return 'java'
-    }
-  }) private type !: string;*/
+  //@Prop设置为required: true会导致默认值失效
 
   // !表示有值, 否则 ts 会告警未初始化 required: true,
   private drawer: boolean = true;
   //侧边栏mini状态
   private mini: boolean = true
-
-  private treeData: any;
 
 
   private thumbStyle = {
@@ -100,7 +100,6 @@ export default class LayoutSide extends Vue {
       this.$refs.tree.setExpanded(value, !this.$refs.tree.isExpanded(value))
     }
   }
-
 
 
   @Watch('$route', {immediate: true, deep: true})
@@ -143,6 +142,7 @@ export default class LayoutSide extends Vue {
 
   login() {
     ipcRenderer.send('login')
+
   }
 }
 
