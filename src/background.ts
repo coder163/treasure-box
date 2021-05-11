@@ -33,7 +33,8 @@ async function createWindow() {
             nodeIntegration: true, // 是否集成 Nodejs
             webSecurity: false,//允许跨域请求
             contextIsolation: false,
-            enableRemoteModule: true
+            enableRemoteModule: true,
+            webviewTag:true
 
         }
 
@@ -121,9 +122,9 @@ ipcMain.on('open-update-dialog', () => {
         autoUpdater.updateConfigPath=path.join(__dirname, '../dev-app-update.yml');
     }
 
-    autoUpdater.checkForUpdates().then((r:UpdateCheckResult) => {
+  /*  autoUpdater.checkForUpdates().then((r:UpdateCheckResult) => {
         console.log(r)
-    })
+    })*/
     win.webContents.send('update-dialog');
 })
 

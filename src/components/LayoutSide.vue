@@ -60,7 +60,7 @@ export default class LayoutSide extends Vue {
   // !表示有值, 否则 ts 会告警未初始化 required: true,
   private drawer: boolean = true;
   //侧边栏mini状态
-  private mini: boolean = true
+  private mini: boolean = false
 
 
   private thumbStyle = {
@@ -94,8 +94,13 @@ export default class LayoutSide extends Vue {
     let $node = this.$refs.tree.getNodeByKey(value);
 
     if (($node.href !== undefined)) {
+      //文档类
       this.$router.push(`/content/${encodeURIComponent($node.href)}`)
-    } else {
+
+    } else if ($node.routerLink !== undefined){
+      //组件类
+      this.$router.push($node.routerLink+`?name=${$node.name}&time=${Date.now()}`);
+    }else {
       // @ts-ignore
       this.$refs.tree.setExpanded(value, !this.$refs.tree.isExpanded(value))
     }

@@ -25,16 +25,22 @@ const routes: Array<RouteConfig> = [
     },{
         path: '/player',
         name: 'Player',
-        component: () => import('../views/Player.vue')
+        component: () => import('@/components/Player.vue')
     },{
         path: '/login/:persistent',
         name: 'Login',
         component: () => import('../views/Login.vue')
     },{
-        path: '/time-line',
-        name: 'TimeLine',
-        component: () => import('../views/TimeLine.vue')
+        path: '/cloud-disk',
+        name: 'CloudDisk',
+        component: () => import('../views/CloudDisk.vue')
     }
+    ,{
+        path: '/play-list',
+        name: 'PlayList',
+        component: () => import('../views/PlayList.vue')
+    }
+
 ]
 
 const router = new VueRouter({

@@ -23,7 +23,7 @@ export default (mainWindow: BrowserWindow) => {
     // autoUpdater.updateConfigPath = path.join(__filename, '../../dist/win-ia32-unpacked/resources/app-update.yml')
 
     // 在下载之前将autoUpdater的autoDownload属性设置成false，通过渲染进程触发主进程事件来实现这一设置(将自动更新设置成false)
-    autoUpdater.autoDownload = true
+    autoUpdater.autoDownload = false
     //设置版本更新地址，即将打包后的latest.yml文件和exe文件同时放在
     autoUpdater.setFeedURL('http://281244ia88.qicp.vip/public')
     // 当更新发生错误的时候触发。

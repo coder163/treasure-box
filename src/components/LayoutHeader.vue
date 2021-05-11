@@ -10,7 +10,7 @@
       <!--中间搜索-->
       <div class="col-lg-10 col-md-8 col-sm-10 col-xs-8">
         <div class="row">
-          <div class="col-md-6 col-sm-7 gt-xs">
+          <div class="col-md-6 col-sm-5 gt-xs">
             <q-btn-dropdown :label="label" rounded flat>
               <q-list>
                 <q-item clickable v-close-popup @click="selectSearchType('文章')">
@@ -40,12 +40,12 @@
                 dense
                 v-model="model" :options="options"
                 rounded
-                style=" float: right;width: 65%;"
+                style=" float: right;width: 55%;"
             >
             </q-select>
           </div>
 
-          <div class="col-md-6 col-sm-5 text-right">
+          <div class="col-md-6 col-sm-7 text-right">
             <q-btn flat v-for="item in menu" :key="item.id" @click="topMenuSelect(item)">
               <q-icon :name="item.icon"/>
               <q-menu transition-show="flip-right" transition-hide="flip-left">
@@ -76,7 +76,6 @@
 <script lang="ts">
 //装饰器组件
 import {Component, Vue, Watch} from 'vue-property-decorator';
-//此注释可兼容js
 import config from '@/db/json'
 import {INavMenu, StatusCode} from '@/domain'
 import {UserDaoImpl} from '@/db/indexedDB'
@@ -140,16 +139,18 @@ export default class LayoutHeader extends Vue {
     })
 
   }
-
+  //顶部无子菜单
   topMenuSelect(menu: INavMenu): void {
+
     switch (menu.name) {
-      case 'home':
-        location.href = '#/';
-
+      case 'cloudDisk':
+        console.log(menu)
+        // location.href = '#'+menu.href;
+        // @ts-ignore
+        this.$router.push(menu.href+`?time=${Date.now()}`);
         break
-
-
     }
+
   }
 
 
@@ -160,8 +161,13 @@ export default class LayoutHeader extends Vue {
   selectMenu(menu: INavMenu): void {
 
     if (menu.docType === undefined) {
-
-      this.$router.push(menu.href)
+      if (menu.name === 'update') {
+        ipcRenderer.send('open-update-dialog');
+        return
+      }
+      //time为虚拟参数，主要是为了让路径发生变化
+      // @ts-ignore
+      this.$router.push(menu.href+`?time=${Date.now()}`);
       return
     }
     //每个分类的默认首页，修改树形菜单的类型

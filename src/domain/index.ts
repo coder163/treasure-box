@@ -40,7 +40,21 @@ export interface INavMenu {
     id: string,
     bel: string,
     name: string
-    docType:string,
-    href:string,
+    docType: string,
+    href: string,
     menuList: Array<INavMenu>
+}
+
+/**
+ * 剧集
+ */
+export interface Episodes {
+    //当前集数
+    index: number,
+    //播放路径
+    src: string,
+    //剧情简介
+    desc:string,
+
+    download:any
 }

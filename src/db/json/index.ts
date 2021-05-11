@@ -3,22 +3,33 @@ import shortId from "shortid";
 
 export default {
     navMenu: [
-
-
         {
             id: shortId.generate(),
             icon: 'video_library',
             menuList: [
-
                 {
                     id: shortId.generate(),
                     bel: 'Delphi视频',
-                    name: 'delphi'
+                    name: 'delphiVideo',
+                    docType: 'delphiVideo'
                 },
                 {
                     id: shortId.generate(),
-                    bel: 'Java视频', name: 'java'
+                    bel: 'Java视频',
+                    name: 'javaVideo'
                 },
+                {
+                    id: shortId.generate(),
+                    bel: '其他视频',
+                    name: 'otherVideo',
+                    docType: 'otherVideo'
+                },
+                {
+                    id: shortId.generate(),
+                    bel: '网络视频',
+                    name: 'networkVideo',
+                    docType: 'networkVideo'
+                }
 
             ]
         },
@@ -46,20 +57,9 @@ export default {
         }, {
             id: shortId.generate(),
             icon: 'wb_cloudy',
+            name: 'cloudDisk',
+            href: '/cloud-disk'
 
-            menuList: [
-
-                {
-                    id: shortId.generate(),
-                    bel: '世纪互联',
-                    name: 'oneDrive'
-                },
-                {
-                    id: shortId.generate(),
-                    bel: '百度网盘',
-                    name: 'baidu'
-                },
-            ]
         },
         {
             id:shortId.generate(),
@@ -82,7 +82,7 @@ export default {
                     bel: '检查更新',
                     name: 'update',
                     //vue组件的路由名称
-                    href: '/time-line'
+                    // href: '/time-line'
                 },
             ]
         }
@@ -213,8 +213,89 @@ export default {
 
                     }
                 ]
+            },
+            {
+                label: '官方案例',
+                children: [
+                    {
+                        label: '安装破解',
+                        href: 'html/delphi/basic/2018-05-09-安装破解.html',
+                        selectable: true,
+
+                    },
+                    {
+                        label: '单元文件结构',
+                        href: 'html/delphi/basic/2018-05-14-单元文件结构.html'
+
+                    },
+                    {
+                        label: '变量和常量',
+                        href: 'html/delphi/basic/2018-05-29-变量和常量.html'
+
+                    },
+                    {
+                        label: '复杂数据类型',
+                        href: 'html/delphi/basic/2018-05-29-复杂数据类型.html'
+
+                    }
+                ]
             }
+        ],
+        delphiVideo: [
+            {
+                label: 'Delphi基础',
+                children: [
+                    {
+                        label: '第一季',
+                        name:'delphi001',
+                        selectable: true,
+                        routerLink: '/play-list'
+                    }
+                ]
+            }
+        ],
+        otherVideo:[
+            {
+                label: '开源计划',
+                children: [
+                    {
+                        label: 'GitBook',
+                        name:'openSource',
+                        selectable: true,
+                        routerLink: '/play-list'
+                    }
+                ]
+            }
+        ],
+        networkVideo:[
+
         ]
+    },
+    videos:{
+        'delphi001':{
+            videos:[
+                "https://www.ixigua.com/iframe/6808815041043759629",
+                "https://www.ixigua.com/iframe/6808907684264280588",
+                "https://www.ixigua.com/iframe/6808941540468064782",
+                "https://www.ixigua.com/iframe/6809137366750462468",
+                "https://www.ixigua.com/iframe/6809218838563914244",
+                "https://www.ixigua.com/iframe/6809219838767006222"
+            ],
+            desc:`<h1>版本控制</h1>`,
+            download:'此类视频请去网盘进行下载'
+        },
+        'openSource':{
+            videos:[
+                "https://www.ixigua.com/iframe/6808815041043759629",
+                "https://www.ixigua.com/iframe/6808907684264280588",
+                "https://www.ixigua.com/iframe/6808941540468064782",
+                "https://www.ixigua.com/iframe/6809137366750462468",
+                "https://www.ixigua.com/iframe/6809218838563914244",
+                "https://www.ixigua.com/iframe/6809219838767006222"
+            ],
+            desc:`GitBook以及通过GitHub实现多人协作`,
+            download:'此类视频请去网盘进行下载'
+        }
     }
 }
 

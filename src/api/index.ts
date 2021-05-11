@@ -1,6 +1,12 @@
 import axios from 'axios'
 import {UserDaoImpl} from '@/db/indexedDB'
+export class ZfileApi {
 
+    static getName(){
+
+    }
+
+}
 export default class {
 
     public getTicket(): Promise<any> {

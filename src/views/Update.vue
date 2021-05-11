@@ -7,7 +7,7 @@
           <q-avatar>
             <img src="@/assets/logo.png"  alt="logo"/>
           </q-avatar>
-          <div><span class="text-subtitle2">更新进度</span></div>
+          <div><span class="text-subtitle2">更新详情</span></div>
 
           <q-space></q-space>
 
@@ -58,7 +58,7 @@ export default class Content extends Vue {
           logger.info('检测到新版本');
           break;
         case UpdateStatusCode.NO_NEW_VERSION_DETECTED:
-          logger.info('检测到新版本');
+          logger.info('没有检测到新版本');
           break;
         case UpdateStatusCode.DOWNLOADING:
           logger.info('下载中', args);
