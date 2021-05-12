@@ -222,20 +222,22 @@ export default {
                         href: 'html/delphi/basic/2018-05-09-安装破解.html',
                         selectable: true,
 
-                    },
+                    }
+                ]
+            }
+        ],
+        cloudDisk:[
+            {
+                label: '网盘传输',
+                children: [
                     {
-                        label: '单元文件结构',
-                        href: 'html/delphi/basic/2018-05-14-单元文件结构.html'
+                        label: '正在下载',
+                        routerLink: '/transmission',
+                        selectable: true,
 
                     },
                     {
-                        label: '变量和常量',
-                        href: 'html/delphi/basic/2018-05-29-变量和常量.html'
-
-                    },
-                    {
-                        label: '复杂数据类型',
-                        href: 'html/delphi/basic/2018-05-29-复杂数据类型.html'
+                        label: '传输完成',
 
                     }
                 ]

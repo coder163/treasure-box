@@ -144,10 +144,12 @@ export default class LayoutHeader extends Vue {
 
     switch (menu.name) {
       case 'cloudDisk':
-        console.log(menu)
+        // console.log(menu)
         // location.href = '#'+menu.href;
+        this.$store.commit('updateNodeType', menu.name);
         // @ts-ignore
         this.$router.push(menu.href+`?time=${Date.now()}`);
+
         break
     }
 

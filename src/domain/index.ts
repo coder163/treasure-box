@@ -26,6 +26,8 @@ export enum UpdateStatusCode {
     DOWNLOAD_COMPLETED = 4,
 }
 
+
+
 export interface IUser {
 
     nickName: string;
@@ -54,7 +56,16 @@ export interface Episodes {
     //播放路径
     src: string,
     //剧情简介
-    desc:string,
+    desc: string,
 
-    download:any
+    download: any
+}
+
+export interface IZfile {
+    name: string;
+    time: string;
+    size: number;
+    type: string;
+    path: string;
+    url: string;
 }

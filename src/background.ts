@@ -34,7 +34,7 @@ async function createWindow() {
             webSecurity: false,//允许跨域请求
             contextIsolation: false,
             enableRemoteModule: true,
-            webviewTag:true
+            webviewTag: true
 
         }
 
@@ -119,12 +119,12 @@ ipcMain.on('login-info', function (event, userInfo) {
 ipcMain.on('open-update-dialog', () => {
     //测试环境下使用自动更新
     if (isDevelopment) {
-        autoUpdater.updateConfigPath=path.join(__dirname, '../dev-app-update.yml');
+        autoUpdater.updateConfigPath = path.join(__dirname, '../dev-app-update.yml');
     }
 
-  /*  autoUpdater.checkForUpdates().then((r:UpdateCheckResult) => {
-        console.log(r)
-    })*/
+    /*  autoUpdater.checkForUpdates().then((r:UpdateCheckResult) => {
+          console.log(r)
+      })*/
     win.webContents.send('update-dialog');
 })
 
@@ -135,3 +135,44 @@ app.on('ready', async () => {
     require('./main/video')
     Update(win)
 })
+
+ipcMain.on('download-is', (event, url,path) => {
+
+    win.webContents.downloadURL(url);
+
+    win.webContents.session.on('will-download', (event, item, webContents) => {
+        //设置文件存放位置，如果用户没有设置保存路径，Electron将使用默认方式来确定保存路径（通常会提示保存对话框）
+        const fullPath = `E:\\download\\${path.replaceAll('/','\\')}${item.getFilename()}`;
+        console.log(fullPath);
+        item.setSavePath(fullPath)
+
+        item.on('updated', (event, state) => {
+            if (state === 'interrupted') {
+                //下载中断
+                console.log('Download is interrupted but can be resumed')
+            } else if (state === 'progressing') {
+                if (item.isPaused()) {
+                    //下载暂停
+                    console.log('Download is paused')
+                } else {
+                    //已经收到的数据
+                    console.log(`Received bytes: ${item.getReceivedBytes()}`)
+                }
+            }
+        })
+        item.once('done', (event, state) => {
+            if (state === 'completed') {
+                console.log('Download successfully')
+                //回显 调用渲染进程方法
+                win.webContents.send('downloadItemDone', state)
+            } else {
+                console.log(`Download failed: ${state}`)
+                //回显 调用渲染进程方法
+                win.webContents.send('downstate', state)
+            }
+        })
+    })
+})
+
+
+

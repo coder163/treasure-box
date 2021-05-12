@@ -39,6 +39,10 @@ const routes: Array<RouteConfig> = [
         path: '/play-list',
         name: 'PlayList',
         component: () => import('../views/PlayList.vue')
+    } ,{
+        path: '/transmission',
+        name: 'Transmission',
+        component: () => import('../views/Transmission.vue')
     }
 
 ]

@@ -1,9 +1,44 @@
 import axios from 'axios'
 import {UserDaoImpl} from '@/db/indexedDB'
+import {IZfile} from "@/domain";
+
+class Zfile implements IZfile {
+    name: string;
+    path: string;
+    size: number;
+    time: string;
+    type: string;
+    url: string;
+
+    constructor(name: string,path: string,size: number,time: string,type: string,url: string) {
+        this.name = name;
+        this.path = path;
+        this.size = size;
+        this.time = time;
+        this.type = type;
+        this.url = url;
+    }
+}
 export class ZfileApi {
 
-    static getName(){
+    static getName(path:string=''){
+       const url= `https://disk.coder163.com/api/list/1?path=/${path}`
+        let fileList: Array<IZfile> = new Array<IZfile>();
 
+        return new Promise<any>(async (resolve, reject) => {
+            await axios.get(url).then(resp => {
+
+                    resp.data.data.files.forEach((item:any)=>{
+                        let {name, path, size, time, type, url} = item;
+                        let  file:Zfile= new Zfile(name,path,size,time,type,url)
+                        fileList.push(file);
+                    })
+                resolve(fileList)
+            }).catch(err => {
+
+                reject(err)
+            })
+        })
     }
 
 }
