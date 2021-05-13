@@ -27,7 +27,6 @@ export enum UpdateStatusCode {
 }
 
 
-
 export interface IUser {
 
     nickName: string;
@@ -69,3 +68,64 @@ export interface IZfile {
     path: string;
     url: string;
 }
+
+export enum DownLoadStatus {
+    //下载中断
+    INTERRUPTED = "INTERRUPTED",
+    //正在下载
+    DOWNLOADING = "DOWNLOADING",
+    //暂停
+    PAUSED = "PAUSED",
+    //下载完成
+    COMPLETED = "COMPLETED",
+    //取消下载
+    CANCELLED = "CANCELLED",
+    //准备下载
+    READY="READY"
+
+}
+
+export interface DownloadItem {
+    id: string;
+    //文件名字
+    fileName: string;
+    //总大小
+    totalSize: number;
+    //已经下载的大小
+    receivedSize: number;
+    //下载状态
+    status: DownLoadStatus;
+    //文件存放路径
+    downloadDir: string;
+}
+export  class DownloadImpl implements DownloadItem {
+    id: string = "";
+    downloadDir: string = "";
+
+    fileName: string = "";
+
+    receivedSize: number = 0;
+
+    status: DownLoadStatus=DownLoadStatus.READY;
+
+    totalSize: number = 0;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

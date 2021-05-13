@@ -11,23 +11,28 @@
 
 
       <template v-slot:body="props">
+
         <q-tr :props="props">
           <q-td key="name" :props="props">
-            <a href="#" >
-              <q-icon :name="  props.row.type==='FILE'?'description':'folder'"/>
-              {{ props.row.name }}
-            </a>
+            <q-icon :name="  props.row.type==='FILE'?'description':'folder'"/>
+            {{ props.row.fileName }}
           </q-td>
 
+          <q-td key="url" :props="props" class="align-right ">
+            <!--&lt;!&ndash;          &ndash;&gt;-->
+            <q-linear-progress :value="percentage(props.row.receivedSize,props.row.totalSize)/100" v-if="percentage(props.row.receivedSize,props.row.totalSize)<100" stripe rounded size="20px" color="secondary">
+              <div class="absolute-full flex flex-center">
 
+                <q-badge :label="percentage(props.row.receivedSize,props.row.totalSize)+'%'" style="background: transparent;color:#000 !important; " text-color="accent"/>
+              </div>
+            </q-linear-progress>
 
-          <q-td key="url"  :props="props" class="align-right ">
-            <a href="#" >
-              <q-icon :name="props.row.type==='FILE'?'cloud_download':'block'"/>
-            </a>
+            <span v-if="percentage(props.row.receivedSize,props.row.totalSize)===100">{{percentage(props.row.receivedSize,props.row.totalSize)}}</span>
           </q-td>
           <q-td key="size" :props="props">
-            {{ props.row.size }}
+
+            <a href="#">打开所在目录</a>
+            <a href="#">删除</a>
           </q-td>
         </q-tr>
       </template>
@@ -36,16 +41,19 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import {Component, Vue, Watch} from 'vue-property-decorator';
+import {DownloadItem} from "@/domain";
+import {Route} from "vue-router";
+import {DownDaoImpl} from "@/db/indexedDB";
 import {ipcRenderer} from "electron";
-import {IZfile} from "@/domain";
 
 @Component({
   components: {},
 
 })
 export default class Content extends Vue {
-  loading: boolean = true
+  loading: boolean = false
+  downDao: DownDaoImpl = new DownDaoImpl();
   columns = [
     {
       name: 'name',
@@ -55,20 +63,58 @@ export default class Content extends Vue {
       sortable: true
     },
 
-    {name: 'url', align: 'left', label: '状态', field: 'url', sortable: true},
-    {name: 'size', align: 'left', label: '操作', field: 'size', sortable: true},
+    {name: 'url', align: 'center', label: '状态', field: 'url', sortable: true},
+    {name: 'size', align: 'center', label: '操作', field: 'size', sortable: true},
   ];
 
-  public data: Array<IZfile> = new Array<IZfile>();
+  public data: Array<DownloadItem> = new Array<DownloadItem>();
 
   async mounted() {
+    //页面切换时的初始化，根据提交的参数
+    switch (this.$route.query.name) {
+      case  "download":
+        this.data = await this.downDao.findDownItemWithDownloading();
+        break;
+      case "download-done":
+        this.data = await this.downDao.findDownItemWithDownloadDone();
+    }
+    let this_ = this;
+    //下载进度
+    ipcRenderer.on('download-process', async () => {
+      console.log('download-process')
+      this_.data = await this_.downDao.findDownItemWithDownloading();
+    })
+    //下载完成
+    ipcRenderer.on('download-process-done', async () => {
+      console.log('download-process-done')
 
-    ipcRenderer.on('downloadProgress', (event, args) => {
-      console.log('下载进度', args)
+      setTimeout(async () => {
+        this_.data = await this_.downDao.findDownItemWithDownloading();
+      }, 500)
+
     })
-    ipcRenderer.on('downloadItemDone', (event, args) => {
-      console.log('下载完成', args)
-    })
+
+  }
+
+  @Watch('$route', {immediate: true, deep: true})
+  async onRouteChange(newVal: Route, oldVal: Route) {
+
+    switch (this.$route.query.name) {
+      case  "download":
+        this.data = await this.downDao.findDownItemWithDownloading();
+        break;
+      case "download-done":
+        this.data = await this.downDao.findDownItemWithDownloadDone();
+        break;
+    }
+  }
+
+
+  percentage(num1: number, num2: number): number {
+
+    let result = Number(num1 / num2) * 100;
+    return parseInt(result.toFixed(2))
+
   }
 }
 </script>

@@ -233,12 +233,15 @@ export default {
                     {
                         label: '正在下载',
                         routerLink: '/transmission',
+                        name: 'download',
                         selectable: true,
 
                     },
                     {
                         label: '传输完成',
-
+                        routerLink: '/transmission',
+                        name: 'download-done',
+                        selectable: true,
                     }
                 ]
             }

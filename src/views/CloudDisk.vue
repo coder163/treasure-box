@@ -26,7 +26,7 @@
         <q-tr :props="props">
           <q-td key="name" :props="props">
             <a href="#" @click="refreshFile(props.row)">
-              <q-icon :name="  props.row.type==='FILE'?'description':'folder'"/>
+              <q-icon style="font-size: 23px" :name="  props.row.type==='FILE'?'description':'folder'"/>
               {{ props.row.name }}
             </a>
           </q-td>
@@ -39,7 +39,7 @@
           </q-td>
           <q-td key="url" @click="download(props.row)" :props="props" class="align-right ">
             <a href="#" :class="props.row.type==='FILE'?'enable-link':'disabled-link'">
-              <q-icon :name="props.row.type==='FILE'?'cloud_download':'block'"/>
+              <q-icon style="font-size: 23px" :name="props.row.type==='FILE'?'cloud_download':'block'"/>
             </a>
           </q-td>
         </q-tr>
@@ -53,6 +53,8 @@ import {ZfileApi} from '@/api'
 import {IZfile} from "@/domain";
 import {Route} from "vue-router";
 import {ipcRenderer} from "electron";
+import {DownDaoImpl} from "@/db/indexedDB";
+
 
 @Component({
   components: {},
@@ -62,6 +64,8 @@ export default class Content extends Vue {
 
   loading: boolean = true
   winHeight = document.documentElement.clientHeight
+
+  downDao: DownDaoImpl = new DownDaoImpl();
 
   columns = [
     {
@@ -99,6 +103,18 @@ export default class Content extends Vue {
         false
     );
     await this.fileListInit();
+
+
+    ipcRenderer.on('download-status', (event, item) => {
+        console.log('数据入库前回传的ID', item.id)
+        this.downDao.putDownloadItem(item);
+
+    })
+    ipcRenderer.on('download-done', (event, item) => {
+
+        // console.log('下载完成', item)
+        this.downDao.putDownloadItem(item);
+    })
   }
 
   async refreshFile(row: any) {
@@ -136,10 +152,8 @@ export default class Content extends Vue {
     if (row.type === "FOLDER") {
       return;
     }
-    console.log('准备下载')
 
-    ipcRenderer.send('download-is', row.url,row.path);
-
+    ipcRenderer.send('download-is',  row);
 
   }
 
@@ -147,6 +161,7 @@ export default class Content extends Vue {
     this.pathNames.forEach((value, index) => {
       if (value.name === row.name) {
         this.pathNames.splice(index);
+        return;
       }
     })
 
@@ -171,12 +186,12 @@ export default class Content extends Vue {
 
 
   a:link
-    color: #64d2ff
+    color: #3495e8
     text-decoration: none
     font-size: 14px
 
   a:hover
-    color: #ec4141
+    color: #ff9b00
     text-decoration: underline
 
   .disabled-link
