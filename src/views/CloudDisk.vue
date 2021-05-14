@@ -9,11 +9,11 @@
         :loading="loading"
     >
       <template v-slot:top>
-        <a href="#" @click="fileListInit" class="flex items-center q-breadcrumbs">
+        <a href="#" @click="diskIndex" class="flex items-center q-breadcrumbs">
           网盘
         </a>
 
-        <div v-for="row in pathNames">
+        <div v-for="row in $store.getters.getCloudDiskPath">
           <span>/</span>
           <a href="#" @click="changePath(row)">
             {{ row.name }}
@@ -39,7 +39,9 @@
           </q-td>
           <q-td key="url" @click="download(props.row)" :props="props" class="align-right ">
             <a href="#" :class="props.row.type==='FILE'?'enable-link':'disabled-link'">
-              <q-icon style="font-size: 23px" :name="props.row.type==='FILE'?'cloud_download':'block'"/>
+              <q-icon v-if="props.row.type==='FILE'" style="font-size: 23px" name="cloud_download"/>
+
+              <span  v-else style="font-size: 23px" >-</span>
             </a>
           </q-td>
         </q-tr>
@@ -83,17 +85,14 @@ export default class Content extends Vue {
 
   public data: Array<IZfile> = new Array<IZfile>();
 
-  private currentRow: any = "";
-
-  private pathNames: Array<IZfile> = new Array<IZfile>();
 
   @Watch('$route', {immediate: true, deep: true})
   async onRouteChange(newVal: Route, oldVal: Route) {
-    await this.fileListInit();
-
+    // await this.fileListInit();
   }
 
   async mounted() {
+    await this.fileListInit();
     let $vue = this;
     window.addEventListener(
         "resize",
@@ -102,48 +101,38 @@ export default class Content extends Vue {
         },
         false
     );
-    await this.fileListInit();
-
 
     ipcRenderer.on('download-status', (event, item) => {
-        console.log('数据入库前回传的ID', item.id)
-        this.downDao.putDownloadItem(item);
-
+      this.downDao.putDownloadItem(item);
     })
     ipcRenderer.on('download-done', (event, item) => {
-
-        // console.log('下载完成', item)
-        this.downDao.putDownloadItem(item);
+      this.downDao.putDownloadItem(item);
     })
   }
 
   async refreshFile(row: any) {
-    console.log(row.url)
     if (row.type === 'FILE') {
       //此处调用播放器
       return;
     }
-
-    this.pathNames.push(row)
     this.data.length = 0;
     this.loading = true
-    let fileList: Array<IZfile> = await ZfileApi.getName(row.path + row.name);
-    fileList.forEach((item) => {
-      this.data.push(item);
+    this.data = await ZfileApi.getName(row.path + row.name);
 
-    })
     this.loading = false
+    //更新网盘路径
+    this.$store.commit('updateCloudDiskPath', row)
   }
 
   async fileListInit() {
     this.data.length = 0;
-    this.pathNames.length = 0;
     this.loading = true
-    let fileList: Array<IZfile> = await ZfileApi.getName();
-    fileList.forEach((item) => {
-      this.data.push(item);
 
-    })
+    let rows: Array<IZfile> = this.$store.getters.getCloudDiskPath;
+    //最后一个打开的文件夹+文件名字即为当前的文件夹
+    let url=rows[rows.length-1]===undefined?'':rows[rows.length-1].path+rows[rows.length-1].name;
+
+    this.data = await ZfileApi.getName(url);
     this.loading = false
   }
 
@@ -153,19 +142,20 @@ export default class Content extends Vue {
       return;
     }
 
-    ipcRenderer.send('download-is',  row);
+    ipcRenderer.send('download-is', row);
 
   }
 
   async changePath(row: any) {
-    this.pathNames.forEach((value, index) => {
-      if (value.name === row.name) {
-        this.pathNames.splice(index);
-        return;
-      }
-    })
-
+    this.$store.commit('subCloudDiskPath', row)
     await this.refreshFile(row);
+  }
+
+  async diskIndex(){
+    //清空路径数组
+    this.$store.commit('updateCloudDiskPath', 0)
+    //清空表格数据，其实就是请求默认目录
+    this.data = await ZfileApi.getName();
   }
 }
 

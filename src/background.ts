@@ -27,7 +27,7 @@ async function createWindow() {
     win = new BrowserWindow({
         width: 1200,
         height: 768,
-        // show: false,
+        show: false,
         frame: false,//添加这一行采用无边框窗口
         webPreferences: {
             javascript: true,
@@ -43,6 +43,9 @@ async function createWindow() {
     })
     Menu.setApplicationMenu(null) //取消菜单栏
     win.webContents.openDevTools()
+    win.once('ready-to-show', () => {
+        win.show()
+    });
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
         await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL as string)
@@ -54,6 +57,8 @@ async function createWindow() {
         await win.loadURL('app://./index.html')
     }
 }
+
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -132,28 +137,24 @@ ipcMain.on('open-update-dialog', () => {
 
 app.commandLine.appendSwitch('--ignore-certificate-errors', 'true')
 
+
 app.on('ready', async () => {
     await createWindow()
     require('./main/video')
 
     Update(win)
-
-    download(win);
-
-
+    download(win)
 })
-
-
 
 ipcMain.on('download-is', (event,  row) => {
-    console.log('*****************')
+    // console.log('*****************',row)
     //触发下载事件will-download
-
-    // this_.$store.commit('updateNodeType', menu.name);
-    win.webContents.downloadURL(row.url);
-
+    win.webContents.downloadURL(row.url+`&${row.path}|${row.size}`);
 
 })
+
+
+
 
 
 

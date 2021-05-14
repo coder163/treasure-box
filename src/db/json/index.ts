@@ -64,7 +64,9 @@ export default {
         {
             id:shortId.generate(),
             icon: 'settings',
-            name:'setting'
+            name: 'setting',
+            //vue组件的路由名称
+            href: '/setting'
         },
         {
             id: shortId.generate(),
@@ -231,17 +233,24 @@ export default {
                 label: '网盘传输',
                 children: [
                     {
+                        label: '返回网盘',
+                        routerLink: '/cloud-disk',
+                        name: 'download-return',
+
+
+                    },
+                    {
                         label: '正在下载',
                         routerLink: '/transmission',
                         name: 'download',
-                        selectable: true,
+
 
                     },
                     {
                         label: '传输完成',
                         routerLink: '/transmission',
                         name: 'download-done',
-                        selectable: true,
+
                     }
                 ]
             }

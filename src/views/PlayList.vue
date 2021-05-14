@@ -109,7 +109,7 @@ export default class PlayList extends Vue {
 
   winHeight = document.documentElement.clientHeight;
   //剧集列表
-  private videos!: Array<string> ;
+  private videos: Array<string> = new Array<string>();
   //当前集
   public currentVideo: Episodes =new CurrentVideo("","",0,"");
 

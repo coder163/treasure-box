@@ -86,6 +86,7 @@ export default class LayoutSide extends Vue {
   //deep:代表开启深度监控，意思是数据的任何一个属性发生变化，监视函数需要执行immediate:设置为 true ，代表代码一加载  立马执行监视函数
   @Watch('key', {immediate: false, deep: true})
   onKeyChange(newVal: string, oldVal: string) {
+
     //点击了任意一个节点都需要将侧边栏的模式该为展开
     this.mini = false;
     //当前点击的key
@@ -117,9 +118,6 @@ export default class LayoutSide extends Vue {
   }
 
   private async mounted() {
-
-
-    // console.log(this.$store.getters.getTreeData)
     let _this = this;
     ipcRenderer.on('login-success', (event, userInfo) => {
       _this.user = userInfo;

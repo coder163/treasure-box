@@ -16,16 +16,22 @@ export default (win: BrowserWindow) => {
         let downloadItem: DownloadItem = new DownloadImpl();
         downloadItem.id = shortId.generate();
 
+        let index=item.getURL().lastIndexOf('&')+1;
+
+        //参数
+        let parames=item.getURL().substring(index).split('|');
+
+
         //设置文件存放位置，如果用户没有设置保存路径，Electron将使用默认方式来确定保存路径（通常会提示保存对话框）
 
-        const fullPath = `E:\\download\\${item.getFilename()}`;
-
+        const fullPath = `E:\\download\\${parames[0].replaceAll("/",'\\')}${item.getFilename()}`;
+        console.log(fullPath);
         item.setSavePath(fullPath)
 
         downloadItem.fileName = item.getFilename()
         //此处有问题
-        downloadItem.totalSize = item.getTotalBytes();
-        console.log('总字节数',item.getTotalBytes());
+        downloadItem.totalSize = parseInt(parames[1]);
+        console.log('总字节数',   downloadItem.totalSize);
         item.on('updated', (event, state) => {
             if (state === 'interrupted') {
                 //下载中断

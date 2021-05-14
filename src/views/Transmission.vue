@@ -27,12 +27,15 @@
               </div>
             </q-linear-progress>
 
-            <span v-if="percentage(props.row.receivedSize,props.row.totalSize)===100">{{percentage(props.row.receivedSize,props.row.totalSize)}}</span>
+            <span v-if="percentage(props.row.receivedSize,props.row.totalSize)===100">
+              已完成
+            </span>
           </q-td>
-          <q-td key="size" :props="props">
+          <q-td key="size" :props="props" >
 
-            <a href="#">打开所在目录</a>
-            <a href="#">删除</a>
+            <a href="#" class="q-pa-sm" @click="openFileHandler">打开所在目录</a>
+            <!--最好将ID传过去            -->
+            <a href="#" class="q-pa-sm" @click="delDownItem(props.row)">删除</a>
           </q-td>
         </q-tr>
       </template>
@@ -77,16 +80,18 @@ export default class Content extends Vue {
         break;
       case "download-done":
         this.data = await this.downDao.findDownItemWithDownloadDone();
+        break;
+
     }
     let this_ = this;
     //下载进度
     ipcRenderer.on('download-process', async () => {
-      console.log('download-process')
+      // console.log('download-process')
       this_.data = await this_.downDao.findDownItemWithDownloading();
     })
     //下载完成
     ipcRenderer.on('download-process-done', async () => {
-      console.log('download-process-done')
+      // console.log('download-process-done')
 
       setTimeout(async () => {
         this_.data = await this_.downDao.findDownItemWithDownloading();
@@ -115,6 +120,14 @@ export default class Content extends Vue {
     let result = Number(num1 / num2) * 100;
     return parseInt(result.toFixed(2))
 
+  }
+
+  openFileHandler() {
+    const {shell} = require("electron").remote;
+    shell.showItemInFolder("D:\\网络视频");
+  }
+  delDownItem(row:any){
+    console.log('删除')
   }
 }
 </script>

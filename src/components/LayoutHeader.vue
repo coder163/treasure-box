@@ -149,8 +149,10 @@ export default class LayoutHeader extends Vue {
         this.$store.commit('updateNodeType', menu.name);
         // @ts-ignore
         this.$router.push(menu.href+`?time=${Date.now()}`);
-
-        break
+        break;
+      case 'setting':
+        // @ts-ignore
+        this.$router.push(menu.href + `?time=${Date.now()}`);
     }
 
   }

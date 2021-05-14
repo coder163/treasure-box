@@ -43,6 +43,10 @@ const routes: Array<RouteConfig> = [
         path: '/transmission',
         name: 'Transmission',
         component: () => import('../views/Transmission.vue')
+    } ,{
+        path: '/setting',
+        name: 'Setting',
+        component: () => import('../views/Setting.vue')
     }
 
 ]
