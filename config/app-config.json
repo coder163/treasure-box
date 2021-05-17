@@ -1,0 +1,9 @@
+{
+  "app": {
+    "downDir": "E:\\win-unpacked\\swiftshader",
+    "isAutoUpdate": false,
+    "isDownTool": true,
+    "isKeepDiskPath": true,
+    "isStandalonePlayer": true
+  }
+}

@@ -33,12 +33,12 @@
 import {Component, Vue} from "vue-property-decorator";
 import {ipcRenderer} from "electron";
 import {logger} from "@/config/Log4jsConfig";
-import {UpdateStatusCode} from "@/domain";
+import {UpdateStatusCode} from "@/domain/Enums";
 
 @Component({
   components: {},
 })
-export default class Content extends Vue {
+export default class Update extends Vue {
   private persistent: boolean = false;
 
   private schedule: string = '0.00%';

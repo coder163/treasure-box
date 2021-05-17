@@ -22,17 +22,12 @@
 </template>
 
 <script lang="ts">
-import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
+import {Component, Vue} from 'vue-property-decorator';
 import {ipcRenderer} from "electron";
-import axios from 'axios'
 
-import {StatusCode} from '@/domain'
-
-import dbDexie, {UserDaoImpl} from '@/db/indexedDB'
+import UserDaoImpl from '@/db/indexedDB/UserDao'
 import Api from '@/api'
-import {Route} from "vue-router";
 
-let userDaoImpl: UserDaoImpl = new UserDaoImpl();
 
 let api = new Api();
 
@@ -44,8 +39,7 @@ export default class Content extends Vue {
   private persistent: boolean = false
   //默认为空
   private qrcode: string = '/erweima.png';
-
-  private user: any;
+  private userDaoImpl: UserDaoImpl = new UserDaoImpl();
 
   closeDialog(): void {
     this.persistent = false
@@ -68,11 +62,11 @@ export default class Content extends Vue {
         //正确响应或者窗口关闭或者超时
         if ((userInfo.status === StatusCode.SUCCESS) || !_this.persistent || Date.now()-beforeTime>1000*60) {
             if ((this.user === undefined) && (userInfo.status === StatusCode.SUCCESS)) {
-              userDaoImpl.add({'id': '1001', 'uid': ticket.id, 'openid': userInfo.info.oid});
+              this.userDaoImpl.add({'id': '1001', 'uid': ticket.id, 'openid': userInfo.info.oid});
               this.user = userInfo;
               ipcRenderer.send('login-info',this.user.info);
             } else if((this.user !== undefined) && (userInfo.status === StatusCode.SUCCESS)) {
-              userDaoImpl.update({'id': '1001', 'uid': ticket.id, 'openid': userInfo.info.oid});
+               this.userDaoImpl.update({'id': '1001', 'uid': ticket.id, 'openid': userInfo.info.oid});
               this.user = userInfo;
               ipcRenderer.send('login-info',this.user.info);
             }
@@ -90,7 +84,7 @@ export default class Content extends Vue {
 
   private async mounted() {
     //页面加载之后查询本地数据库
-    // this.user = await userDaoImpl.getFirstUser();
+    // this.user = await  this.userDaoImpl.getFirstUser();
     // // console.log('数据库查询结果', this.user)
     //
     // if (this.user !== undefined && ((await api.getUserByOid(this.user.openid)).status !== StatusCode.UNSUBSCRIBE)) {

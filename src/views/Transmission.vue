@@ -1,3 +1,4 @@
+<!--
 <template>
   <div id="transmission">
     <q-table
@@ -19,7 +20,7 @@
           </q-td>
 
           <q-td key="url" :props="props" class="align-right ">
-            <!--&lt;!&ndash;          &ndash;&gt;-->
+            &lt;!&ndash;&lt;!&ndash;          &ndash;&gt;&ndash;&gt;
             <q-linear-progress :value="percentage(props.row.receivedSize,props.row.totalSize)/100" v-if="percentage(props.row.receivedSize,props.row.totalSize)<100" stripe rounded size="20px" color="secondary">
               <div class="absolute-full flex flex-center">
 
@@ -34,7 +35,7 @@
           <q-td key="size" :props="props" >
 
             <a href="#" class="q-pa-sm" @click="openFileHandler">打开所在目录</a>
-            <!--最好将ID传过去            -->
+            &lt;!&ndash;最好将ID传过去            &ndash;&gt;
             <a href="#" class="q-pa-sm" @click="delDownItem(props.row)">删除</a>
           </q-td>
         </q-tr>
@@ -45,18 +46,20 @@
 
 <script lang="ts">
 import {Component, Vue, Watch} from 'vue-property-decorator';
-import {DownloadItem} from "@/domain";
+import {DownloadItem} from "@/domain/Download";
 import {Route} from "vue-router";
-import {DownDaoImpl} from "@/db/indexedDB";
+import DownDaoImpl from "@/db/indexedDB/DownDao";
 import {ipcRenderer} from "electron";
 
 @Component({
   components: {},
 
 })
-export default class Content extends Vue {
+export default class Transmission extends Vue {
   loading: boolean = false
-  downDao: DownDaoImpl = new DownDaoImpl();
+
+  downDao: DownDaoImpl=new DownDaoImpl(this.$dexie);
+
   columns = [
     {
       name: 'name',
@@ -73,13 +76,15 @@ export default class Content extends Vue {
   public data: Array<DownloadItem> = new Array<DownloadItem>();
 
   async mounted() {
+
+
     //页面切换时的初始化，根据提交的参数
     switch (this.$route.query.name) {
       case  "download":
-        this.data = await this.downDao.findDownItemWithDownloading();
+        this.data = await this.downDao.findItemWithDownloading();
         break;
       case "download-done":
-        this.data = await this.downDao.findDownItemWithDownloadDone();
+        this.data = await this.downDao.findWithDownloadDone();
         break;
 
     }
@@ -87,14 +92,14 @@ export default class Content extends Vue {
     //下载进度
     ipcRenderer.on('download-process', async () => {
       // console.log('download-process')
-      this_.data = await this_.downDao.findDownItemWithDownloading();
+      this_.data = await this_.downDao.findItemWithDownloading();
     })
     //下载完成
     ipcRenderer.on('download-process-done', async () => {
       // console.log('download-process-done')
 
       setTimeout(async () => {
-        this_.data = await this_.downDao.findDownItemWithDownloading();
+        this_.data = await this_.downDao.findItemWithDownloading();
       }, 500)
 
     })
@@ -106,10 +111,10 @@ export default class Content extends Vue {
 
     switch (this.$route.query.name) {
       case  "download":
-        this.data = await this.downDao.findDownItemWithDownloading();
+        this.data = await this.downDao.findItemWithDownloading();
         break;
       case "download-done":
-        this.data = await this.downDao.findDownItemWithDownloadDone();
+        this.data = await this.downDao.findWithDownloadDone();
         break;
     }
   }
@@ -134,4 +139,4 @@ export default class Content extends Vue {
 
 <style scoped>
 
-</style>
+</style>-->

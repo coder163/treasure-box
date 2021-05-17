@@ -295,8 +295,10 @@ export default {
                 "https://www.ixigua.com/iframe/6809218838563914244",
                 "https://www.ixigua.com/iframe/6809219838767006222"
             ],
-            desc:`<h1>版本控制</h1>`,
-            download:'此类视频请去网盘进行下载'
+            desc:`<h6>版本控制</h6>`,
+            download:'此类视频请去网盘进行下载',
+            source:'xigua'
+
         },
         'openSource':{
             videos:[
@@ -308,7 +310,8 @@ export default {
                 "https://www.ixigua.com/iframe/6809219838767006222"
             ],
             desc:`GitBook以及通过GitHub实现多人协作`,
-            download:'此类视频请去网盘进行下载'
+            download: '此类视频请去网盘进行下载',
+            source:'xigua'
         }
     }
 }

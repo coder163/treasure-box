@@ -1,8 +1,8 @@
-import {DownloadImpl, DownloadItem, DownLoadStatus} from "@/domain";
-import {BrowserWindow, ipcMain} from "electron";
+import {DownLoadStatus} from "@/domain/Enums";
+import {BrowserWindow} from "electron";
 // @ts-ignore
 import shortId from "shortid";
-
+import DownloadImpl, {DownloadItem} from "@/domain/Download";
 
 // downloadItem.fileName = row.name
 

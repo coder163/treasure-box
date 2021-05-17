@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import config from "@/db/json";
-import {DownloadItem, IZfile} from "@/domain";
-import {DownDaoImpl} from "@/db/indexedDB";
+import {IZfile} from "@/domain/Zfile";
+
 
 Vue.use(Vuex)
 

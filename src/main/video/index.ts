@@ -1,6 +1,5 @@
 import {BrowserWindow, ipcMain, Menu} from 'electron'
 import {logger} from "@/config/Log4jsConfig";
-import {createProtocol} from "vue-cli-plugin-electron-builder/lib";
 
 let playerWindow: BrowserWindow;
 
@@ -38,9 +37,9 @@ async function createPlayerWindow() {
     // playerWindow.webContents.openDevTools()
 }
 
-ipcMain.on('open-video', function (e, args) {
+ipcMain.on('open-video', function  (e, args) {
 
-    createPlayerWindow()
+    createPlayerWindow().then(r => console.log(r))
 
 
 })

@@ -52,10 +52,10 @@
 <script lang="ts">
 import {Component, Vue, Watch} from 'vue-property-decorator';
 import {ZfileApi} from '@/api'
-import {IZfile} from "@/domain";
+import {IZfile} from "@/domain/Zfile";
 import {Route} from "vue-router";
 import {ipcRenderer} from "electron";
-import {DownDaoImpl} from "@/db/indexedDB";
+import DownDaoImpl from "@/db/indexedDB/DownDao";
 
 
 @Component({
@@ -103,10 +103,10 @@ export default class Content extends Vue {
     );
 
     ipcRenderer.on('download-status', (event, item) => {
-      this.downDao.putDownloadItem(item);
+      this.downDao.putItem(item);
     })
     ipcRenderer.on('download-done', (event, item) => {
-      this.downDao.putDownloadItem(item);
+      this.downDao.putItem(item);
     })
   }
 

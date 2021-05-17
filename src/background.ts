@@ -1,6 +1,4 @@
 'use strict'
-
-
 import {app, BrowserWindow, ipcMain, Menu, protocol} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 // @ts-ignore
@@ -57,7 +55,6 @@ async function createWindow() {
         await win.loadURL('app://./index.html')
     }
 }
-
 
 
 // Quit when all windows are closed.
@@ -146,17 +143,33 @@ app.on('ready', async () => {
     download(win)
 })
 
-ipcMain.on('download-is', (event,  row) => {
+ipcMain.on('download-is', (event, row) => {
     // console.log('*****************',row)
     //触发下载事件will-download
-    win.webContents.downloadURL(row.url+`&${row.path}|${row.size}`);
+    win.webContents.downloadURL(row.url + `&${row.path}|${row.size}`);
 
 })
 
+import {dialog} from 'electron'
 
 
+ipcMain.on('open-directory-dialog', function (event, p) {
+
+    dialog.showOpenDialog({
+        properties: ['openDirectory']
+
+    }).then((value) => {
+
+        if (!value.canceled) {
+            event.sender.send('selectedItem', value.filePaths[0])
+        }
+
+    })
+    //
+});
 
 
+import '@/main/search'
 
 
 

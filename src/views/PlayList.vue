@@ -2,8 +2,8 @@
   <div id="play-list">
     <div class="row">
       <div class="col-8 q-mt-xs ">
+        <!--   <player/>-->
         <q-video :src="currentVideo.src" style="height: 450px;"/>
-        <!--<player/>-->
       </div>
       <div class="col-4">
         <!--间距     <q-space style="height: 10px"/>-->
@@ -81,28 +81,16 @@ import PlayerXg from '@/components/PlayerXg.vue'
 import {Route} from "vue-router";
 import config from '@/db/json'
 
-import {Episodes} from '@/domain';
+import CurrentVideo, {Episodes} from '@/domain/Episode';
 
-class CurrentVideo implements Episodes{
-  desc: string;
-  download: any;
-  index: number;
-  src: string;
-
-  constructor(desc:string,download:any,index:number,src:string) {
-    this.desc = desc;
-    this.download = download;
-    this.index = index;
-    this.src = src;
-  }
-}
 
 @Component({
   components: {Player, PlayerXg},
 })
 export default class PlayList extends Vue {
+  isStandalonePlayer :boolean= Vue.prototype.$AppCofig.isStandalonePlayer
   // @ts-ignore
-  videosConfig= config.videos[this.$route.query.name];
+  videosConfig = config.videos[this.$route.query.name];
 
   episodesTab: string = 'episodes';
   plotTab: string = 'plot';
@@ -111,13 +99,12 @@ export default class PlayList extends Vue {
   //剧集列表
   private videos: Array<string> = new Array<string>();
   //当前集
-  public currentVideo: Episodes =new CurrentVideo("","",0,"");
+  public currentVideo: Episodes = new CurrentVideo("", "", 0, "");
 
   @Watch('$route', {immediate: true, deep: true})
   onRouteChange(newVal: Route, oldVal: Route) {
 
   }
-
   //钩子函数
   private mounted() {
     let $vue = this;
@@ -138,6 +125,7 @@ export default class PlayList extends Vue {
   }
 
   getVideosWithConfig() {
+    console.log(this.$route.query.name)
     // @ts-ignore,根据请求参数获取对应的视频配置信息
     let {desc, download, videos}: any = config.videos[this.$route.query.name];
     this.videos = videos;

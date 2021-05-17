@@ -21,7 +21,6 @@ import LayoutHeader from './components/LayoutHeader.vue';
 import LayoutSide from "@/components/LayoutSide.vue";
 import Login from '@/views/Login.vue'
 import Update from '@/views/Update.vue'
-import shortId from "shortid";
 
 export default {
   name: "LayoutDefault",
@@ -57,6 +56,7 @@ export default {
         },
         false
     );
+
 
   },
 

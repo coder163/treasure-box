@@ -1,11 +1,11 @@
 <template>
   <q-drawer v-model="drawer" :mini="mini" show-if-above :width="200" :breakpoint="400">
-    <!--人物头像-->
-    <q-img class="absolute-top text-center" src="https://cdn.quasar.dev/img/material.png"
+    <!--人物头像：https://cdn.quasar.dev/img/material.png-->
+    <q-img class="absolute-top text-center" src="/001.jpg"
            style="height: 150px">
       <!-- 在用户登录之后才可以显示，否则默认只显示背景图即可-->
       <div class="absolute-center bg-transparent">
-        <q-btn flat fab-mini @click="mini?login():clickMini()" >
+        <q-btn flat fab-mini @click="mini?login():clickMini()">
           <!--未登录显示-->
           <q-icon name="account_circle" :size="mini?'30px':'46px'"/>
           <!--登录之后显示-->
@@ -43,13 +43,13 @@ import config from '@/db/json'
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
 import {Route} from "vue-router";
 import {ipcRenderer} from "electron";
-import {StatusCode} from "@/domain";
+import {StatusCode} from "@/domain/Enums";
 
 
-import {UserDaoImpl} from '@/db/indexedDB'
+import UserDaoImpl from '@/db/indexedDB/UserDao'
 import Api from "@/api";
 
-let userDaoImpl: UserDaoImpl = new UserDaoImpl();
+
 let api = new Api();
 
 @Component({})
@@ -62,6 +62,7 @@ export default class LayoutSide extends Vue {
   //侧边栏mini状态
   private mini: boolean = false
 
+  private userDaoImpl: UserDaoImpl = new UserDaoImpl();
 
   private thumbStyle = {
     right: '4px',
@@ -98,10 +99,10 @@ export default class LayoutSide extends Vue {
       //文档类
       this.$router.push(`/content/${encodeURIComponent($node.href)}`)
 
-    } else if ($node.routerLink !== undefined){
+    } else if ($node.routerLink !== undefined) {
       //组件类
-      this.$router.push($node.routerLink+`?name=${$node.name}&time=${Date.now()}`);
-    }else {
+      this.$router.push($node.routerLink + `?name=${$node.name}&time=${Date.now()}`);
+    } else {
       // @ts-ignore
       this.$refs.tree.setExpanded(value, !this.$refs.tree.isExpanded(value))
     }
@@ -123,12 +124,11 @@ export default class LayoutSide extends Vue {
       _this.user = userInfo;
     })
     // await this.refresh()
-
   }
 
 
   async refresh() {
-    let dbuser = await userDaoImpl.getFirstUser();
+    let dbuser = await this.userDaoImpl.getFirstUser();
 
     // console.log('side数据库查询结果', dbuser)
 
