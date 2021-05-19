@@ -1,12 +1,14 @@
 <template>
   <div id="play-list">
+
     <div class="row">
-      <div class="col-8 q-mt-xs ">
-        <!--   <player/>-->
-        <q-video :src="currentVideo.src" style="height: 450px;"/>
-      </div>
-      <div class="col-4">
-        <!--间距     <q-space style="height: 10px"/>-->
+      <div class="col-8 q-mt-xs " >
+        <!--TODO 根据视频类型判断需要使用哪一种播放器-->
+        <player/>
+        <!--       <q-video :src="currentVideo.src"   style="height: 450px;"/>-->
+         </div>
+         <div class="col-4">
+        <!--TODO 此处布局需要变更，将选项卡改为panel.其他平台下移和简介放在一起-->
         <q-card flat>
           <q-tabs
               v-model="episodesTab"
@@ -40,8 +42,10 @@
         </q-card>
       </div>
     </div>
+
     <q-space style="height: 10px"/>
-    <q-card flat>
+    <!--TODO 独立播放器此部分不需要显示-->
+   <q-card flat>
       <q-tabs
           v-model="plotTab"
           dense
@@ -51,16 +55,16 @@
           align="justify"
           narrow-indicator
       >
-        <q-tab name="plot" label="视频简介"></q-tab>
-        <q-tab name="download" label="下载相关"></q-tab>
+        <q-tab name="plot" label="VIP解析"></q-tab>
+        <q-tab name="download" label="其他平台"></q-tab>
       </q-tabs>
 
       <q-separator></q-separator>
 
       <q-tab-panels v-model="plotTab" animated>
         <q-tab-panel name="plot" :style="{'max-height':winHeight-553+'px'}">
-          <p v-html="currentVideo.desc">
-          </p>
+
+         
         </q-tab-panel>
         <q-tab-panel name="download" :style="{'max-height':winHeight-553+'px'}">
           <p>
@@ -81,21 +85,22 @@ import PlayerXg from '@/components/PlayerXg.vue'
 import {Route} from "vue-router";
 import config from '@/db/json'
 
-import CurrentVideo, {Episodes} from '@/domain/Episode';
+import CurrentVideo, {IEpisodes} from '@/domain/Episode';
+import {ipcRenderer} from "electron";
 
 
 @Component({
   components: {Player, PlayerXg},
 })
 export default class PlayList extends Vue {
-  isStandalonePlayer :boolean= Vue.prototype.$AppCofig.isStandalonePlayer
+  private isStandalonePlayer: boolean = Vue.prototype.$AppCofig.isStandalonePlayer
   // @ts-ignore
-  videosConfig = config.videos[this.$route.query.name];
+  private videosConfig = config.videos[this.$route.query.name];
 
-  episodesTab: string = 'episodes';
-  plotTab: string = 'plot';
+  private episodesTab: string = 'episodes';
+  private plotTab: string = 'plot';
 
-  winHeight = document.documentElement.clientHeight;
+  private winHeight = document.documentElement.clientHeight;
   //剧集列表
   private videos: Array<string> = new Array<string>();
   //当前集
@@ -105,8 +110,10 @@ export default class PlayList extends Vue {
   onRouteChange(newVal: Route, oldVal: Route) {
 
   }
+
   //钩子函数
   private mounted() {
+
     let $vue = this;
     window.addEventListener(
         "resize",
@@ -116,23 +123,26 @@ export default class PlayList extends Vue {
         false
     );
     this.getVideosWithConfig();
-
+    //独立播放
+    if (this.isStandalonePlayer) {
+      ipcRenderer.send('open-video');
+    }
   }
 
   changeVideo(index: number, src: string) {
-    this.currentVideo.index = index;
-    this.currentVideo.src = src;
+    // this.currentVideo.index = index;
+    // this.currentVideo.src = src;
   }
 
   getVideosWithConfig() {
     console.log(this.$route.query.name)
     // @ts-ignore,根据请求参数获取对应的视频配置信息
     let {desc, download, videos}: any = config.videos[this.$route.query.name];
-    this.videos = videos;
-    this.currentVideo.desc = desc;
-    this.currentVideo.index = 0;
-    this.currentVideo.src = this.videos[0];
-    this.currentVideo.download = download;
+    // this.videos = videos;
+    // this.currentVideo.desc = desc;
+    // this.currentVideo.index = 0;
+    // this.currentVideo.src = this.videos[0];
+    // this.currentVideo.download = download;
 
   }
 }

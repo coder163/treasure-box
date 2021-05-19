@@ -55,7 +55,7 @@ let {
     isStandalonePlayer
 } = AppConfig.get("app").value()
 
-Vue.prototype.$AppCofig =  new Setting(downDir, isAutoUpdate, isDownTool, isKeepDiskPath, isStandalonePlayer);
+Vue.prototype.$AppCofig = new Setting(downDir, isAutoUpdate, isDownTool, isKeepDiskPath, isStandalonePlayer);
 
 //将数据库对象挂载到vue的全局对象
 Vue.prototype.$dexie = dbDexie;
@@ -69,7 +69,7 @@ axios.interceptors.request.use(
         config.headers = {
             'Access-Control-Allow-Origin': '*',
             'Accept': 'application/json,text/plain,text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*!/!*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'
         }
         // console.log("请求拦截", config)
         return config;
@@ -80,7 +80,7 @@ axios.interceptors.request.use(
 );
 
 // http response 服务器响应拦截器，
-/*axios.interceptors.response.use(
+axios.interceptors.response.use(
     function (response) {
         return response;
     },
@@ -100,7 +100,7 @@ axios.interceptors.request.use(
         }
         return Promise.reject(error.response.data)
     }
-);*/
+);
 new Vue({
     router,
     store,

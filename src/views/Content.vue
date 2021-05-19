@@ -1,6 +1,5 @@
 <template>
   <div id="content">
-
     <markdown :file-path="filePath"/>
   </div>
 </template>

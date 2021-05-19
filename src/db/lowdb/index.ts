@@ -6,7 +6,7 @@ import path from 'path'
 import {logger} from "@/config/Log4jsConfig";
 
 
-logger.info('读取配置文件', path.join(process.cwd(), '/config/app-config.json'))
+logger.info('读取基础设置配置文件', path.join(process.cwd(), '/config/app-config.json'))
 
 //基础设置
 const AppConfig = Datastore(new FileSync(path.join(process.cwd(), '/config/app-config.json')))
@@ -35,7 +35,7 @@ if (!AppConfig.has("app").value()) {
                 }
         }).write()
 }
-logger.info('初始化视频资源站', path.join(process.cwd(), '/config/video-api-config.json'))
+logger.info('读取视频资源站配置文件', path.join(process.cwd(), '/config/video-api-config.json'))
 if (!VideoApiConfig.has("resource-site").value()) {
     VideoApiConfig.defaults(
         {

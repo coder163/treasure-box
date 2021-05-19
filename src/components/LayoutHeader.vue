@@ -11,21 +11,46 @@
       <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 ">
         <div class="row">
 
-          <div class="col-lg-8 col-md-8 col-sm-5 col-xs-11">
-
+          <div class="col-lg-8 col-md-8 col-sm-12 col-xs-11">
+            <!--   @input-value="inputSearchValue"-->
             <q-select
                 class="q-electron-drag--exception"
+
                 outlined
+                clearable
+                options-selected-class="text-deep-orange"
                 use-input
-                dense
-                v-model="model" :options="options" filled-input
+                v-model="model" :options="options"
                 rounded
-                input-debounce="5000"
-                @input-value="inputSearchValue"
+                dense
+                ref="searchInput"
+                input-debounce="100"
+                @new-value="inputSearchValue"
             >
-              <!--                @filter="filterFn"-->
+              <template v-slot:selected class="text-no-wrap" >
+                <span class="text-no-wrap">  {{ model !== null ? model.name : model }}</span>
+              </template>
+
+              <!-- 有搜索结果-->
+              <template v-slot:option="scope" >
+                <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                  <q-item-section>
+                    <q-item-label caption>
+                      {{ scope.opt.name }}
+
+                      <div class="float-right">
+                         {{ scope.opt.type }}
+                        <span  v-if="scope.opt.lang!==null && scope.opt.lang!==''" >
+                          -{{ scope.opt.lang }}
+                        </span>
+                      </div>
+
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
               <template v-slot:before>
-                <q-btn-dropdown :label="label" rounded flat>
+                <q-btn-dropdown :label="searchType" rounded flat>
                   <q-list>
                     <q-item clickable v-close-popup @click="selectSearchType('文章')">
                       <q-item-section>
@@ -50,11 +75,11 @@
             </q-select>
           </div>
           <!--TODO sm导航处理，现在直接隐藏导航-->
-          <div class="lt-sm-xs col-sm-5 col-xs-1 q-pa-xs lt-sm">
-            <q-btn dense icon="format_list_bulleted" flat></q-btn>
-          </div>
+          <!--          <div class="lt-sm-xs col-sm-5 col-xs-1 q-pa-xs gt-sm">
+                      <q-btn dense icon="format_list_bulleted" flat></q-btn>
+                    </div>-->
           <!--工具图标-->
-          <div class="col-lg-4 col-md-4 col-sm-7   gt-xs   text-right">
+          <div class="col-lg-4 col-md-4    gt-sm   text-right">
             <q-btn flat v-for="item in menu" :key="item.id" @click="topMenuSelect(item)">
               <q-icon :name="item.icon"/>
               <q-menu transition-show="flip-right" transition-hide="flip-left">
@@ -72,7 +97,7 @@
         </div>
       </div>
       <!--最右侧工具-->
-      <div class="col-lg-1 col-md-2 col-sm-2  col-xs-4  text-right">
+      <div class="col-lg-1 col-md-2 col-sm-2  col-xs-4  text-right ">
         <q-btn dense flat icon="minimize" @click="windowOperation('minimize')"/>
         <q-btn dense flat icon="crop_square" @click="windowOperation('maximize')"/>
         <q-btn dense flat icon="close" @click="windowOperation('close')"/>
@@ -86,34 +111,67 @@
 
 import {Component, Vue, Watch} from 'vue-property-decorator';
 import config from '@/db/json'
-import Api from '@/api'
 import {ipcRenderer} from "electron";
 
 import {INavMenu} from '@/domain/Menu'
+import Episode, {IEpisodes} from "@/domain/Episode";
 
-const {ipcRenderer: ipc} = require("electron");
-
-
-let api = new Api();
 @Component({
   // 其他组件列表
 })
 export default class LayoutHeader extends Vue {
-  // 初始数据可以直接声明为实例的 property
-  private state: boolean = true;
-  private label: string = '影视';
+  private searchType: string = '影视';
   private menu = config.navMenu
-  private model = null;
-  private options = [
-    'Google', 'Facebook', 'Twitter', 'Apple', 'Oracle'
-  ]
+  private model: IEpisodes|null = null;
 
+  private options = new Array<IEpisodes>()
+
+
+  private mounted() {
+    let this_ = this;
+    ipcRenderer.on('episodes-result', ((event, args) => {
+      switch (args.status) {
+        case 'success':
+          args.data.forEach((value: IEpisodes) => {
+
+            this_.options.push(value)
+          });
+          this_.options.filter((value, index, arr) => {
+            return value.name === arr[index].name;
+          });
+          if (this_.$refs.searchInput !== undefined) {
+            //@ts-ignore
+            this_.$refs.searchInput.showPopup();
+          }
+          break;
+        case 'end':
+          //TODO 需要增加一个VIP解析页面
+          if (args.data.length <= 0) {
+            this.$q.notify({
+              type: 'warning',
+              html: true,
+              position: 'bottom-right',
+              timeout: 5000,
+              message: `很抱歉没有搜索结果，尝试  <a class="q-btn text-blue"   href="/#/play-list"  >VIP解析</a>`
+            })
+          }
+
+      }
+
+    }));
+
+  }
+  vip(){
+    this.model = null;
+    console.log('vip解析')
+  }
   /**
    * 选择之后才会响应
    */
   @Watch('model', {immediate: true, deep: true})
   onModelChange(newVal: any, oldVal: any) {
-    console.log(newVal, this.label)
+
+    console.log(newVal)
 
   }
 
@@ -121,9 +179,10 @@ export default class LayoutHeader extends Vue {
    * 监听输入
    */
   inputSearchValue(value: string) {
-    console.log(value)
+    let this_ = this;
     if (value !== null && value.trim() !== "") {
       ipcRenderer.send('search-video', value);
+      this_.options.length = 0;
     }
 
 
@@ -133,10 +192,7 @@ export default class LayoutHeader extends Vue {
    * 窗口操作
    */
   windowOperation(operation: string): void {
-    ipc.send(operation)
-  }
-
-  private mounted() {
+    ipcRenderer.send(operation)
   }
 
 
@@ -189,7 +245,7 @@ export default class LayoutHeader extends Vue {
   }
 
   selectSearchType(searchType: string) {
-    this.label = searchType;
+    this.searchType = searchType;
   }
 }
 </script>

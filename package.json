@@ -25,6 +25,7 @@
     "lowdb": "^1.0.0",
     "quasar": "^1.0.0",
     "shortid": "^2.2.16",
+    "urlencode": "^1.1.0",
     "vue": "^2.6.11",
     "vue-carousel-3d": "^1.0.1",
     "vue-class-component": "^7.2.3",

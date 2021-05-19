@@ -45,9 +45,9 @@ export default {
                 volume: 0.7,//音量播放器会记忆用户设置
                 logo: '',
                 video: {
-                    url: 'https://www.ixigua.com/api/videov2/pseries_more_v2?pSeriesId=6808861554897846787&rank=0&tailCount=30&_signature=_02B4Z6wo00f01jN84CwAAIDD5LrNVB.gv2ozWOSAAOxTe4',
+                    url: "https://v8.dious.cc/20210411/PwWzzJyO/index.m3u8",
                     pic:background,  //图片地址。img4
-                    type: 'auto',//可选值:'customHls' 'auto', 'hls', 'flv', 'dash', 'webtorrent', 'normal' 或其他自定义类型
+                    type: 'customHls',//可选值:'customHls' 'auto', 'hls', 'flv', 'dash', 'webtorrent', 'normal' 或其他自定义类型
                     customType: {
                         // @ts-ignore
                         'customHls': function (video, player) {

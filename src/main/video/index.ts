@@ -39,7 +39,7 @@ async function createPlayerWindow() {
 
 ipcMain.on('open-video', function  (e, args) {
 
-    createPlayerWindow().then(r => console.log(r))
+    createPlayerWindow()
 
 
 })
