@@ -4,7 +4,7 @@
     <!-- 内容 -->
     <q-page-container>
       <layout-side/>
-      <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" :style="{'height': (winHeight-50)+'px','margin-left': '1px'} ">
+      <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" :style="{'height': (winHeight-50)+'px'} ">
         <router-view />
       </q-scroll-area>
     </q-page-container>

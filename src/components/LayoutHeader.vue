@@ -15,32 +15,32 @@
             <!--   @input-value="inputSearchValue"-->
             <q-select
                 class="q-electron-drag--exception"
-
                 outlined
-                clearable
                 options-selected-class="text-deep-orange"
                 use-input
                 v-model="model" :options="options"
                 rounded
                 dense
                 ref="searchInput"
-                input-debounce="100"
+                :loading="loading"
+
                 @new-value="inputSearchValue"
             >
-              <template v-slot:selected class="text-no-wrap" >
+              <template v-slot:selected class="text-no-wrap">
                 <span class="text-no-wrap">  {{ model !== null ? model.name : model }}</span>
               </template>
 
-              <!-- 有搜索结果-->
-              <template v-slot:option="scope" >
+              <!--  input-debounce="100"有搜索结果-->
+              <template v-slot:option="scope">
                 <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
                   <q-item-section>
                     <q-item-label caption>
-                      {{ scope.opt.name }}
+                      <span v-if="!isEnd">{{ scope.opt.name }}</span>
+                      <div v-if="isEnd" v-html=" scope.opt.name "></div>
 
                       <div class="float-right">
-                         {{ scope.opt.type }}
-                        <span  v-if="scope.opt.lang!==null && scope.opt.lang!==''" >
+                        {{ scope.opt.type }}
+                        <span v-if="scope.opt.lang!==null && scope.opt.lang!==''">
                           -{{ scope.opt.lang }}
                         </span>
                       </div>
@@ -49,6 +49,7 @@
                   </q-item-section>
                 </q-item>
               </template>
+
               <template v-slot:before>
                 <q-btn-dropdown :label="searchType" rounded flat>
                   <q-list>
@@ -122,38 +123,48 @@ import Episode, {IEpisodes} from "@/domain/Episode";
 export default class LayoutHeader extends Vue {
   private searchType: string = '影视';
   private menu = config.navMenu
-  private model: IEpisodes|null = null;
+  private model: IEpisodes | null = null;
 
   private options = new Array<IEpisodes>()
-
+  private isEnd: boolean = false;
+  private loading: boolean = false;
 
   private mounted() {
     let this_ = this;
     ipcRenderer.on('episodes-result', ((event, args) => {
+      this_.isEnd = false;
+      this_.loading = true;
       switch (args.status) {
         case 'success':
           args.data.forEach((value: IEpisodes) => {
-
             this_.options.push(value)
           });
-          this_.options.filter((value, index, arr) => {
-            return value.name === arr[index].name;
-          });
+
           if (this_.$refs.searchInput !== undefined) {
+            //@ts-ignore
+            this_.$refs.searchInput.refresh(-1)
             //@ts-ignore
             this_.$refs.searchInput.showPopup();
           }
           break;
+        case 'err':
+          console.log('搜索失败');
+          break;
         case 'end':
-          //TODO 需要增加一个VIP解析页面
-          if (args.data.length <= 0) {
-            this.$q.notify({
-              type: 'warning',
-              html: true,
-              position: 'bottom-right',
-              timeout: 5000,
-              message: `很抱歉没有搜索结果，尝试  <a class="q-btn text-blue"   href="/#/play-list"  >VIP解析</a>`
-            })
+          console.log('搜索完成')
+          this_.loading = false;
+          if (this_.options.length > 0) {
+            return;
+          }
+          let episode: Episode = new Episode();
+          episode.name = `很抱歉没有搜索结果，请尝试 <a class=" text-blue "   href="/#/play-list"  >VIP解析</a>`;
+          this_.options.push(episode)
+          this_.isEnd = true;
+          if (this_.$refs.searchInput !== undefined) {
+            //@ts-ignore
+            this_.$refs.searchInput.refresh(-1)
+            //@ts-ignore
+            this_.$refs.searchInput.showPopup();
           }
 
       }
@@ -161,18 +172,27 @@ export default class LayoutHeader extends Vue {
     }));
 
   }
-  vip(){
-    this.model = null;
-    console.log('vip解析')
-  }
+
+
   /**
    * 选择之后才会响应
    */
   @Watch('model', {immediate: true, deep: true})
   onModelChange(newVal: any, oldVal: any) {
+    let epi = newVal === null ? oldVal : newVal;
+    // console.log(epi);
+    if (epi === undefined) {
+      return;
+    }
+    if (epi.name.indexOf('play-list') > 0) {
 
-    console.log(newVal)
-
+      this.model = null;
+      return;
+    }
+    console.log('选择：',epi.name)
+    //更新剧集列表
+    this.$store.commit('updateEpisodes', epi);
+    this.$router.push('/play-list?time=' + Date.now());
   }
 
   /**

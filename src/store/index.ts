@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import config from "@/db/json";
 import {IZfile} from "@/domain/Zfile";
+import EpisodesImpl, {CurrentEpisodes} from "@/domain/Episode";
 
 
 Vue.use(Vuex)
@@ -12,8 +13,9 @@ export default new Vuex.Store({
     state: {
         nodeType: 'java',
         //网盘路径
-        cloudDiskPath:  new Array<IZfile>()
+        cloudDiskPath: new Array<IZfile>(),
 
+        episodes: new EpisodesImpl(),
 
     },
     getters: {
@@ -25,13 +27,21 @@ export default new Vuex.Store({
             return state.nodeType
         },
 
-        getCloudDiskPath(state){
-            // console.log('getCloudDiskPath获取数组元素',state.cloudDiskPath.length)
+        getCloudDiskPath(state) {
             return state.cloudDiskPath;
-        }
+        },
+
+        getEpisodes(state) {
+            return state.episodes;
+        },
 
     },
     mutations: {
+
+
+        updateEpisodes(state, currentVideo) {
+            state.episodes = currentVideo;
+        },
 
         updateNodeType(state, payload = 'java') {
             state.nodeType = payload;
