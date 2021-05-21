@@ -1,8 +1,22 @@
+const pages = require('./pages.config')
+
 module.exports = {
+    pages,
+    chainWebpack: config => {
+        // 修复热更新
+        config.resolve.symlinks(true);
+    },
+    devServer: {
+        //open: true,               npm run serve 自动打开浏览器
+        index: '/index.html'    //  默认启动页面
+    },
+    lintOnSave: false,
+    assetsDir: 'public',      //  打包后静态文件夹名称
+
     pluginOptions: {
         electronBuilder: {
             nodeIntegration: true,
-            extraResources: ["public/html/**/*"],
+            extraResources: ["public/html/**/*","config/**/*"],
             builderOptions: {
                 "publish": [
                     {

@@ -126,9 +126,9 @@ ipcMain.on('open-update-dialog', () => {
         autoUpdater.updateConfigPath = path.join(__dirname, '../dev-app-update.yml');
     }
 
-    /*  autoUpdater.checkForUpdates().then((r:UpdateCheckResult) => {
+      autoUpdater.checkForUpdates().then((r:UpdateCheckResult) => {
           console.log(r)
-      })*/
+      })
     win.webContents.send('update-dialog');
 })
 

@@ -157,7 +157,7 @@ export default class LayoutHeader extends Vue {
             return;
           }
           let episode: Episode = new Episode();
-          episode.name = `很抱歉没有搜索结果，请尝试 <a class=" text-blue "   href="/#/play-list"  >VIP解析</a>`;
+          episode.name = `很抱歉没有搜索结果，请尝试 <a class=" text-blue "   href="/#/vip"  >VIP解析</a>`;
           this_.options.push(episode)
           this_.isEnd = true;
           if (this_.$refs.searchInput !== undefined) {
@@ -184,7 +184,7 @@ export default class LayoutHeader extends Vue {
     if (epi === undefined) {
       return;
     }
-    if (epi.name.indexOf('play-list') > 0) {
+    if (epi.name.indexOf('搜索结果') > 0) {
 
       this.model = null;
       return;

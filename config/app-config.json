@@ -4,6 +4,6 @@
     "isAutoUpdate": false,
     "isDownTool": true,
     "isKeepDiskPath": true,
-    "isStandalonePlayer": false
+    "isStandalonePlayer": true
   }
 }

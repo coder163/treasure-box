@@ -24,7 +24,7 @@ export default {
     }
   },
   watch: {
-    videoSrc: {//深度监听，可监听到对象、数组的变化
+    videoSrc: {
       handler(val, oldVal) {
         console.log('**********************', val)
         this.player.switchVideo(

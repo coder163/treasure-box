@@ -5,9 +5,9 @@ let playerWindow: BrowserWindow;
 
 async function createPlayerWindow() {
     // Create the browser window.
-    logger.info(playerWindow)
+    logger.info('开启播放器')
     if (playerWindow === null) {
-        logger.info('播放器打开失败',playerWindow)
+        logger.info('播放器打开失败', playerWindow)
     }
     playerWindow = new BrowserWindow({
         width: 800,
@@ -26,18 +26,19 @@ async function createPlayerWindow() {
 
     });
 
-    Menu.setApplicationMenu(null) //取消菜单栏
+    // Menu.setApplicationMenu(null) //取消菜单栏
 
 
     const winURL = process.env.NODE_ENV === 'development'
-        ? `http://localhost:8080`
-        : `file://${__dirname}/index.html`
+        ? `http://localhost:8080/player.html`
+        : `file://${__dirname}/player.html`
 
-    await playerWindow.loadURL(winURL + '#/player')
-    // playerWindow.webContents.openDevTools()
+    // await playerWindow.loadURL(winURL + '#/player')
+    await playerWindow.loadURL(winURL)
+    playerWindow.webContents.openDevTools()
 }
 
-ipcMain.on('open-video', function  (e, args) {
+ipcMain.on('open-video', function (e, args) {
 
     createPlayerWindow()
 

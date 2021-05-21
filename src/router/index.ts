@@ -47,6 +47,10 @@ const routes: Array<RouteConfig> = [
         path: '/setting',
         name: 'Setting',
         component: () => import('../views/Setting.vue')
+    },{
+        path: '/vip',
+        name: 'Vip',
+        component: () => import('../views/Vip.vue')
     }
 
 ]

@@ -45,12 +45,8 @@ if (!VideoApiConfig.has("resource-site").value()) {
                     "url": "http://www.kuaibozy.com/api.php/provide/vod/at/json/?"
                 },
                 {
-                    "name": "OK资源",
-                    "url": "https://api.okzy.tv/api.php/provide/vod/at/json/?"
-                },
-                {
                     "name": "天空资源",
-                    "url": "https://m3u8.tiankongapi.com/api.php/provide/vod/at/json/?"
+                    "url": "http://tiankongzy.cc/api.php/provide/vod/at/json/?"
                 }
             ]
         }).write()

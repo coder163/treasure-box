@@ -5,22 +5,22 @@
     <q-page-container>
       <layout-side/>
       <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" :style="{'height': (winHeight-50)+'px'} ">
+        <!--        <button @click="dycLoad">aaaa</button>-->
         <router-view />
       </q-scroll-area>
     </q-page-container>
-    <login />
-<!--    <update/>-->
-<!--    <button @click="dycLoad"></button>-->
+    <!--    <login />-->
+    <!--    <update/>-->
   </q-layout>
-
 </template>
 
 <script>
 
-import LayoutHeader from './components/LayoutHeader.vue';
+import LayoutHeader from '@/components/LayoutHeader.vue';
 import LayoutSide from "@/components/LayoutSide.vue";
 import Login from '@/views/Login.vue'
 import Update from '@/views/Update.vue'
+import {ipcRenderer} from "electron";
 
 export default {
   name: "LayoutDefault",
@@ -63,7 +63,7 @@ export default {
 
   methods: {
     dycLoad(){
-
+      ipcRenderer.send('open-video');
     }
   }
 };
