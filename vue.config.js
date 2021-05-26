@@ -11,13 +11,19 @@ module.exports = {
         index: '/index.html'    //  默认启动页面
     },
     lintOnSave: false,
-    assetsDir: 'public',      //  打包后静态文件夹名称
+    assetsDir: 'static',      //  打包后静态文件夹名称
 
     pluginOptions: {
         electronBuilder: {
             nodeIntegration: true,
-            extraResources: ["public/html/**/*","config/**/*"],
             builderOptions: {
+                "asar": false,
+                extraResources: [
+                    {
+                        "from": "./config/",
+                        "to": "../config"
+                    }
+                ],
                 "publish": [
                     {
                         "provider": "generic",
@@ -30,7 +36,7 @@ module.exports = {
                 directories: {
                     output: 'build' // 打包产物的位置
                 },
-                "asar": false,
+
                 "win": {//win相关配置
                     "icon": "./logo.ico",//图标，当前图标在根目录下，注意这里有两个坑
                     "requestedExecutionLevel": "highestAvailable", // 申请高级权限
@@ -66,15 +72,15 @@ module.exports = {
         'quasar'
     ],
     //警告 webpack 的性能提示
-    configureWebpack : {
+    configureWebpack: {
         performance: {
-            hints:'warning',
+            hints: 'warning',
             //入口起点的最大体积 整数类型（以字节为单位）
             maxEntrypointSize: 10000000,
             //生成文件的最大体积 整数类型（以字节为单位 3000k）
             maxAssetSize: 30000000,
             //只给出 js 文件的性能提示
-            assetFilter: function(assetFilename) {
+            assetFilter: function (assetFilename) {
                 return assetFilename.endsWith('.js');
             }
         }

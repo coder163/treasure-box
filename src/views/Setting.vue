@@ -7,16 +7,28 @@
           <p class="doc-note__title">温馨提示：</p>
           <p>- 选择第三方下载之后将不再直接下载而是显示文件的下载路径，同时其他的下载设置将失效</p>
           <p>- 启用独立播放器之后在观看视频时将以独立的窗口进行播放</p>
+          <p>- 跳过片头在看电视剧时下建议勾选，因为每一部时长不同所以需要单独设置,单位为秒</p>
         </div>
 
         <span class="text-subtitle1 subtitle ">播放设置</span>
         <q-separator/>
         <q-checkbox v-model="appConfig.isStandalonePlayer" label="独立播放器"/>
 
+        <q-checkbox v-model="appConfig.isSkipTitle" label="跳过片头"/>
+        <div v-if="appConfig.isSkipTitle">
+          <q-input v-model="appConfig.titleDuration" label="片头时长" class="q-gutter-md" style="max-width: 300px"/>
+          <q-input v-model="appConfig.creditDuration" label="片尾时长" class="q-gutter-md" style="max-width: 300px"/>
+        </div>
+
+
+
+
+
         <span class="text-subtitle1 subtitle">更新设置</span>
+
+        <q-space style="height: 10px"/>
         <q-separator/>
         <q-checkbox v-model="appConfig.isAutoUpdate" label="自动更新"/>
-
         <span class="text-subtitle1 subtitle">下载设置</span>
         <q-separator/>
 
@@ -56,7 +68,7 @@ import {AppConfig} from '@/db/lowdb'
 export default class Setting extends Vue {
 
   private appConfig: ISetting = Vue.prototype.$AppCofig
-
+  text:number=90
   private mounted() {
     let this_ = this;
     ipcRenderer.on('selectedItem', function (event, dir) {
@@ -70,7 +82,6 @@ export default class Setting extends Vue {
 
   saveSetting() {
 
-    let config = this.appConfig
     AppConfig.set('app', {
       //下载目录
       downDir: this.appConfig.downDir,
@@ -81,11 +92,22 @@ export default class Setting extends Vue {
       //保留网盘路径
       isKeepDiskPath: this.appConfig.isKeepDiskPath,
       //独立播放器
-      isStandalonePlayer: this.appConfig.isStandalonePlayer
-    }).write()
+      isStandalonePlayer: this.appConfig.isStandalonePlayer,
+      //跳过片头
+      isSkipTitle: this.appConfig.isSkipTitle,
+      //片头时长
+      titleDuration: this.appConfig.titleDuration,
+      //片尾时长
+      creditDuration: this.appConfig.creditDuration
+    }).write();
+
+
+
+    Vue.prototype.$AppCofig = AppConfig.get("app").value();
+
     this.$q.notify({
       type: 'info',
-      message: `保存完成！`
+      message: `保存成功！`
     })
   }
 }

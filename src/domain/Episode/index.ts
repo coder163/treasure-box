@@ -2,8 +2,9 @@
  * 剧集
  */
 export interface IEpisodes {
+    id: string;
     //播放路径
-    src: Array<string>,
+    src: Array<string>;
     //剧情简介
     desc: string,
     //下载链接
@@ -32,6 +33,7 @@ export class CurrentEpisodes implements ICurrentEpisodes{
 
 }
 export default class implements IEpisodes {
+    id: string = "";
     desc: string = "";
     download: string = "";
     name: string = "";

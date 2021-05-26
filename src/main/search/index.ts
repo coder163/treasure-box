@@ -3,7 +3,8 @@ import axios from "axios";
 import {VideoApiConfig} from '@/db/lowdb'
 import {logger} from "@/config/Log4jsConfig";
 import Episodes, {IEpisodes} from "@/domain/Episode";
-
+// @ts-ignore
+import shortId from "shortid";
 const urlencode = require('urlencode');
 
 ipcMain.on("search-video", function (response, name) {
@@ -21,6 +22,7 @@ ipcMain.on("search-video", function (response, name) {
                         let {vod_play_note, vod_play_url, vod_time, vod_content, type_name, vod_lang, vod_name} = resp.data.list[i];
                         let episodes: Episodes = new Episodes();
                         //剧情描述
+                        episodes.id=shortId.generate()
                         episodes.desc = vod_content;
                         episodes.name = vod_name;
                         episodes.type = type_name;

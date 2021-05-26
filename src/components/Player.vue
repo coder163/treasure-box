@@ -1,6 +1,6 @@
 <template>
   <!--  'height': winHeight+'px',-->
-  <div id="dplayer" :style="{'height':'450px'}">
+  <div id="dplayer">
 
   </div>
 
@@ -10,7 +10,8 @@
 import Hls from 'hls.js'
 import DPlayer from 'dplayer';
 import {logger} from "@/config/Log4jsConfig";
-import background from "@/assets/bg.gif";
+import {ipcRenderer} from "electron";
+import {ChannelMessage} from "@/domain/Enums";
 
 export default {
   name: "Player",
@@ -26,7 +27,6 @@ export default {
   watch: {
     videoSrc: {
       handler(val, oldVal) {
-        console.log('**********************', val)
         this.player.switchVideo(
             {
               url: val,
@@ -41,7 +41,11 @@ export default {
 
 
     let $vue = this;
-
+    ipcRenderer.on(ChannelMessage.TO_RENDERER_DESTROY_PLAYER, () => {
+      logger.info('销毁播放器');
+      // @ts-ignore
+      $vue.stopPlayer();
+    })
     window.addEventListener(
         "resize",
         function () {
@@ -49,18 +53,17 @@ export default {
         },
         false
     );
-    console.log('播放地址：', $vue.vurl)
     //播放配置项
     let options = {
       container: document.getElementById('dplayer'),
-      autoplay: true,
+      autoplay: false,
       airplay: true,
       lang: 'zh-cn',
       screenshot: true,
       volume: 0.7,//音量播放器会记忆用户设置
       video: {
         url: $vue.videoSrc,
-        pic: background,  //图片地址。img4
+        //   pic: background,  图片地址。img4
         type: 'customHls',//可选值:'customHls' 'auto', 'hls', 'flv', 'dash', 'webtorrent', 'normal' 或其他自定义类型
         customType: {
           // @ts-ignore
@@ -83,17 +86,25 @@ export default {
 
     this.player.on('loadeddata', (e) => {
       logger.info('数据加载完成loadstart')
-      // this.player.seek(100);
+      if (this.$AppCofig.isSkipTitle) {
+        this.player.seek(this.$AppCofig.titleDuration);
+      }
+
       this.player.play()
     })
     this.player.on('progress', () => {
-      // logger.info('progress',e)
+
+      if (this.$AppCofig.isSkipTitle) {
+        if (this.player.video.duration - this.player.video.currentTime <= this.$AppCofig.creditDuration) {
+          this.$emit('ended');
+        }
+      }
     })
     this.player.on('error', () => {
       logger.info('error')
     })
     this.player.on('canplay', () => {
-      logger.info('canplay')
+
 
     })
 
@@ -101,6 +112,11 @@ export default {
       logger.info('ended')
       this.$emit('ended');
     })
+  },
+  methods:{
+    stopPlayer(){
+      this.player.pause();
+    }
   }
 }
 </script>

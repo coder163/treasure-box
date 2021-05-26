@@ -1,3 +1,5 @@
+import {ipcRenderer} from "electron";
+
 export enum StatusCode {
     /**
      * 资源不存在
@@ -40,4 +42,19 @@ export enum DownLoadStatus {
     //准备下载
     READY="READY"
 
+}
+//主进程和渲染进程通信消息名称
+export enum ChannelMessage {
+    //打开播放器窗口
+    TO_MAIN_OPEN_VIDEO_WINDOWS = "TO_MAIN_OPEN_VIDEO_WINDOWS",
+    TO_RENDERER_OPEN_VIDEO_WINDOWS = "TO_RENDERER_OPEN_VIDEO_WINDOWS",
+    //影视数据
+    TO_MAIN_VIDEO_DATA = "TO_MAIN_VIDEO_DATA",
+    TO_RENDERER_VIDEO_DATA = "TO_RENDERER_VIDEO_DATA",
+    //销毁播放器实例
+    TO_RENDERER_DESTROY_PLAYER = "TO_RENDERER_DESTROY_PLAYER",
+    //播放窗口销毁
+    TO_RENDERER_DESTROY_PLAYER_WINDOW = "TO_RENDERER_DESTROY_PLAYER_WINDOW",
+
+    TO_MAIN_DESTROY_PLAYER_WINDOW = "TO_RENDERER_DESTROY_PLAYER_WINDOW",
 }

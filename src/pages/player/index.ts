@@ -1,58 +1,12 @@
 import Vue from 'vue'
 import App from './index.vue'
-
-import router from '@/router'
-import '../../quasar'
 import store from '@/store'
-
-import VueRouter, {RawLocation} from 'vue-router'
-//初始化数据库
-import Dexie from 'dexie';
-//全局配置对象
-import Setting from "@/domain/Setting";
-
-Vue.config.productionTip = false
-
-/*
-全局守卫
-*/
-router.beforeEach((to, from, next) => {
-  // console.log("全局前置守卫",to)
-  next();
-})
-router.afterEach((to, from) => {
-  // console.log("全局后置守卫")
-})
-
-//解决路由重复（即当前路径多次点击报错，不影响页面效果）
-const originalPush = VueRouter.prototype.push
-VueRouter.prototype.push = function push(location: RawLocation) {
-  // @ts-ignore
-  return originalPush.call(this, location).catch(err => err)
-}
-
-//数据库相关
-const dbDexie: Dexie = new Dexie('local');
-
-dbDexie.version(1).stores(
-    {
-      user: 'id,openid',
-      download: 'id,fileName,totalSize,receivedSize,status,downloadDir',
-    }
-);
-//打开失败的情况几乎不会出现
-dbDexie.open().catch(function (e) {
-  console.error("浏览器不支持 " + e);
-});
-
+import router from "@/router";
+import '../../quasar'
 //全局配置
 import {AppConfig} from '@/db/lowdb'
-
-
-Vue.prototype.$AppCofig = AppConfig.get("app").value();
-
-//将数据库对象挂载到vue的全局对象
-Vue.prototype.$dexie = dbDexie;
+//全局配置对象
+import Setting from "@/domain/Setting";
 
 //请求相关
 
@@ -95,8 +49,22 @@ axios.interceptors.response.use(
       return Promise.reject(error.response.data)
     }
 );
+
+let {
+  downDir,
+  isAutoUpdate,
+  isDownTool,
+  isKeepDiskPath,
+  isStandalonePlayer,
+  isSkipTitle,
+  titleDuration,
+  creditDuration,
+} = AppConfig.get("app").value();
+
+Vue.prototype.$AppCofig = new Setting(downDir, isAutoUpdate, isDownTool, isKeepDiskPath, isStandalonePlayer,isSkipTitle,titleDuration,creditDuration);
+
 new Vue({
   router,
   store,
-  render: h => h(App)
-}).$mount('#app');
+  render: h => h(App),
+}).$mount('#app')

@@ -18,12 +18,12 @@
                 outlined
                 options-selected-class="text-deep-orange"
                 use-input
-                v-model="model" :options="options"
+                v-model="model"
+                :options="options"
                 rounded
                 dense
                 ref="searchInput"
                 :loading="loading"
-
                 @new-value="inputSearchValue"
             >
               <template v-slot:selected class="text-no-wrap">
@@ -32,7 +32,7 @@
 
               <!--  input-debounce="100"有搜索结果-->
               <template v-slot:option="scope">
-                <q-item v-bind="scope.itemProps" v-on="scope.itemEvents">
+                <q-item v-bind="scope.itemProps" v-on="scope.itemEvents" @click="selectEpisodes(scope.opt)">
                   <q-item-section>
                     <q-item-label caption>
                       <span v-if="!isEnd">{{ scope.opt.name }}</span>
@@ -59,12 +59,6 @@
                       </q-item-section>
                     </q-item>
 
-                    <q-item clickable v-close-popup @click="selectSearchType('教程')">
-                      <q-item-section>
-                        <q-item-label>教程</q-item-label>
-                      </q-item-section>
-                    </q-item>
-
                     <q-item clickable v-close-popup @click="selectSearchType('影视')">
                       <q-item-section>
                         <q-item-label>影视</q-item-label>
@@ -76,9 +70,6 @@
             </q-select>
           </div>
           <!--TODO sm导航处理，现在直接隐藏导航-->
-          <!--          <div class="lt-sm-xs col-sm-5 col-xs-1 q-pa-xs gt-sm">
-                      <q-btn dense icon="format_list_bulleted" flat></q-btn>
-                    </div>-->
           <!--工具图标-->
           <div class="col-lg-4 col-md-4    gt-sm   text-right">
             <q-btn flat v-for="item in menu" :key="item.id" @click="topMenuSelect(item)">
@@ -116,6 +107,8 @@ import {ipcRenderer} from "electron";
 
 import {INavMenu} from '@/domain/Menu'
 import Episode, {IEpisodes} from "@/domain/Episode";
+import {ChannelMessage} from '@/domain/Enums'
+import {logger} from "@/config/Log4jsConfig";
 
 @Component({
   // 其他组件列表
@@ -129,8 +122,14 @@ export default class LayoutHeader extends Vue {
   private isEnd: boolean = false;
   private loading: boolean = false;
 
+
   private mounted() {
     let this_ = this;
+    //渲染进程接收到主窗口销毁消息
+    ipcRenderer.on(ChannelMessage.TO_RENDERER_DESTROY_PLAYER_WINDOW,()=>{
+
+      ipcRenderer.send(ChannelMessage.TO_MAIN_DESTROY_PLAYER_WINDOW);
+    })
     ipcRenderer.on('episodes-result', ((event, args) => {
       this_.isEnd = false;
       this_.loading = true;
@@ -189,10 +188,26 @@ export default class LayoutHeader extends Vue {
       this.model = null;
       return;
     }
-    console.log('选择：',epi.name)
+
+  }
+
+
+  //下拉菜单选择对应的影视
+  selectEpisodes(curEpi: IEpisodes) {
+    console.log('选择：', curEpi.name)
     //更新剧集列表
-    this.$store.commit('updateEpisodes', epi);
-    this.$router.push('/play-list?time=' + Date.now());
+    this.$store.commit('updateEpisodes', curEpi);
+    //不是独立播放才跳转
+    if (!Vue.prototype.$AppCofig.isStandalonePlayer) {
+      this.$router.push('/play-list?time=' + Date.now());
+    } else {
+      ipcRenderer.send(ChannelMessage.TO_MAIN_OPEN_VIDEO_WINDOWS);
+      ipcRenderer.on(ChannelMessage.TO_RENDERER_OPEN_VIDEO_WINDOWS, (event, args) => {
+        ipcRenderer.send(ChannelMessage.TO_MAIN_VIDEO_DATA, curEpi);
+      })
+
+
+    }
   }
 
   /**
@@ -212,7 +227,11 @@ export default class LayoutHeader extends Vue {
    * 窗口操作
    */
   windowOperation(operation: string): void {
-    ipcRenderer.send(operation)
+    //自定义销毁按钮发送销毁播放窗口
+    if (operation === "close") {
+      ipcRenderer.send(ChannelMessage.TO_MAIN_DESTROY_PLAYER_WINDOW);
+    }
+    ipcRenderer.send(operation);
   }
 
 
