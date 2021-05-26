@@ -43,11 +43,12 @@ import config from '@/db/json'
 import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
 import {Route} from "vue-router";
 import {ipcRenderer} from "electron";
-import {StatusCode} from "@/domain/Enums";
+import {ChannelMessage, StatusCode} from "@/domain/Enums";
 
 
 import UserDaoImpl from '@/db/indexedDB/UserDao'
 import Api from "@/api";
+import {logger} from "@/config/Log4jsConfig";
 
 
 let api = new Api();
@@ -100,8 +101,22 @@ export default class LayoutSide extends Vue {
       this.$router.push(`/content/${encodeURIComponent($node.href)}`)
 
     } else if ($node.routerLink !== undefined) {
-      //组件类
-      this.$router.push($node.routerLink + `?name=${$node.name}&time=${Date.now()}`);
+      if($node.routerLink==='/play-list'&& $node.source==='iframe' && Vue.prototype.$AppCofig.isStandalonePlayer){
+        // logger.info(config.videos[ $node.name])
+        // @ts-ignore
+        this.$store.commit('updateEpisodes',config.videos[ $node.name]);
+        ipcRenderer.send(ChannelMessage.TO_MAIN_OPEN_VIDEO_WINDOWS);
+        ipcRenderer.on(ChannelMessage.TO_RENDERER_OPEN_VIDEO_WINDOWS, (event, args) => {
+          // @ts-ignore
+          ipcRenderer.send(ChannelMessage.TO_MAIN_VIDEO_DATA, config.videos[ $node.name]);
+        })
+      }else {
+        //组件类
+        this.$router.push($node.routerLink + `?name=${$node.name}&time=${Date.now()}`);
+
+      }
+
+
     } else {
       // @ts-ignore
       this.$refs.tree.setExpanded(value, !this.$refs.tree.isExpanded(value))
@@ -109,14 +124,7 @@ export default class LayoutSide extends Vue {
   }
 
 
-  @Watch('$route', {immediate: true, deep: true})
-  onRouteChange(newVal: Route, oldVal: Route) {
-    //about界面保持原有树形数据不变
-    //@ts-ignore
-    // this.treeData = config.docs[this.type];
 
-
-  }
 
   private async mounted() {
     let _this = this;

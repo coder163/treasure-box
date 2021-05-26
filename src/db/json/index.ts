@@ -263,6 +263,7 @@ export default {
                         label: '第一季',
                         name:'delphi001',
                         selectable: true,
+                        source: 'iframe',
                         routerLink: '/play-list'
                     }
                 ]
@@ -276,6 +277,7 @@ export default {
                         label: 'GitBook',
                         name:'openSource',
                         selectable: true,
+                        source: 'iframe',
                         routerLink: '/play-list'
                     }
                 ]
@@ -287,7 +289,8 @@ export default {
     },
     videos:{
         'delphi001':{
-            videos:[
+            name:'Delphi第一季',
+            src:[
                 "https://www.ixigua.com/iframe/6808815041043759629",
                 "https://www.ixigua.com/iframe/6808907684264280588",
                 "https://www.ixigua.com/iframe/6808941540468064782",
@@ -295,13 +298,13 @@ export default {
                 "https://www.ixigua.com/iframe/6809218838563914244",
                 "https://www.ixigua.com/iframe/6809219838767006222"
             ],
-            desc:`<h6>版本控制</h6>`,
-            download:'此类视频请去网盘进行下载',
-            source:'xigua'
+            desc:`此类视频无法自动更换下一集`,
+            source:'iframe'
 
         },
         'openSource':{
-            videos:[
+            name:'文档开源计划',
+            src:[
                 "https://www.ixigua.com/iframe/6808815041043759629",
                 "https://www.ixigua.com/iframe/6808907684264280588",
                 "https://www.ixigua.com/iframe/6808941540468064782",
@@ -309,9 +312,9 @@ export default {
                 "https://www.ixigua.com/iframe/6809218838563914244",
                 "https://www.ixigua.com/iframe/6809219838767006222"
             ],
-            desc:`GitBook以及通过GitHub实现多人协作`,
+            desc:`此类视频无法自动更换下一集`,
             download: '此类视频请去网盘进行下载',
-            source:'xigua'
+            source:'iframe'
         }
     }
 }

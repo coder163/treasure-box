@@ -15,7 +15,7 @@ import {ChannelMessage} from "@/domain/Enums";
 
 export default {
   name: "Player",
-  props: ['videoSrc'],
+  props: ['videoSrc','videoType'],
   data() {
     return {
       player: null,
@@ -63,6 +63,7 @@ export default {
       volume: 0.7,//音量播放器会记忆用户设置
       video: {
         url: $vue.videoSrc,
+        // url: 'https://helloblack2017.github.io/resources/video/火星人来过.mp4',
         //   pic: background,  图片地址。img4
         type: 'customHls',//可选值:'customHls' 'auto', 'hls', 'flv', 'dash', 'webtorrent', 'normal' 或其他自定义类型
         customType: {
@@ -89,8 +90,9 @@ export default {
       if (this.$AppCofig.isSkipTitle) {
         this.player.seek(this.$AppCofig.titleDuration);
       }
+      this.$emit('play');
+      // this.player.play();
 
-      this.player.play()
     })
     this.player.on('progress', () => {
 
@@ -115,6 +117,7 @@ export default {
   },
   methods:{
     stopPlayer(){
+
       this.player.pause();
     }
   }

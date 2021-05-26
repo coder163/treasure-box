@@ -6,7 +6,7 @@ let playerWindow: BrowserWindow
 
 function createPlayerWind() {
     playerWindow = new BrowserWindow({
-        width: 800,
+        width: 900,
         height: 600,
         show: false,
         webPreferences: {
@@ -44,6 +44,7 @@ ipcMain.on(ChannelMessage.TO_MAIN_OPEN_VIDEO_WINDOWS, function (event, args) {
 });
 
 ipcMain.on(ChannelMessage.TO_MAIN_VIDEO_DATA, async function (event, epi) {
+    // logger.info(epi)
     playerWindow?.webContents.send(ChannelMessage.TO_RENDERER_VIDEO_DATA, epi)
 });
 
