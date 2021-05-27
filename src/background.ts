@@ -101,7 +101,7 @@ app.on('ready', async () => {
     download(win)
     require('@/main/video');
 })
-//触发下载事件will-download
+
 ipcMain.on('download-is', (event, row) => {
     // console.log('*****************',row)
 

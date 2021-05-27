@@ -97,7 +97,7 @@ export default class LayoutSide extends Vue {
     let $node = this.$refs.tree.getNodeByKey(value);
 
     if (($node.href !== undefined)) {
-      // console.log('LayoutSide.vue',$node.href)
+      console.log('LayoutSide.vue',$node.href)
       //文档类
       this.$router.push(`/content/${$node.href}`)
 

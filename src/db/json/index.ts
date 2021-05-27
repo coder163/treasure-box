@@ -84,19 +84,19 @@ export default {
         java: [
             {
                 label: '基础语法',
-                children: listFile('public/html/docs/java/basic', [])
+                children: listFile(`./html/docs/java/basic`, [])
             }
 
         ],
         delphi: [
             {
                 label: 'Delphi百集',
-                children: listFile('public/html/docs/delphi/basic', [])
+                children: listFile(`./html/docs/delphi/basic`, [])
 
             },
             {
                 label: '官方案例',
-                children: listFile('public/html/docs/delphi/basic', [])
+                children: listFile(`./html/docs/delphi/basic`, [])
             }
         ],
         cloudDisk: [

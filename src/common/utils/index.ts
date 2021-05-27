@@ -11,9 +11,8 @@ function listFile(pathName: string, dirs: ITreeNode[]) {
             listFile(path.join(pathName, item), dirs)
         } else if (stat.isFile()) {
             let treeNode: ITreeNode = new TreeNode();
-            let fullPath = path.join(pathName, item)
-
-            treeNode.href = encodeURIComponent(fullPath.substring(fullPath.indexOf('\\') + 1))
+            // console.log(path.join(pathName, item))
+            treeNode.href = encodeURIComponent( path.join(pathName, item))
             treeNode.label = item.substring(item.indexOf('-') + 1, item.lastIndexOf('.'))
             // console.log(path.join(pathName, item))
             dirs.push(treeNode)

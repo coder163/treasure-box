@@ -22,6 +22,10 @@ module.exports = {
                     {
                         "from": "./config/",
                         "to": "../config"
+                    },
+                    {
+                        "from": "./html/",
+                        "to": "../html"
                     }
                 ],
                 "publish": [
