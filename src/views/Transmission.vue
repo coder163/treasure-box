@@ -99,7 +99,7 @@ export default class Transmission extends Vue {
 
   mounted() {
 
-    console.log('Transmission.vue', this.$route.query.name)
+    // console.log('Transmission.vue', this.$route.query.name)
     //页面切换时的初始化，根据提交的参数
     this.loadData()
     let this_ = this;
@@ -124,7 +124,7 @@ export default class Transmission extends Vue {
 
   @Watch('$route', {immediate: true, deep: true})
   onRouteChange(newVal: Route, oldVal: Route) {
-    console.log('Transmission.vue', this.$route.query.name)
+    // console.log('Transmission.vue', this.$route.query.name)
     this.loadData()
   }
 
@@ -146,7 +146,8 @@ export default class Transmission extends Vue {
     this.rowId = id;
 
   }
-  delBtn(){
+
+  delBtn() {
     this.downDao.delById(this.rowId)
     this.downladDialog = false;
     this.loadData()
