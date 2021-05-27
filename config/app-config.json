@@ -1,10 +1,10 @@
 {
   "app": {
-    "downDir": "E:\\win-unpacked\\swiftshader",
+    "downDir": "D:\\demo",
     "isAutoUpdate": true,
     "isDownTool": true,
     "isKeepDiskPath": true,
-    "isStandalonePlayer": true,
+    "isStandalonePlayer": false,
     "isSkipTitle": true,
     "titleDuration": "90",
     "creditDuration": "120"

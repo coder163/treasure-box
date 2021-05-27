@@ -126,7 +126,7 @@ export default class LayoutHeader extends Vue {
   private mounted() {
     let this_ = this;
     //渲染进程接收到主窗口销毁消息
-    ipcRenderer.on(ChannelMessage.TO_RENDERER_DESTROY_PLAYER_WINDOW,()=>{
+    ipcRenderer.on(ChannelMessage.TO_RENDERER_DESTROY_PLAYER_WINDOW, () => {
 
       ipcRenderer.send(ChannelMessage.TO_MAIN_DESTROY_PLAYER_WINDOW);
     })
@@ -259,25 +259,30 @@ export default class LayoutHeader extends Vue {
    * @param menu
    */
   selectMenu(menu: INavMenu): void {
-
-    if (menu.docType === undefined) {
-      if (menu.name === 'update') {
-        ipcRenderer.send('open-update-dialog');
-        return
-      }
-      //time为虚拟参数，主要是为了让路径发生变化
+    //这个需要弹框
+    if (menu.name === 'update') {
+      ipcRenderer.send('open-update-dialog');
+      return
+    }
+    //vue组件的页面
+    if (menu.href) {
       // @ts-ignore
       this.$router.push(menu.href + `?time=${Date.now()}`);
       return
     }
-    //每个分类的默认首页，修改树形菜单的类型
-    let encode = encodeURIComponent(`html/${menu.name}/index.html`);
-    if (menu.docType) {
-      this.$store.commit('updateNodeType', menu.docType);
+    // @ts-ignore
+    let encode = encodeURIComponent(`html/docs/${menu.name}/index.html`);
+    let nodeType = menu.name
+    // @ts-ignore
+    if (menu.video) {
+      //视频路径
+      // @ts-ignore
+      encode = encodeURIComponent(`html/video/${menu.video}/index.html`);
+      // @ts-ignore
+      nodeType = menu.video
     }
-
+    this.$store.commit('updateNodeType', nodeType);
     let indexPath = `/content/${encode}`;
-
     this.$router.push(indexPath)
 
 

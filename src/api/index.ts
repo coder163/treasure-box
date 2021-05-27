@@ -4,8 +4,8 @@ import Zfile, {IZfile} from "@/domain/Zfile";
 
 export class ZfileApi {
 
-    static getName(path:string=''){
-       const url= `https://disk.coder163.com/api/list/1?path=/${path}`
+    static getName(path:string='treasure-box'){
+       const url= `https://disk.coder163.com/api/list/1?path=/${path}&password=000000`
         let fileList: Array<IZfile> = new Array<IZfile>();
         return new Promise<any>(async (resolve, reject) => {
             await axios.get(url).then(resp => {

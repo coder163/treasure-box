@@ -1,5 +1,5 @@
 import {DownLoadStatus} from "@/domain/Enums";
-import {BrowserWindow} from "electron";
+import {BrowserWindow, dialog} from "electron";
 // @ts-ignore
 import shortId from "shortid";
 import DownloadImpl, {DownloadItem} from "@/domain/Download";
@@ -8,30 +8,48 @@ import DownloadImpl, {DownloadItem} from "@/domain/Download";
 
 //每一次下载都是一个新的下载项
 // downloadItem.downloadDir = `E:\\download\\${row.path.replaceAll('/', '\\')}`;
+import {AppConfig} from '@/db/lowdb'
+import {logger} from "@/config/Log4jsConfig";
+
+const fs = require('fs')
 
 export default (win: BrowserWindow) => {
-
-
     win.webContents.session.on('will-download', (event, item, webContents) => {
+        logger.info('*****************************开始下载******************')
         let downloadItem: DownloadItem = new DownloadImpl();
         downloadItem.id = shortId.generate();
 
-        let index=item.getURL().lastIndexOf('&')+1;
+        let index = item.getURL().lastIndexOf('&') + 1;
 
         //参数
-        let parames=item.getURL().substring(index).split('|');
+        let parames = item.getURL().substring(index).split('|');
 
 
         //设置文件存放位置，如果用户没有设置保存路径，Electron将使用默认方式来确定保存路径（通常会提示保存对话框）
 
-        const fullPath = `E:\\download\\${parames[0].replaceAll("/",'\\')}${item.getFilename()}`;
-        console.log(fullPath);
+        const fullPath = `${AppConfig.get("app").value().downDir}\\${item.getFilename()}`;
+
+        if (fs.existsSync(fullPath)) {
+            console.log('文件存在')
+           let handle= dialog.showMessageBoxSync(win, {
+                type: 'warning',title:'码农宝典',message: '温馨提示', detail: '文件已经存在点击确认将会覆盖文件',
+                buttons:['确认','取消']
+            })
+
+            if (handle === 1) {
+                console.log(handle,'下载已取消');
+                item.cancel()
+            }
+
+        }
+
+        console.log('下载目录：', fullPath);
         item.setSavePath(fullPath)
 
         downloadItem.fileName = item.getFilename()
         //此处有问题
         downloadItem.totalSize = parseInt(parames[1]);
-        console.log('总字节数',   downloadItem.totalSize);
+        console.log('总字节数', downloadItem.totalSize);
         item.on('updated', (event, state) => {
             if (state === 'interrupted') {
                 //下载中断

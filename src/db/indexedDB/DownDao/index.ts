@@ -43,5 +43,8 @@ export default class {
         this.download.put(item);
     }
 
+    delById(key:string){
+        this.download.delete(key);
+    }
 
 }

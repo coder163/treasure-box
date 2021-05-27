@@ -97,23 +97,29 @@ export default class LayoutSide extends Vue {
     let $node = this.$refs.tree.getNodeByKey(value);
 
     if (($node.href !== undefined)) {
+      // console.log('LayoutSide.vue',$node.href)
       //文档类
-      this.$router.push(`/content/${encodeURIComponent($node.href)}`)
+      this.$router.push(`/content/${$node.href}`)
 
     } else if ($node.routerLink !== undefined) {
-      if($node.routerLink==='/play-list'&& $node.source==='iframe' && Vue.prototype.$AppCofig.isStandalonePlayer){
-        // logger.info(config.videos[ $node.name])
-        // @ts-ignore
-        this.$store.commit('updateEpisodes',config.videos[ $node.name]);
+      // @ts-ignore
+      this.$store.commit('updateEpisodes',config.videos[ $node.name]);
+      if($node.routerLink==='/play-list' && Vue.prototype.$AppCofig.isStandalonePlayer){
+        logger.info('LayoutSide.vue：独立播放')
         ipcRenderer.send(ChannelMessage.TO_MAIN_OPEN_VIDEO_WINDOWS);
         ipcRenderer.on(ChannelMessage.TO_RENDERER_OPEN_VIDEO_WINDOWS, (event, args) => {
           // @ts-ignore
           ipcRenderer.send(ChannelMessage.TO_MAIN_VIDEO_DATA, config.videos[ $node.name]);
         })
-      }else {
+      }else if ($node.routerLink==='/play-list'){
+        logger.info('LayoutSide.vue：/play-list')
         //组件类
         this.$router.push($node.routerLink + `?name=${$node.name}&time=${Date.now()}`);
 
+      }else {
+        logger.info($node.routerLink)
+        //组件类
+        this.$router.push($node.routerLink + `?name=${$node.name}&time=${Date.now()}`);
       }
 
 

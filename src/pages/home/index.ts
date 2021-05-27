@@ -17,18 +17,18 @@ Vue.config.productionTip = false
 全局守卫
 */
 router.beforeEach((to, from, next) => {
-  // console.log("全局前置守卫",to)
-  next();
+    // console.log("全局前置守卫",to)
+    next();
 })
 router.afterEach((to, from) => {
-  // console.log("全局后置守卫")
+    // console.log("全局后置守卫")
 })
 
 //解决路由重复（即当前路径多次点击报错，不影响页面效果）
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location: RawLocation) {
-  // @ts-ignore
-  return originalPush.call(this, location).catch(err => err)
+    // @ts-ignore
+    return originalPush.call(this, location).catch(err => err)
 }
 
 //数据库相关
@@ -36,13 +36,13 @@ const dbDexie: Dexie = new Dexie('local');
 
 dbDexie.version(1).stores(
     {
-      user: 'id,openid',
-      download: 'id,fileName,totalSize,receivedSize,status,downloadDir',
+        user: 'id,openid',
+        download: 'id,fileName,totalSize,receivedSize,status,downloadDir',
     }
 );
 //打开失败的情况几乎不会出现
 dbDexie.open().catch(function (e) {
-  console.error("浏览器不支持 " + e);
+    console.error("浏览器不支持 " + e);
 });
 
 //全局配置
@@ -60,43 +60,42 @@ import axios from "axios";
 // http request 请求拦截器
 axios.interceptors.request.use(
     function (config) {
-      config.headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Accept': 'application/json,text/plain,text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*!/!*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'
-      }
-      // console.log("请求拦截", config)
-      return config;
+        config.headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Accept': 'application/json,text/plain,text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*!/!*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        }
+        // console.log("请求拦截", config)
+        return config;
     },
     function (error) {
-      return Promise.reject(error);
+        return Promise.reject(error);
     }
 );
 
 // http response 服务器响应拦截器，
 axios.interceptors.response.use(
     function (response) {
-      return response;
+        return response;
     },
     function (error) {
-      if (error.response) {
-        switch (error.response.status) {
-          case 401:
-            console.log("401");
-            break;
-          case 404:
-            console.log("404");
-            break;
-          case 403:
-            console.log("403");
-            break;
+        if (error.response) {
+            switch (error.response.status) {
+                case 401:
+                    console.log("401");
+                    break;
+                case 404:
+                    console.log("404");
+                    break;
+                case 403:
+                    console.log("403");
+                    break;
+            }
         }
-      }
-      return Promise.reject(error.response.data)
+        return Promise.reject(error.response.data)
     }
 );
 new Vue({
-  router,
-  store,
-  render: h => h(App)
+    router,
+    store,
+    render: h => h(App)
 }).$mount('#app');

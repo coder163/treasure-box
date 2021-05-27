@@ -2,7 +2,7 @@
   <div id="play-list">
 
     <div class="row">
-      <div :class="fabRight?'col-8':'col-12' ">
+      <div :class="fabRight?'col-12':'col-8' ">
 
         <div v-if="video.source==='iframe'">
           <q-video v-if="isClose" ref="qvideo" :src="currentEpisodes.src"
@@ -22,9 +22,9 @@
       <div style="position: fixed;z-index:9999">
         <q-fab v-model="fabRight" flat color="primary" icon="menu" active-icon="menu"/>
       </div>
-      <div :class="fabRight?'col-4':''">
+      <div :class="fabRight?'':'col-4'" >
 
-        <q-card class="episodes-card" flat v-if="fabRight">
+        <q-card class="episodes-card" flat  v-if="!fabRight">
           <q-card-section>
 
             <div class="text-h6">{{ video.name }}</div>
@@ -101,17 +101,13 @@ export default class PlayList extends Vue {
   private winHeight = document.documentElement.clientHeight;
   //剧集列表
   private video: IEpisodes = this.$store.getters.getEpisodes;
-  //数据加载完成
-  private isLoadData=false
-  fabPos = [18, 18]
-  draggingFab = false
-  fabRight = true
+  private fabRight = false
   //当前剧集
   private currentEpisodes: ICurrentEpisodes = new CurrentEpisodes();
 
   @Watch('$route', {immediate: true, deep: true})
   onRouteChange(newVal: Route, oldVal: Route) {
-
+    logger.info('PlayList.vue')
     //当前剧集
     this.video = this.$store.getters.getEpisodes;
     //路径切换，初始化第一集
@@ -129,19 +125,19 @@ export default class PlayList extends Vue {
         },
         false
     );
-    //处理内嵌播放器
-    if (this.video.name === "" && undefined !== this.$route.query.name) {
-      // @ts-ignore
-      this.video = config.videos[this.$route.query.name]
-    }
+
+    //当前剧集
+    this.video = this.$store.getters.getEpisodes;
     //初始化第一集
     this.videoInit();
+
     ipcRenderer.on(ChannelMessage.TO_RENDERER_VIDEO_DATA, (event, args) => {
 
       $vue.isClose = true;
+
       $vue.video = args;
       $vue.videoInit();
-      // @ts-ignore  , $vue.$refs.cplayer.player.video.isPaused
+
       console.log('*************TO_RENDERER_VIDEO_DATA')
     });
 
@@ -161,10 +157,7 @@ export default class PlayList extends Vue {
   changeVideo(index: number, src: string) {
     this.currentEpisodes.index = index;
     this.currentEpisodes.src = src;
-    if (this.isLoadData) {
-      logger.info('换集播放')
 
-    }
   }
 
   nextVideo() {

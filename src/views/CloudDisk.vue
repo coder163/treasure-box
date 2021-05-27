@@ -56,6 +56,7 @@ import {IZfile} from "@/domain/Zfile";
 import {Route} from "vue-router";
 import {ipcRenderer} from "electron";
 import DownDaoImpl from "@/db/indexedDB/DownDao";
+import {AppConfig} from "@/db/lowdb";
 
 
 @Component({
@@ -148,6 +149,7 @@ export default class Content extends Vue {
 
   async changePath(row: any) {
     this.$store.commit('subCloudDiskPath', row)
+
     await this.refreshFile(row);
   }
 
