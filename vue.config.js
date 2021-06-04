@@ -31,7 +31,7 @@ module.exports = {
                 "publish": [
                     {
                         "provider": "generic",
-                        "url": "http://281244ia88.qicp.vip/public/",//更新服务器地址,可为空
+                        "url": "http://vip.coder163.com/public/",//更新服务器地址,可为空
                     }
                 ],
                 "appId": "com.coder163",
@@ -40,8 +40,14 @@ module.exports = {
                 directories: {
                     output: 'build' // 打包产物的位置
                 },
+                linux: {
+                    "icon": "./logo.ico", // 包含各种尺寸图标的文件夹
+                    target: [
+                        "AppImage"
+                    ],
 
-                "win": {//win相关配置
+                },
+                win: {//win相关配置
                     "icon": "./logo.ico",//图标，当前图标在根目录下，注意这里有两个坑
                     "requestedExecutionLevel": "highestAvailable", // 申请高级权限
                     "target": [

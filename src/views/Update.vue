@@ -5,19 +5,18 @@
       <q-card style="width: 300px">
         <q-bar>
           <q-avatar>
-            <img src="@/assets/logo.png"  alt="logo"/>
+            <img src="@/assets/logo.png" alt="logo"/>
           </q-avatar>
-          <div><span class="text-subtitle2">更新详情</span></div>
+          <div>
+            <span class="text-subtitle2">更新详情</span></div>
 
-          <q-space></q-space>
-
-          <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip>开始了是不能停止的</q-tooltip>
-          </q-btn>
         </q-bar>
 
         <q-card-section>
+          <div>
+            {{updateMessage}}
 
+          </div>
           <q-linear-progress stripe rounded size="25px" :value="percent" color="secondary">
             <div class="absolute-full flex flex-center">
               <q-badge style="background: transparent;color:#1D1D1D " :label="schedule"/>
@@ -34,6 +33,8 @@ import {Component, Vue} from "vue-property-decorator";
 import {ipcRenderer} from "electron";
 import {logger} from "@/config/Log4jsConfig";
 import {UpdateStatusCode} from "@/domain/Enums";
+import {autoUpdater, UpdateCheckResult} from "electron-updater";
+
 
 @Component({
   components: {},
@@ -44,28 +45,37 @@ export default class Update extends Vue {
   private schedule: string = '0.00%';
   private percent: any = 0.0;
 
+  private updateMessage: string = '正在连接服务器...';
+
   private mounted() {
     let _this = this;
     ipcRenderer.on('update-dialog', () => {
-      _this.persistent = true
+      logger.info('打开对话框')
+      _this.persistent = true;
+
     })
+
     ipcRenderer.on('UpdateMsg', (event, args) => {
+
       switch (args.state) {
         case UpdateStatusCode.CHECKING_FOR_UPDATE:
-          logger.info('正在检查更新');
+          _this.updateMessage='正在检查更新';
           break
         case UpdateStatusCode.NEW_VERSION_DETECTED:
-          logger.info('检测到新版本');
+
+          _this.updateMessage='检测到新版本';
+
           break;
         case UpdateStatusCode.NO_NEW_VERSION_DETECTED:
-          logger.info('没有检测到新版本');
+          _this.updateMessage='当前已经是最新版本';
           break;
         case UpdateStatusCode.DOWNLOADING:
-          logger.info('下载中', args);
+          _this.updateMessage='下载中....';
           _this.percent = parseFloat(Number(args.msg.percent).toFixed(2)) / 100
           _this.schedule = Number(_this.percent * 100).toFixed(2) + '%'
           break;
         case UpdateStatusCode.DOWNLOAD_COMPLETED:
+          ipcRenderer.send('confirm-update')
           _this.persistent = false;
           break;
       }

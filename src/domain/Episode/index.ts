@@ -30,6 +30,7 @@ export interface ICurrentEpisodes {
 export class CurrentEpisodes implements ICurrentEpisodes{
     index: number=0;
     src: string = '';
+    name: string = '';
 
 }
 export default class implements IEpisodes {

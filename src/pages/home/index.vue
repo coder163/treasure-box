@@ -1,16 +1,16 @@
 <template>
   <q-layout view="hHh Lpr lff" container :style="{'height': winHeight+'px'}" class="shadow-2 ">
-    <layout-header/>
+    <layout-header />
     <!-- 内容 -->
     <q-page-container>
-      <layout-side/>
+      <layout-side />
       <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" :style="{'height': (winHeight-50)+'px'} ">
         <!--        <button @click="dycLoad">aaaa</button>-->
         <router-view />
       </q-scroll-area>
     </q-page-container>
     <!--    <login />-->
-    <!--    <update/>-->
+    <update />
   </q-layout>
 </template>
 
@@ -20,12 +20,12 @@ import LayoutHeader from '@/components/LayoutHeader.vue';
 import LayoutSide from "@/components/LayoutSide.vue";
 import Login from '@/views/Login.vue'
 import Update from '@/views/Update.vue'
-import {ipcRenderer} from "electron";
+import { ipcRenderer } from "electron";
 
 export default {
   name: "LayoutDefault",
   components: {
-    LayoutHeader, LayoutSide, Login,Update
+    LayoutHeader, LayoutSide, Login, Update
   },
   data() {
     return {
@@ -50,11 +50,11 @@ export default {
   mounted() {
     let $vue = this;
     window.addEventListener(
-        "resize",
-        function () {
-          $vue.winHeight = document.documentElement.clientHeight;
-        },
-        false
+      "resize",
+      function () {
+        $vue.winHeight = document.documentElement.clientHeight;
+      },
+      false
     );
 
 
@@ -62,7 +62,7 @@ export default {
 
 
   methods: {
-    dycLoad(){
+    dycLoad() {
       ipcRenderer.send('open-video');
     }
   }
@@ -70,6 +70,4 @@ export default {
 </script>
 
 <style lang="sass">
-
-
 </style>

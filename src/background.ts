@@ -60,7 +60,7 @@ function createWindow() {
     });
     //主窗口关闭时销毁其他窗口
     win.on('close', () => {
-        console.log('主窗口系统菜单销毁')
+        logger.info('主窗口系统菜单销毁')
         win.webContents.send(ChannelMessage.TO_RENDERER_DESTROY_PLAYER_WINDOW);
 
     })
@@ -165,10 +165,11 @@ ipcMain.on('open-update-dialog', () => {
     if (isDevelopment) {
         autoUpdater.updateConfigPath = path.join(__dirname, '../dev-app-update.yml');
     }
-
     autoUpdater.checkForUpdates().then((r: UpdateCheckResult) => {
-        console.log(r)
+
     })
+
+
     win.webContents.send('update-dialog');
 })
 

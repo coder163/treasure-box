@@ -31,7 +31,7 @@ ipcMain.on("search-video", function (response, name) {
                         episodes.source='m3u8'
                         //按照指定的分隔符进行拆分,该数组内容的形式$https://vod.bunediy.com/share/zOBt4pGh3U47vXFe#$$$超清$https://vod.bunediy.com/20201119/vVYz7uzh/index.m3u8#
                         let urls = vod_play_url.split(vod_play_note)
-
+                      
                         urls.map((item: string) => {
                             if (item.endsWith("m3u8") || item.endsWith("m3u8#")) {
                                 let list = item.match(/https.*?\/index.m3u8/gi)
@@ -44,7 +44,7 @@ ipcMain.on("search-video", function (response, name) {
                         // console.log(episodes.src)
                         episodesList.push(episodes);
                     }
-
+                   
                 }
 
                 if (currentWin !== null) {
@@ -53,6 +53,7 @@ ipcMain.on("search-video", function (response, name) {
                         status: 'success',
                         data: episodesList
                     }
+                  
                     currentWin.webContents.send('episodes-result', result);
                 }
 
@@ -87,3 +88,5 @@ ipcMain.on("search-video", function (response, name) {
         ))
 
 })
+
+

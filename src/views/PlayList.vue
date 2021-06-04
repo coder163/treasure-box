@@ -7,12 +7,12 @@
         <div v-if="video.source==='iframe'">
           <q-video v-if="isClose" ref="qvideo" :src="currentEpisodes.src"
 
-                   :style="{'height':isStandalonePlayer?winHeight+'px':'450px'}"
+                   :style="{'height':(isStandalonePlayer?winHeight:winHeight-135)+'px'}"
           />
         </div>
         <div v-else>
           <player ref="cplayer"
-                  :style="{'height':isStandalonePlayer?winHeight+'px':'450px'}"
+                  :style="{'height':(isStandalonePlayer?winHeight:winHeight-135)+'px'}"
                   :videoSrc="currentEpisodes.src"
                   @play="play()"
                   @ended="nextVideo"/>
@@ -22,59 +22,57 @@
       <div style="position: fixed;z-index:9999">
         <q-fab v-model="fabRight" flat color="primary" icon="menu" active-icon="menu"/>
       </div>
-      <div :class="fabRight?'':'col-4'" >
+      <div :class="fabRight?'':'col-4'">
+        <div  v-if="!fabRight">
+          <div class="text-h6 q-pl-md">{{ video.name }}</div>
+          <q-separator/>
+          <q-card flat>
+            <q-tabs
+                v-model="plotTab"
+                dense
+                class="text-grey"
+                active-color="primary"
+                indicator-color="primary"
+                align="justify"
+                narrow-indicator
+            >
+              <q-tab name="plot" label="剧集列表"></q-tab>
+              <q-tab name="other" label="其他平台"></q-tab>
+            </q-tabs>
 
-        <q-card class="episodes-card" flat  v-if="!fabRight">
-          <q-card-section>
-
-            <div class="text-h6">{{ video.name }}</div>
-            <q-separator/>
-            <q-scroll-area :style="{'height':isStandalonePlayer?winHeight-300+'px':winHeight-500+'px'}">
-              <div class="row">
-                <div class="col-xs-6 col-sm-3 col-md-2 col-lg-2" v-for="(src,index) in video.src">
-                  <q-btn flat
-                         :color="(index)===(currentEpisodes.index)?'primary':'secondary'"
-                         :label="index+1<10?'0'+(index+1):index+1"
-                         @click="changeVideo(index,src)"/>
+            <q-tab-panels v-model="plotTab" animated>
+              <q-tab-panel name="plot" :style="{'max-height':winHeight-380+'px'}">
+                <div class="row">
+                  <div class="col-xs-6 col-sm-3 col-md-2 col-lg-2" v-for="(src,index) in video.src">
+                    <q-btn flat
+                           :color="(index)===(currentEpisodes.index)?'primary':'secondary'"
+                           :label="index+1<10?'0'+(index+1):index+1"
+                           @click="changeVideo(index,src)"/>
+                  </div>
                 </div>
-              </div>
-            </q-scroll-area>
+              </q-tab-panel>
+              <q-tab-panel name="other" :style="{'max-height':winHeight-380+'px'}">
 
-          </q-card-section>
-        </q-card>
+                <q-list  separator>
+                  <q-item clickable v-ripple v-for="(item,index) in extraList">
+                    <q-item-section @click="extraListClick(item.url)">
+                      <span style="display: inline-block" >{{item.website}}</span>
+                    </q-item-section>
+                  </q-item>
 
+                </q-list>
+              </q-tab-panel>
+
+            </q-tab-panels>
+          </q-card>
+
+          <div class="doc-note doc-note--tip">
+            <p> 视频均为第三方资源站采集，勿要相信视频中的广告内容</p>
+          </div>
+        </div>
       </div>
     </div>
-    <div v-if="!isStandalonePlayer">
-      <q-space style="height: 10px"/>
-      <q-separator></q-separator>
 
-      <!--独立播放器不显示-->
-      <q-card flat>
-        <q-tabs
-            v-model="plotTab"
-            dense
-            class="text-grey"
-            active-color="primary"
-            indicator-color="primary"
-            align="justify"
-            narrow-indicator
-        >
-          <q-tab name="plot" label="剧情简介"></q-tab>
-          <q-tab name="download" label="其他平台"></q-tab>
-        </q-tabs>
-
-        <q-tab-panels v-model="plotTab" animated>
-          <q-tab-panel name="plot" v-html="video.desc" :style="{'max-height':winHeight-553+'px'}">
-          </q-tab-panel>
-          <q-tab-panel name="download" :style="{'max-height':winHeight-553+'px'}">
-            <p>
-            </p>
-          </q-tab-panel>
-
-        </q-tab-panels>
-      </q-card>
-    </div>
   </div>
 
 </template>
@@ -86,10 +84,11 @@ import {Route} from "vue-router";
 // @ts-ignore
 import config from '@/db/json'
 import {CurrentEpisodes, ICurrentEpisodes, IEpisodes} from '@/domain/Episode';
-import {ipcRenderer} from "electron";
+import {ipcRenderer, shell} from "electron";
 import {ChannelMessage} from "@/domain/Enums";
 import {logger} from "@/config/Log4jsConfig";
 
+import {extraResult} from '@/common/utils'
 
 @Component({
   components: {Player},
@@ -102,6 +101,8 @@ export default class PlayList extends Vue {
   //剧集列表
   private video: IEpisodes = this.$store.getters.getEpisodes;
   private fabRight = false
+  //其他观看平台
+  private extraList = new Array<string>();
   //当前剧集
   private currentEpisodes: ICurrentEpisodes = new CurrentEpisodes();
 
@@ -112,6 +113,18 @@ export default class PlayList extends Vue {
     this.video = this.$store.getters.getEpisodes;
     //路径切换，初始化第一集
     this.videoInit();
+
+  }
+
+  @Watch('plotTab', {immediate: true, deep: true})
+  async onPlotTabChange(newVal: string, oldVal: string) {
+
+    if (newVal === 'other' && this.extraList.length <= 0) {
+
+      this.extraList = await extraResult(this.video.name)
+      logger.info('plotTab:' + this.extraList)
+    }
+
 
   }
 
@@ -147,7 +160,10 @@ export default class PlayList extends Vue {
     })
   }
 
+  extraListClick(href:string){
+  shell.openExternal(href);
 
+  }
   videoInit() {
     this.currentEpisodes.src = this.video.src[0];
     this.currentEpisodes.index = 0;
@@ -157,7 +173,6 @@ export default class PlayList extends Vue {
   changeVideo(index: number, src: string) {
     this.currentEpisodes.index = index;
     this.currentEpisodes.src = src;
-
   }
 
   nextVideo() {
@@ -170,9 +185,10 @@ export default class PlayList extends Vue {
     console.log('播放下一集');
 
   }
-  play(){
+
+  play() {
     console.log('可以播放了')
-    if (this.video.source !== 'iframe' ) {
+    if (this.video.source !== 'iframe') {
       // @ts-ignore
       this.$refs.cplayer.player.play()
     }
@@ -181,6 +197,17 @@ export default class PlayList extends Vue {
 }
 </script>
 
-<style scoped>
+<style lang="sass">
+.doc-note--tip
+  background-color: #f9e09b
+  border-color: #f2c037
 
+.doc-note
+  border-radius: 4px
+  margin: 6px 0
+  padding: 6px 6px
+  font-size: 1em
+  border-width: 0 5px
+  border-style: solid
+  letter-spacing: 0.5px
 </style>

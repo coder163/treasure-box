@@ -1,19 +1,21 @@
 import axios from 'axios'
 import Zfile, {IZfile} from "@/domain/Zfile";
+import {logger} from "@/config/Log4jsConfig";
 
 
 export class ZfileApi {
 
-    static getName(path:string='treasure-box'){
-       const url= `https://disk.coder163.com/api/list/1?path=/${path}&password=000000`
+    static getName(path: string = 'treasure-box') {
+        const url = `https://disk.coder163.com/api/list/1?path=/${path}&password=000000`
+        logger.info(url)
         let fileList: Array<IZfile> = new Array<IZfile>();
         return new Promise<any>(async (resolve, reject) => {
             await axios.get(url).then(resp => {
-                    resp.data.data.files.forEach((item:any)=>{
-                        let {name, path, size, time, type, url} = item;
-                        let  file:Zfile= new Zfile(name,path,size,time,type,url)
-                        fileList.push(file);
-                    })
+                resp.data.data.files.forEach((item: any) => {
+                    let {name, path, size, time, type, url} = item;
+                    let file: Zfile = new Zfile(name, path, size, time, type, url)
+                    fileList.push(file);
+                })
                 resolve(fileList)
             }).catch(err => {
 
@@ -23,6 +25,7 @@ export class ZfileApi {
     }
 
 }
+
 export default class {
 
     public getTicket(): Promise<any> {
@@ -49,6 +52,7 @@ export default class {
             })
         })
     }
+
     public getUserByOid(openid: string): Promise<any> {
 
         return new Promise(async (resolve, reject) => {

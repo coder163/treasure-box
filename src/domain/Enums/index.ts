@@ -25,6 +25,7 @@ export enum UpdateStatusCode {
     NO_NEW_VERSION_DETECTED = 2,
 
     DOWNLOADING = 3,
+    
     DOWNLOAD_COMPLETED = 4,
 }
 
