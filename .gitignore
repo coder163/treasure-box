@@ -107,3 +107,4 @@ build/
 dist_electron/
 public/html/
 package-lock.json
+./地址列表.txt

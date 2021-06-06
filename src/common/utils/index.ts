@@ -1,5 +1,6 @@
 import {ITreeNode, TreeNode} from "@/domain/Tree";
 import axios from "axios";
+import {logger} from "@/config/Log4jsConfig";
 
 const fs = require('fs')
 const path = require('path')
@@ -40,8 +41,29 @@ async function extraResult(title: string, size: number = 5) {
     return sources;
 }
 
+async function html2M3u8(sourceUrl: string) {
+    console.log('待解析的url:'+sourceUrl)
+    let playUrl = `https://m3u8.tv.janan.net/json.php?url=${sourceUrl}`;
+    let result = {
+        type: 'mp4',
+        url: ''
+    };
+    await axios.get(playUrl).then(resp => {
+        console.log('m3u8.tv', resp.data);
+
+        result.url = resp.data.url;
+        result.type = resp.data.type;
+
+    }).catch(err => {
+        // 请求失败后的处理函数
+        console.log('请求失败！！', err);
+    });
+
+    return result;
+}
+
 export {
     listFile,
-
+    html2M3u8,
     extraResult
 };

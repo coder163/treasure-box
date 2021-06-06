@@ -12,7 +12,7 @@ const routes: Array<RouteConfig> = [
         path: '/',
         name: 'Home',
         component: Home,
-        redirect:'/content/html/docs%2Fjava%2Findex.html'
+        // redirect:'/content/html/docs%2Fjava%2Findex.html'
         // redirect:'/update'
     }, {
         path: '/content/:filePath',

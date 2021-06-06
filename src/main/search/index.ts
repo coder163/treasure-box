@@ -5,12 +5,14 @@ import {logger} from "@/config/Log4jsConfig";
 import Episodes, {IEpisodes} from "@/domain/Episode";
 // @ts-ignore
 import shortId from "shortid";
+
 const urlencode = require('urlencode');
 
 ipcMain.on("search-video", function (response, name) {
     let currentWin: Electron.BrowserWindow | null = BrowserWindow.getFocusedWindow();
     let resources = VideoApiConfig.get("resource-site").value();
     let episodesList: Array<IEpisodes> = new Array<IEpisodes>();
+
     axios.all(resources.map(function (value: any) {
             let url = `${value.url}ac=detail&wd=${urlencode(name)}`;
             console.log(url, value.name)
@@ -22,29 +24,37 @@ ipcMain.on("search-video", function (response, name) {
                         let {vod_play_note, vod_play_url, vod_time, vod_content, type_name, vod_lang, vod_name} = resp.data.list[i];
                         let episodes: Episodes = new Episodes();
                         //剧情描述
-                        episodes.id=shortId.generate()
+                        episodes.id = shortId.generate()
                         episodes.desc = vod_content;
                         episodes.name = vod_name;
                         episodes.type = type_name;
                         episodes.lang = vod_lang
                         episodes.time = vod_time;
-                        episodes.source='m3u8'
+                        episodes.source = 'm3u8'
                         //按照指定的分隔符进行拆分,该数组内容的形式$https://vod.bunediy.com/share/zOBt4pGh3U47vXFe#$$$超清$https://vod.bunediy.com/20201119/vVYz7uzh/index.m3u8#
                         let urls = vod_play_url.split(vod_play_note)
-                      
+
                         urls.map((item: string) => {
+                            //优先解析HTML
                             if (item.endsWith("m3u8") || item.endsWith("m3u8#")) {
                                 let list = item.match(/https.*?\/index.m3u8/gi)
                                 if (list !== null) {
                                     episodes.src = list;
                                 }
 
+                            } else if (item.endsWith("html")) {
+                                // 此处的分隔符不应该写死，但是就这样吧,群主太横了
+                                // let htmlUrls = item.split('$$$')[0];
+                                // let htmls = htmlUrls.match(/http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+/mg)
+                                // if (htmls !== null) {
+                                //     episodes.src = htmls;
+                                // }
                             }
                         })
                         // console.log(episodes.src)
                         episodesList.push(episodes);
                     }
-                   
+
                 }
 
                 if (currentWin !== null) {
@@ -53,7 +63,7 @@ ipcMain.on("search-video", function (response, name) {
                         status: 'success',
                         data: episodesList
                     }
-                  
+
                     currentWin.webContents.send('episodes-result', result);
                 }
 

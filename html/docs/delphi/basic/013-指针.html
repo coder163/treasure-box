@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>013-指针</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    body { background-color: transparent !important; }
+
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <p>指针，是C语言中的一个重要概念及其特点，也是掌握C语言比较困难的部分。<strong>指针也就是内存地址</strong>，<strong>指针变量是用来存放内存地址的变量</strong>，不同类型的指针变量所占用的存储单元长度是相同的，而存放数据的变量因数据的类型不同，所占用的存储空间长度也不同。有了指针以后，不仅可以对数据本身，也可以对存储数据的变量地址进行操作</p>
+<blockquote>
+<p>引自百度百科</p>
+</blockquote>
+<p>这里面提到了两个比较重要的名词：<strong>指针</strong>和<strong>指针变量</strong>，其实只要理清楚这两个东西就会感觉指针并不难（基础使用）</p>
+<p>C语言之所以强大，以及其自由性，很大部分体现在其灵活的指针运用上。因此，说指针是C语言的灵魂，一点都不为过。</p>
+<p>这种说法也让很多人产生误解，似乎只有C语言的指针才能算指针。其他语言不支持指针，其实，Pascal语言本身也是支持指针的。从最初的Pascal发展至今的Object Pascal，可以说在指针运用上，丝毫不会逊色于C语言的指针。</p>
+<h2 id="toc_0">类型指针<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h2>
+<p>类型指针的定义。对于指向特定类型的指针，在C中是这样定义的：</p>
+<pre><code class="lang-c hljs"><span class="hljs-keyword">int</span> *ptr;
+<span class="hljs-keyword">char</span> *pcr;
+</code></pre>
+<p>与之等价的Object Pascal是如何定义的呢？</p>
+<pre><code class="lang-c hljs">var
+ptr : ^Integer;
+pcr : ^<span class="hljs-keyword">char</span>;
+</code></pre>
+<blockquote>
+<p>针对ptr和pcr这种变量我们就可以称为指针变量，和普通变量相比而言他们的值不一样而已，类似于下图这样</p>
+</blockquote>
+<p><img src="_v_images/20210211152534247_17820.png" alt="" class="view-image"></p>
+<h2 id="toc_1">无类型指针<a class="vnote-anchor" href="#toc_1" data-anchor-icon="#"></a></h2>
+<p>所谓无类型指针类似于老外心目中的上帝</p>
+<p>C中有void *类型，也就是可以指向任何类型数据的指针。Object Pascal为其定义了一个专门的类型：Pointer。于是，<code>ptr : Pointer;</code>就与C中的<code>void *ptr;</code>等价了。</p>
+<blockquote>
+<p>在新版本的Delphi中其实很少使用指针了，所以个人建议无类型指针更应该少用甚至不用</p>
+</blockquote>
+<h2 id="toc_2">基本使用<a class="vnote-anchor" href="#toc_2" data-anchor-icon="#"></a></h2>
+<p>主要是指针的解除引用和取地址，不说了直接代码演示</p>
+<pre><code class="lang-c hljs">var
+  <span class="hljs-comment">// 定义普通变量，因为是全局变量可以直接赋初始值</span>
+  Age: Integer = <span class="hljs-number">10</span>;
+
+  <span class="hljs-comment">// 定义同类型的指针变量,可以使用^数据类型的形式，他们是等同的</span>
+  PAge: PInteger;
+
+begin
+  <span class="hljs-comment">// 给指针变量赋值,它只能接收这样的值</span>
+  PAge := @Age;
+
+  <span class="hljs-comment">// 获取指针变量PAge的值，即变量Age的内存地址</span>
+  Writeln(IntToHex(Integer(PAge)));
+
+  <span class="hljs-comment">// 直接获取变量Age的内存地址</span>
+  Writeln(IntToHex(Integer(@Age)));
+
+  <span class="hljs-comment">// 获取指针变量中存储的具体值(解除指针引用)</span>
+  Writeln(PAge^);
+
+  readln;
+
+end.
+</code></pre>
+<blockquote>
+<p>上面代码演示的仅仅为一级指针，指针是可以嵌套的</p>
+</blockquote>
+<h2 id="toc_3">指针运算<a class="vnote-anchor" href="#toc_3" data-anchor-icon="#"></a></h2>
+<p>在C中，可以对指针进行移动的运算，如：</p>
+<pre><code class="lang-C hljs"><span class="hljs-keyword">char</span> a[<span class="hljs-number">20</span>];
+<span class="hljs-keyword">char</span> *ptr=a;
+ptr++;
+ptr+=<span class="hljs-number">2</span>;
+
+</code></pre>
+<p>当执行ptr++;时，编译器会产生让ptr前进sizeof(char)步长的代码，之后，ptr将指向a[1]。ptr+=2;这句使得ptr前进两 个sizeof(char)大小的步长。同样，我们来看一下Object Pascal中如何实现</p>
+<pre><code class="lang-c hljs">var
+   a : <span class="hljs-built_in">array</span> [<span class="hljs-number">1.</span><span class="hljs-number">.20</span>] of Char;
+   ptr : PChar; <span class="hljs-comment">//PChar 可以看作 ^Char</span>
+begin
+   ptr := @a;
+   Inc(ptr); <span class="hljs-comment">// 这句等价于 C 的 ptr++;</span>
+   Inc(ptr, <span class="hljs-number">2</span>); <span class="hljs-comment">//这句等价于 C 的 ptr+=2;</span>
+end;
+</code></pre>
+<blockquote>
+<p>可能我接触Delphi 的时间比较短，指针运算这一块我几乎没怎么用过，作为一个知识点整理出来</p>
+</blockquote>
+<h3 id="toc_4">字符数组的运算<a class="vnote-anchor" href="#toc_4" data-anchor-icon="#"></a></h3>
+<p>C语言中，是没有字符串类型的，因此，字符串都是用字符数组来实现，于是也有一套str打头的库函数以进行字符数组的运算,</p>
+<pre><code class="lang-C hljs"><span class="hljs-keyword">char</span> str[<span class="hljs-number">15</span>];
+<span class="hljs-keyword">char</span> *pstr;
+<span class="hljs-built_in">strcpy</span>(str, <span class="hljs-string">"teststr"</span>);
+<span class="hljs-built_in">strcat</span>(str, <span class="hljs-string">"_testok"</span>);
+pstr = (<span class="hljs-keyword">char</span>*) <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">char</span>) * <span class="hljs-number">15</span>);
+<span class="hljs-built_in">strcpy</span>(pstr, str);
+<span class="hljs-built_in">printf</span>(pstr);
+<span class="hljs-built_in">free</span>(pstr);
+</code></pre>
+<p>而在Object Pascal中，有了String类型，因此可以很方便的对字符串进行各种运算。但是，有时我们的Pascal代码需要与C的代码交互（比如：用 Object Pascal的代码调用C写的DLL或者用Object Pascal写的DLL准备允许用C写客户端的代码）的话，就不能使用String类型了，而必须使用两种语言通用的字符数组。其实，Object Pascal提供了完全相似C的一整套字符数组的运算函数，以上那段代码的Object Pascal版本是这样的：</p>
+<pre><code class="lang-c hljs">var str : <span class="hljs-built_in">array</span> [<span class="hljs-number">1.</span><span class="hljs-number">.15</span>] of <span class="hljs-keyword">char</span>;
+   pstr : PChar; <span class="hljs-comment">//Pchar 也就是 ^Char</span>
+<span class="hljs-function">begin
+   <span class="hljs-title">StrCopy</span><span class="hljs-params">(@str, <span class="hljs-string">'teststr'</span>)</span></span>; <span class="hljs-comment">//在C中，数组的名称可以直接作为数组首地址指针来用</span>
+    <span class="hljs-comment">//但Pascal不是这样的，因此 str前要加上取地址的运算符</span>
+   StrCat(@str, <span class="hljs-string">'_testok'</span>);
+   GetMem(pstr, <span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">char</span>) * <span class="hljs-number">15</span>);
+   StrCopy(pstr, @str);
+   Write(pstr);
+   FreeMem(pstr);
+end;
+</code></pre>
+<h2 id="toc_5">函数指针<a class="vnote-anchor" href="#toc_5" data-anchor-icon="#"></a></h2>
+<p>函数指针能用于两种不同的目的：声明函数指针类型的变量；或者把函数指针作为参数传递给另一例程。</p>
+<p>Delphi中可以通过函数指针把一个函数作为参数来传递，然后在另外一个函数中调用。首先，申明函数指针类型TFunctionParameter</p>
+<pre><code class="lang-c hljs">type
+          TFunctionParameter = function(<span class="hljs-keyword">const</span> value : integer) : <span class="hljs-built_in">string</span>; <span class="hljs-comment">//函数指针</span>
+
+</code></pre>
+<p>定义准备被作为参数传递的函数</p>
+<pre><code class="lang-c hljs"><span class="hljs-function">function <span class="hljs-title">One</span><span class="hljs-params">(<span class="hljs-keyword">const</span> value : integer)</span> : <span class="hljs-built_in">string</span></span>;                            <span class="hljs-comment">//函数-实例1</span>
+begin
+  result := IntToStr(value) ;
+end;
+
+<span class="hljs-function">function <span class="hljs-title">Two</span><span class="hljs-params">(<span class="hljs-keyword">const</span> value : integer)</span> : <span class="hljs-built_in">string</span></span>;                            <span class="hljs-comment">//函数-实例2</span>
+begin
+  result := IntToStr(<span class="hljs-number">2</span> * value) ;
+end;
+</code></pre>
+<p>定义将要使用动态函数指针参数的函数</p>
+<pre><code class="lang-c hljs"><span class="hljs-function">function <span class="hljs-title">DynamicFunction</span><span class="hljs-params">(f : TFunctionParameter; <span class="hljs-keyword">const</span> value : integer)</span> : <span class="hljs-built_in">string</span></span>;
+begin
+  result := f(value) ;
+end;
+</code></pre>
+<p>上面这个动态函数的使用实例</p>
+<pre><code class="lang-c hljs">var
+  s : <span class="hljs-built_in">string</span>;
+begin
+  s := DynamicFunction(One,<span class="hljs-number">2006</span>) ;
+  ShowMessage(s) ; <span class="hljs-comment">//will display "2006"</span>
+
+  s := DynamicFunction(Two,<span class="hljs-number">2006</span>) ;
+  ShowMessage(s) ; <span class="hljs-comment">// will display "4012"</span>
+end;
+</code></pre>
+<p>虽然这种调用方法比直接调用麻烦了,那么我们为什么要用这种方式呢？</p>
+<ol>
+<li>
+<p>因为在某些情况下，调用什么样的函数需要在实际中(运行时)决定,你可以根据条件来判断,实现用同一个表达,调用不同的函数,很是灵活.</p>
+</li>
+<li>
+<p>利用函数指针我们可以实现委托,委托在.NEt中被发挥的淋漓尽致,但Delphi同样能实现</p>
+</li>
+<li>
+<p>实现回调机制</p>
+</li>
+</ol>
+<p>例子</p>
+<pre><code class="lang-c hljs"><span class="hljs-comment">//********************************************************</span>
+<span class="hljs-comment">// 函数指针(指向一般函数和过程)</span>
+<span class="hljs-comment">//*********************************************************</span>
+unit DelegateUnit;
+interface
+     procedure Func1;
+     <span class="hljs-comment">//定义两个函数型构相同但功能不同的函数</span>
+    <span class="hljs-function">function    <span class="hljs-title">FuncAdd</span><span class="hljs-params">(VarA , VarB : Integer)</span>:Integer</span>;
+    <span class="hljs-function">function    <span class="hljs-title">FuncSub</span><span class="hljs-params">(VarA , VarB : Integer)</span>:Integer</span>;
+type
+    DelegateFunc1 = procedure;
+    DelegateFuncCalc = function(VarA , VarB : Integer):Integer;
+var
+  I : Integer;
+implementation
+
+procedure Func1;
+<span class="hljs-function">begin
+      <span class="hljs-title">Writeln</span><span class="hljs-params">(<span class="hljs-string">'Func1 was called!'</span>)</span></span>;
+end;
+
+<span class="hljs-function">function    <span class="hljs-title">FuncAdd</span><span class="hljs-params">(VarA , VarB : Integer)</span>:Integer</span>;
+begin
+     Result := VarA + VarB;
+end;
+<span class="hljs-function">function    <span class="hljs-title">FuncSub</span><span class="hljs-params">(VarA , VarB : Integer)</span>:Integer</span>;
+begin
+   Result := VarA - VarB;
+end;
+end.
+
+</code></pre>
+<p>调用</p>
+<pre><code class="lang-c hljs">program Delegate;
+{$APPTYPE CONSOLE}
+uses
+  DelegateUnit;
+ var
+    ADelegateFunc1 : DelegateFunc1;
+    ADelegateFuncCalc : DelegateFuncCalc;
+ begin
+     <span class="hljs-comment">//通过函数指针调用过程</span>
+     ADelegateFunc1  := Func1;
+     ADelegateFunc1 ;
+    <span class="hljs-comment">//通过同种方式调用不同函数</span>
+    ADelegateFuncCalc  := FuncAdd;
+    Writeln(ADelegateFuncCalc(<span class="hljs-number">3</span>,<span class="hljs-number">5</span>));
+    ADelegateFuncCalc  := FuncSub;
+    Writeln(ADelegateFuncCalc(<span class="hljs-number">3</span>,<span class="hljs-number">5</span>));
+end.
+
+</code></pre>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

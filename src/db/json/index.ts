@@ -90,13 +90,17 @@ export default {
         ],
         delphi: [
             {
-                label: 'Delphi百集',
+                label: '基础编程',
                 children: listFile(`./html/docs/delphi/basic`, [])
 
             },
             {
-                label: '官方案例',
-                children: listFile(`./html/docs/delphi/basic`, [])
+                label: '设计模式',
+                children: listFile(`./html/docs/delphi/design`, [])
+            },
+            {
+                label: '附录',
+                children: listFile(`./html/docs/delphi/appendix`, [])
             }
         ],
         cloudDisk: [

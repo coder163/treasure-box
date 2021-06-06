@@ -2,9 +2,10 @@
   <div class="home">
     <!--TODO 布局没想好，暂时不要了而且轮播图好像没有世纪作用-->
 
-    <div v-html="msg">
-
-    </div>
+    <player
+            :style="{'height':'300px'}"
+            :videoSrc="msg"
+    />
   </div>
 
 
@@ -14,9 +15,9 @@
 
 import axios from "axios";
 import cheerio from 'cheerio';
-
+import Player from '@/components/Player.vue'
 export default {
-  components: {},
+  components: {Player},
   data() {
     return {
       msg: ""
@@ -30,8 +31,6 @@ export default {
     let url = 'https://m3u8.zh188.net/20210508%60/playm3u8.php?url=https://v.qq.com/x/page/n0029pq9fe2.html';
     axios.get(url
     ).then((res) => {
-
-    
 
 
     })

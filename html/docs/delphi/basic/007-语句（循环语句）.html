@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>007-语句（循环语句）</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    body { background-color: transparent !important; }
+
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <h2 id="toc_0">循环语句<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h2>
+<p>其它编程语言中使用的循环语句，Pascal语言中都有，它们包括 for、 while 和 repeat 语句。如果你用过其他编程语言，你会发现Pascal中的循环语句没什么特别的，因此这里我只作简要的说明。</p>
+<h3 id="toc_1">for循环<a class="vnote-anchor" href="#toc_1" data-anchor-icon="#"></a></h3>
+<p>Pascal 中的for循环严格地建立在计数器基础上，循环每执行一次，计数器不是增加一个值就是减小一个值。下面是一个for语句的简例，用来将前十个数加起来：</p>
+<pre><code class="lang-c hljs">var
+  K, I: Integer;
+begin
+  K := <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">for</span> I := <span class="hljs-number">1</span> to <span class="hljs-number">10</span> <span class="hljs-keyword">do</span>
+    K := K + I;
+</code></pre>
+<p>同样的for语句可以用正好相反的计数器来写：</p>
+<pre><code class="lang-c hljs">var
+  K, I: Integer;
+begin
+  K := <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">for</span> I := <span class="hljs-number">10</span> downto <span class="hljs-number">1</span> <span class="hljs-keyword">do</span>
+    K := K + I;
+</code></pre>
+<p>Pascal 中的for循环语句其灵活性比其他语言小（它不能指定1之外的步长），不过简单也容易理解。如果需判断的条件比较复杂，或想自定义计数器，你可以用while语句 或 repeat 语句，而不是for循环语句。</p>
+<h3 id="toc_2">while语句和repeat语句<a class="vnote-anchor" href="#toc_2" data-anchor-icon="#"></a></h3>
+<p>while-do 循环语句和 repeat-until 语句的不同点在于repeat 循环语句的代码至少要执行一次。从下面的简例很容易理解这一点：</p>
+<pre><code class="lang-c hljs"><span class="hljs-keyword">while</span> (I &lt;= <span class="hljs-number">100</span>) <span class="hljs-keyword">and</span> (J &lt;= <span class="hljs-number">100</span>) <span class="hljs-keyword">do</span>
+begin
+  <span class="hljs-comment">// use I and J to compute something...</span>
+  I := I + <span class="hljs-number">1</span>;
+  J := J + <span class="hljs-number">1</span>;
+end;
+
+repeat
+  <span class="hljs-comment">// use I and J to compute something...</span>
+  I := I + <span class="hljs-number">1</span>;
+  J := J + <span class="hljs-number">1</span>;
+until (I &gt; <span class="hljs-number">100</span>) <span class="hljs-keyword">or</span> (J &gt; <span class="hljs-number">100</span>);
+</code></pre>
+<p>从上可见即使 I 或 J 的初始值大于100，repeat-until循环中的代码也仍会执行一次。</p>
+<blockquote>
+<p>PS：repeat-until 循环的条件是反向的条件，只要不满足这个条件，循环就执行；当条件满足时，循环终止。这正好与while-do 循环相反，while-do 循环当条件是真值时才执行。为此，我不得不在上面代码中用反向条件来获得相同的结果。</p>
+</blockquote>
+<h2 id="toc_3">with语句<a class="vnote-anchor" href="#toc_3" data-anchor-icon="#"></a></h2>
+<p>with语句是Pascal编程语言独有的语句，with语句是一种用于简化代码的语句。 如你要访问一个记录类型变量（或一个对象），用with语句就不必每次重复变量的名字。例如对于以下的记录类型代码：</p>
+<pre><code class="lang-c hljs">type
+  Date = record
+    Year: Integer;
+    Month: Byte;
+    Day: Byte;
+  end;
+
+var
+  BirthDay: Date;
+
+begin
+  BirthDay.Year := <span class="hljs-number">1997</span>;
+  BirthDay.Month := <span class="hljs-number">2</span>;
+  BirthDay.Day := <span class="hljs-number">14</span>;
+</code></pre>
+<p>可以用with语句改进后半部分代码，如下：</p>
+<pre><code class="lang-c hljs">begin
+  with BirthDay <span class="hljs-keyword">do</span>
+  begin
+    Year := <span class="hljs-number">1995</span>;
+    Month := <span class="hljs-number">2</span>;
+    Day := <span class="hljs-number">14</span>;
+  end;
+</code></pre>
+<p>在Delphi程序中，这种方法能用于访问控件和类变量。现在通过with语句访问列表框的条目，我们重写上面循环例子的最后部分：</p>
+<pre><code class="lang-c hljs">procedure TForm1.WhileButtonClick(Sender: TObject);
+var
+  I: Integer;
+begin
+  with ListBox1.Items <span class="hljs-keyword">do</span>
+  begin
+    Clear; <span class="hljs-comment">// shortcut</span>
+    Randomize;
+    I := <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">while</span> I &lt; <span class="hljs-number">1000</span> <span class="hljs-keyword">do</span>
+    begin
+      I := I + Random (<span class="hljs-number">100</span>);
+      <span class="hljs-comment">// shortcut:</span>
+      Add (<span class="hljs-string">'Random Number: '</span> + IntToStr (I));
+    end;
+  end;
+end;
+</code></pre>
+<p>当编写的代码很复杂时，with语句会很有用，也可省去一些临时变量。</p>
+<p>但是这样做也有缺点，因为这样将使代码的可读性变差，特别对有相似或相同属性的对象。更严重的是，使用with语句可能会在代码中融入微妙的逻辑错误，甚至连编译器都难以发现。例如</p>
+<pre><code class="lang-c hljs">with Button1 <span class="hljs-keyword">do</span>
+begin
+  Width := <span class="hljs-number">200</span>;
+  Caption := <span class="hljs-string">'New Caption'</span>;
+  Color := clRed;
+end;
+</code></pre>
+<p>这段代码改变了按钮的Caption 和 Width属性，但也改变了窗体的Color属性，而不是按钮的颜色！其原因是 TButton 控件没有Color属性, 又由于执行的代码是针对窗体对象的（我们正在写窗体的方法），所以窗体对象即成为默认的访问对象。如果这样写：</p>
+<pre><code class="lang-c hljs">Button1.Width := <span class="hljs-number">200</span>;
+Button1.Caption := <span class="hljs-string">'New Caption'</span>;
+Button1.Color := clRed; <span class="hljs-comment">// error!</span>
+</code></pre>
+<p>编译器会给出一个错误。通常，由于with语句在当前的块中定义了新的标识符，省略了原有的标识符，可能引起在同一块内错误地访问另一个标识符（就象上面的这段代码）。即使存在种种缺陷，我还是建议你习惯于使用with语句，因为with语句确实是非常便利，并且有时也会使代码更容易读懂。</p>
+<p>然而，你应该避免使用多个with语句，如</p>
+<pre><code class="lang-c hljs">with ListBox1, Button1 <span class="hljs-keyword">do</span>..
+</code></pre>
+<p>这样会使后面的代码非常难读，因为，对该块中定义的每个属性，你都要根据相应的属性以及控件的次序，才能推出所访问的控件。</p>
+<blockquote>
+<p>PS：个人的理解with语句能不不用就不要用了，太容易出问题了，而且排错也不方便</p>
+</blockquote>
+<h2 id="toc_4">break<a class="vnote-anchor" href="#toc_4" data-anchor-icon="#"></a></h2>
+<p>强制退出最近的一层循环（注意：只能放在循环里；而且是只能跳出最近的一层循环），用于从for、while、repeat语句中强制退出类似于C/C++等语言中的break的功能</p>
+<pre><code class="lang-c hljs">  <span class="hljs-keyword">for</span> var I := <span class="hljs-number">0</span> to <span class="hljs-number">10</span> <span class="hljs-keyword">do</span> begin
+
+    <span class="hljs-keyword">for</span> var X := <span class="hljs-number">0</span> to <span class="hljs-number">5</span> <span class="hljs-keyword">do</span> begin
+      <span class="hljs-comment">//只能推出内层循环</span>
+      <span class="hljs-keyword">if</span> X = <span class="hljs-number">5</span> then begin
+        <span class="hljs-keyword">break</span>;
+      end;
+    end;
+
+  end;
+</code></pre>
+<h2 id="toc_5">continue<a class="vnote-anchor" href="#toc_5" data-anchor-icon="#"></a></h2>
+<p>用于从for、while、repeat语句中结束循环内的本次处理,继续从循环体的开始位置继续执行，类似于C/C++等语言中的continue的功能</p>
+<blockquote>
+<p>至少在我自己的编码过程中，continue语句其实很少使用</p>
+</blockquote>
+<h2 id="toc_6">exit<a class="vnote-anchor" href="#toc_6" data-anchor-icon="#"></a></h2>
+<p>用于从当前代码块中退出。若该代码是主程序，则终止该程序。如果是函数或过程，则立即终止该函数或过程</p>
+<p>在Delphi中没有return关键字，一般情况下我使用Result和Exit联用达到return的效果</p>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

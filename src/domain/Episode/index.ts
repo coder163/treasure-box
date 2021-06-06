@@ -25,13 +25,14 @@ export interface IEpisodes {
 export interface ICurrentEpisodes {
     //当前集数
     index: number,
-    src:string
+    src:string,
+    videoType:string
 }
 export class CurrentEpisodes implements ICurrentEpisodes{
     index: number=0;
     src: string = '';
     name: string = '';
-
+    videoType:string='customHls'
 }
 export default class implements IEpisodes {
     id: string = "";

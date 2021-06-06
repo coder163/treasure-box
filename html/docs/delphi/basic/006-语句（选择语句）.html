@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>006-语句（选择语句）</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    body { background-color: transparent !important; }
+
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <blockquote>
+<p>本来今天想更新的内容是异步IO模型中的重叠IO，但是没有整理完，所以继续更新基础笔记</p>
+</blockquote>
+<p>如果说数据类型是 Pascal 编程的一个基础，那么另一个则是语句。</p>
+<p>很多人喜欢把条件控制和循环语句称为流程控制语句，这样说的原因是代码有默认执行流程，而这些语句改变了代码默认的执行流程，但需要注意的是编程中不仅仅只有流程控制语句，此外还有表达式语句，所以我们从表达式聊起</p>
+<h2 id="toc_0">表达式<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h2>
+<p>在学习语句之前还有一个概念需要了解，那就是表达式。在我初学编程的日子里被表达式折磨的死去活来。经常听到老师提起表达式却又没有一个准确的描述。</p>
+<p>定义：<strong>由关键字和操作符组成符合一定语法规则的序列成为表达式，根据该序列运算的结果类型不同又划分为不同类型的表达式</strong></p>
+<p>例如当我们看到下面的写法一般会称为逻辑表达式</p>
+<pre><code class="hljs">IsOpen := 1 &lt; 2;
+</code></pre>
+<blockquote>
+<p>注意这个定义是我自己的理解非官方定义</p>
+</blockquote>
+<p>在Delphi中表达式被包含在了简单语句中，当然这也是我在翻阅一些文档时看到的一些说法并不是官方说法，例如下面的例子。</p>
+<p>Pascal 简单语句中不包含任何别的语句，赋值语句和过程调用即是简单语句的例子。简单语句用分号隔开，如下所示：</p>
+<pre><code class="lang-c hljs">X := Y + Z;  <span class="hljs-comment">// 运算赋值</span>
+Randomize;   <span class="hljs-comment">// 过程调用</span>
+
+</code></pre>
+<h2 id="toc_1">赋值语句<a class="vnote-anchor" href="#toc_1" data-anchor-icon="#"></a></h2>
+<p>单独的把赋值语句列出来是因为和其他语言不一样</p>
+<p>在Pascal 语言中赋值语句用冒号-等号操作符“:=”，对使用其他语言的编程人员来说这是一个奇怪的符号。在其他语言中用作赋值符号的“=”在Pascal 中用作关系运算符，用于判断是否相等。</p>
+<p>赋值和相等判断使用不同的符号，使Pascal 编译器（象C编译器一样）能更快解译源代码，因为这样就不需要通过检查上下文来判断符号的意义，此外使用不同操作符也使代码更易读。</p>
+<blockquote>
+<p>PS：最近特别流行的TypeScript中的变量初始化声明方式和Delphi采用了类似的方式，谁让它们同宗同源呢</p>
+</blockquote>
+<h2 id="toc_2">if语句<a class="vnote-anchor" href="#toc_2" data-anchor-icon="#"></a></h2>
+<p>条件语句通过条件检测，判断是否执行该条件语句中包含的语句。条件语句可有两种基本形式：if语句和case语句。</p>
+<p>对if-then型语句， 仅当条件满足时，语句才执行；对if-then-else型，if语句在两条语句中选择一条执行。</p>
+<p>例如：下面是一个按钮事件代码中一条简单的if语句：</p>
+<pre><code class="lang-c hljs">procedure TForm1.Button1Click(Sender: TObject);
+begin
+
+  <span class="hljs-keyword">if</span> CheckBox1.<span class="hljs-function">Checked then
+    <span class="hljs-title">ShowMessage</span> <span class="hljs-params">(<span class="hljs-string">'CheckBox1 is checked'</span>)</span>
+end</span>;
+</code></pre>
+<p>如果点击按钮后没有反应，表明复选框未被选中。对于这种情况，最好能交代得更清楚些，为此在第二个按钮的代码中，我用了if-then-else 语句：</p>
+<pre><code class="lang-c hljs">procedure TForm1.Button2Click(Sender: TObject);
+begin
+  <span class="hljs-comment">// if-then-else statement</span>
+  <span class="hljs-keyword">if</span> CheckBox2.<span class="hljs-function">Checked then
+    <span class="hljs-title">ShowMessage</span> <span class="hljs-params">(<span class="hljs-string">'CheckBox2 is checked'</span>)</span>
+  <span class="hljs-keyword">else</span>
+    <span class="hljs-title">ShowMessage</span> <span class="hljs-params">(<span class="hljs-string">'CheckBox2 is NOT checked'</span>)</span></span>;
+end;
+</code></pre>
+<blockquote>
+<p>注意的是，不能在第一句之后、else 关键词之前加分号，否则编译器将告知语法错误。实际上，if-then-else 语句是单纯的一条语句，因此不能在语句中间加分号</p>
+</blockquote>
+<p>if 语句可以很复杂，句子中的条件部分可以是一系列条件（用and、 or 、 not等布尔操作符联接起来），if语句又可以嵌套另一个if语句，</p>
+<pre><code class="lang-c hljs">procedure TForm1.Button3Click(Sender: TObject);
+begin
+
+  <span class="hljs-keyword">if</span> CheckBox1.Checked <span class="hljs-keyword">and</span> CheckBox2.<span class="hljs-function">Checked then
+    <span class="hljs-title">ShowMessage</span> <span class="hljs-params">(<span class="hljs-string">'Both check boxes are checked'</span>)</span>
+end</span>;
+
+procedure TForm1.Button4Click(Sender: TObject);
+begin
+  <span class="hljs-keyword">if</span> CheckBox1.Checked then
+    <span class="hljs-keyword">if</span> CheckBox2.<span class="hljs-function">Checked then
+      <span class="hljs-title">ShowMessage</span> <span class="hljs-params">(<span class="hljs-string">'CheckBox1 and 2 are checked'</span>)</span>
+    <span class="hljs-keyword">else</span>
+      <span class="hljs-title">ShowMessage</span> <span class="hljs-params">(<span class="hljs-string">'Only CheckBox1 is checked'</span>)</span>
+  <span class="hljs-keyword">else</span>
+    <span class="hljs-title">ShowMessage</span> <span class="hljs-params">(
+      <span class="hljs-string">'Checkbox1 is not checked, who cares for Checkbox2?'</span>)</span>
+end</span>;
+</code></pre>
+<blockquote>
+<p>虽然上面的例子中省略了 begin...end 但是就我个人而言不太推荐省略的做法，感觉会降低代码的可读性</p>
+</blockquote>
+<h2 id="toc_3">case语句<a class="vnote-anchor" href="#toc_3" data-anchor-icon="#"></a></h2>
+<p>如果你的if语句变得非常复杂，有时可以用case语句代替它。case语句包括用来选值的表达式、可能值序列或一个取值范围。这些值应该是常量，并且它们必须唯一，而且应属于有序类型。</p>
+<p>case语句最后可以带一个else 语句，当没有一个标签与选择器的值一致时，执行else语句。下面是两个简单的例子：</p>
+<pre><code class="lang-c hljs"><span class="hljs-keyword">case</span> Number of
+  <span class="hljs-number">1</span>: Text := <span class="hljs-string">'One'</span>;
+  <span class="hljs-number">2</span>: Text := <span class="hljs-string">'Two'</span>;
+  <span class="hljs-number">3</span>: Text := <span class="hljs-string">'Three'</span>;
+end;
+
+<span class="hljs-keyword">case</span> MyChar of
+  <span class="hljs-string">'+'</span> : Text := <span class="hljs-string">'Plus sign'</span>;
+  <span class="hljs-string">'-'</span> : Text := <span class="hljs-string">'Minus sign'</span>;
+  <span class="hljs-string">'*'</span>, <span class="hljs-string">'/'</span>: Text := <span class="hljs-string">'Multiplication or division'</span>;
+  <span class="hljs-string">'0'</span>.<span class="hljs-number">.'9'</span>: Text := <span class="hljs-string">'Number'</span>;
+  <span class="hljs-string">'a'</span>.<span class="hljs-number">.'</span>z': Text := <span class="hljs-string">'Lowercase character'</span>;
+  <span class="hljs-string">'A'</span>.<span class="hljs-number">.'</span>Z': Text := <span class="hljs-string">'Uppercase character'</span>;
+<span class="hljs-keyword">else</span>
+  Text := <span class="hljs-string">'Unknown character'</span>;
+end;
+
+</code></pre>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

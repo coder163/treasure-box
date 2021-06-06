@@ -14,6 +14,7 @@
           <player ref="cplayer"
                   :style="{'height':(isStandalonePlayer?winHeight:winHeight-135)+'px'}"
                   :videoSrc="currentEpisodes.src"
+                  :videoType="currentEpisodes.videoType"
                   @play="play()"
                   @ended="nextVideo"/>
         </div>
@@ -23,7 +24,7 @@
         <q-fab v-model="fabRight" flat color="primary" icon="menu" active-icon="menu"/>
       </div>
       <div :class="fabRight?'':'col-4'">
-        <div  v-if="!fabRight">
+        <div v-if="!fabRight">
           <div class="text-h6 q-pl-md">{{ video.name }}</div>
           <q-separator/>
           <q-card flat>
@@ -53,10 +54,10 @@
               </q-tab-panel>
               <q-tab-panel name="other" :style="{'max-height':winHeight-380+'px'}">
 
-                <q-list  separator>
+                <q-list separator>
                   <q-item clickable v-ripple v-for="(item,index) in extraList">
                     <q-item-section @click="extraListClick(item.url)">
-                      <span style="display: inline-block" >{{item.website}}</span>
+                      <span style="display: inline-block">{{ item.website }}</span>
                     </q-item-section>
                   </q-item>
 
@@ -88,7 +89,7 @@ import {ipcRenderer, shell} from "electron";
 import {ChannelMessage} from "@/domain/Enums";
 import {logger} from "@/config/Log4jsConfig";
 
-import {extraResult} from '@/common/utils'
+import {extraResult, html2M3u8} from '@/common/utils'
 
 @Component({
   components: {Player},
@@ -160,28 +161,46 @@ export default class PlayList extends Vue {
     })
   }
 
-  extraListClick(href:string){
-  shell.openExternal(href);
+  extraListClick(href: string) {
+    shell.openExternal(href);
 
   }
+
   videoInit() {
     this.currentEpisodes.src = this.video.src[0];
     this.currentEpisodes.index = 0;
 
   }
 
-  changeVideo(index: number, src: string) {
+  async changeVideo(index: number, src: string) {
     this.currentEpisodes.index = index;
-    this.currentEpisodes.src = src;
+
+
+    if (src.endsWith('html')) {
+      let result = await html2M3u8(src);
+      this.currentEpisodes.src = result.url;
+      this.currentEpisodes.videoType = result.type;
+    } else {
+      this.currentEpisodes.src = src;
+    }
   }
 
-  nextVideo() {
+  async nextVideo() {
     if (this.currentEpisodes.index + 1 >= this.video.src.length) {
       console.log('最后一集了');
       return
     }
     this.currentEpisodes.index = this.currentEpisodes.index + 1;
-    this.currentEpisodes.src = this.video.src[this.currentEpisodes.index];
+
+    let currentUrl = this.video.src[this.currentEpisodes.index]
+
+    if (currentUrl.endsWith('html')) {
+      let result = await html2M3u8(currentUrl);
+      this.currentEpisodes.src = result.url;
+      this.currentEpisodes.videoType = result.type;
+    } else {
+      this.currentEpisodes.src = currentUrl;
+    }
     console.log('播放下一集');
 
   }
