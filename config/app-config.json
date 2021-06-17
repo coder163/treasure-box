@@ -5,7 +5,7 @@
     "isDownTool": true,
     "isKeepDiskPath": true,
     "isStandalonePlayer": false,
-    "isSkipTitle": true,
+    "isSkipTitle": false,
     "titleDuration": "90",
     "creditDuration": "120"
   }

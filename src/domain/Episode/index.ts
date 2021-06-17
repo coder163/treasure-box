@@ -19,6 +19,8 @@ export interface IEpisodes {
     lang:string;
     //时间
     time: string;
+    //采集站名称
+    sourceName:string
 
 }
 
@@ -44,6 +46,6 @@ export default class implements IEpisodes {
     source: string = "";
     lang:string="";
     time: string="";
-
+    sourceName: string = '';
 
 }

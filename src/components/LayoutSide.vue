@@ -4,20 +4,21 @@
     <q-img class="absolute-top text-center" src="/001.jpg"
            style="height: 150px">
       <!-- 在用户登录之后才可以显示，否则默认只显示背景图即可-->
-      <div class="absolute-center bg-transparent">
-        <q-btn flat fab-mini @click="mini?login():clickMini()">
-          <!--未登录显示-->
-          <q-icon name="account_circle" :size="mini?'30px':'46px'"/>
-          <!--登录之后显示-->
-          <!--            <q-img :style="{'border-radius': mini?'15px':'23px' , 'width': mini?'30px':'46px'}" src="https://cdn.quasar.dev/img/boy-avatar.png" alt=""/>-->
-        </q-btn>
-      </div>
+      <!--      <div class="absolute-center bg-transparent">-->
+      <!--        <q-btn flat fab-mini @click="mini ?login():clickMini()">-->
+      <!--          &lt;!&ndash;未登录显示&ndash;&gt;-->
+      <!--          <q-icon name="account_circle"  v-if="user.headImgUrl === '' " :size="mini?'30px':'46px'"/>-->
+      <!--          &lt;!&ndash;登录之后显示&ndash;&gt;-->
+      <!--          <q-img v-else :style="{'border-radius': mini?'15px':'23px' , 'width': mini?'30px':'46px'}"-->
+      <!--                 :src="user.headImgUrl" alt=""/>-->
+      <!--        </q-btn>-->
+      <!--      </div>-->
       <span class="absolute-bottom" v-if="!mini">
 
-        <q-btn flat class=" text-bold text-white" v-if="user === '' " @click="login">未登录</q-btn>
+<!--        <q-btn flat class=" text-bold text-white" v-if="user.nickName === '' " @click="login">未登录</q-btn>-->
 
-        <!--        <span v-if="user !== ''"  class=" text-bold text-white">舞动的代码</span>-->
-
+        <!--         <span v-else class=" text-bold text-white">{{ user.nickName }}</span>-->
+      <q-btn flat class=" text-bold text-white" @click="clickMini">致敬每个爱学习的你</q-btn>
       </span>
     </q-img>
     <!--滚动条-->
@@ -40,8 +41,7 @@
 // @ts-ignore
 import config from '@/db/json'
 
-import {Component, Prop, Vue, Watch} from 'vue-property-decorator';
-import {Route} from "vue-router";
+import {Component, Vue, Watch} from 'vue-property-decorator';
 import {ipcRenderer} from "electron";
 import {ChannelMessage, StatusCode} from "@/domain/Enums";
 
@@ -49,6 +49,7 @@ import {ChannelMessage, StatusCode} from "@/domain/Enums";
 import UserDaoImpl from '@/db/indexedDB/UserDao'
 import Api from "@/api";
 import {logger} from "@/config/Log4jsConfig";
+import {IUser, User} from "@/domain/User";
 
 
 let api = new Api();
@@ -83,7 +84,7 @@ export default class LayoutSide extends Vue {
 
   private key: string = 'any'
 
-  private user: any = "";
+  private user: IUser = new User();
 
   //deep:代表开启深度监控，意思是数据的任何一个属性发生变化，监视函数需要执行immediate:设置为 true ，代表代码一加载  立马执行监视函数
   @Watch('key', {immediate: false, deep: true})
@@ -97,39 +98,36 @@ export default class LayoutSide extends Vue {
     let $node = this.$refs.tree.getNodeByKey(value);
 
     if (($node.href !== undefined)) {
-      console.log('LayoutSide.vue',$node.href)
+      // console.log('LayoutSide.vue', $node.href)
       //文档类
       this.$router.push(`/content/${$node.href}`)
 
     } else if ($node.routerLink !== undefined) {
       // @ts-ignore
-      this.$store.commit('updateEpisodes',config.videos[ $node.name]);
-      if($node.routerLink==='/play-list' && Vue.prototype.$AppCofig.isStandalonePlayer){
+      this.$store.commit('updateEpisodes', config.videos[$node.name]);
+      if ($node.routerLink === '/play-list' && Vue.prototype.$AppCofig.isStandalonePlayer) {
         logger.info('LayoutSide.vue：独立播放')
         ipcRenderer.send(ChannelMessage.TO_MAIN_OPEN_VIDEO_WINDOWS);
         ipcRenderer.on(ChannelMessage.TO_RENDERER_OPEN_VIDEO_WINDOWS, (event, args) => {
           // @ts-ignore
-          ipcRenderer.send(ChannelMessage.TO_MAIN_VIDEO_DATA, config.videos[ $node.name]);
+          ipcRenderer.send(ChannelMessage.TO_MAIN_VIDEO_DATA, config.videos[$node.name]);
         })
-      }else if ($node.routerLink==='/play-list'){
+      } else if ($node.routerLink === '/play-list') {
         logger.info('LayoutSide.vue：/play-list')
         //组件类
         this.$router.push($node.routerLink + `?name=${$node.name}&time=${Date.now()}`);
 
-      }else {
+      } else {
         logger.info($node.routerLink)
         //组件类
         this.$router.push($node.routerLink + `?name=${$node.name}&time=${Date.now()}`);
       }
-
 
     } else {
       // @ts-ignore
       this.$refs.tree.setExpanded(value, !this.$refs.tree.isExpanded(value))
     }
   }
-
-
 
 
   private async mounted() {

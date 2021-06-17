@@ -118,6 +118,7 @@ export default class Content extends Vue {
     }
     this.data.length = 0;
     this.loading = true
+
     this.data = await ZfileApi.getName(row.path + row.name);
 
     this.loading = false
@@ -129,11 +130,12 @@ export default class Content extends Vue {
     this.data.length = 0;
     this.loading = true
 
-    let rows: Array<IZfile> = this.$store.getters.getCloudDiskPath;
-    //最后一个打开的文件夹+文件名字即为当前的文件夹
-    let url=rows[rows.length-1]===undefined?'':rows[rows.length-1].path+rows[rows.length-1].name;
+    // let rows: Array<IZfile> = this.$store.getters.getCloudDiskPath;
 
-    this.data = await ZfileApi.getName(url);
+    //最后一个打开的文件夹+文件名字即为当前的文件夹
+    // let url=rows[rows.length-1]===undefined?'':rows[rows.length-1].path+rows[rows.length-1].name;
+    // console.log(url)
+    this.data = await ZfileApi.getName();
     this.loading = false
   }
 

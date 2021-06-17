@@ -1,16 +1,19 @@
 {
   "resource-site": [
+
     {
+      "name": "蘑菇资源网",
+      "url": "http://www.moguzyw.com:520/moguzy.php/provide/vod/at/json/?"
+    },{
       "name": "天空资源",
       "url": "http://tiankongzy.cc/api.php/provide/vod/at/json/?"
+    },{
+      "url": "https://zy.kuluni.cn/api.php/provide/vod/at/json/?",
+      "name": "零度资源网"
     },
     {
       "name": "快播资源",
       "url": "http://www.kuaibozy.com/api.php/provide/vod/at/json/?"
-    },
-    {
-      "url": "https://kongbuya.com/api.php/provide/vod/?",
-      "name": "恐怖鸭"
     }
   ]
 }

@@ -5,7 +5,7 @@
       <!--logo处理 -->
       <div class="col-lg-1   gt-md position-relative">
         <img alt="logo" src='@/assets/logo.png' class="float-left" style="height: 25px"/>
-        <span class="text-weight-bold float-left" style="line-height: 25px ">码农宝典</span>
+        <span class="text-weight-bold float-left" style="line-height: 25px;">码农宝典</span>
       </div>
       <!--中间搜索-->
       <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 ">
@@ -23,9 +23,11 @@
                 rounded
                 dense
                 ref="searchInput"
-                :loading="loading"
+
                 @new-value="inputSearchValue"
+
             >
+<!--                :loading="loading"-->
               <template v-slot:selected class="text-no-wrap">
                 <span class="text-no-wrap">  {{ model !== null ? model.name : model }}</span>
               </template>
@@ -35,14 +37,17 @@
                 <q-item v-bind="scope.itemProps" v-on="scope.itemEvents" @click="selectEpisodes(scope.opt)">
                   <q-item-section>
                     <q-item-label caption>
-                      <span v-if="!isEnd">{{ scope.opt.name }}</span>
+
                       <div v-if="isEnd" v-html=" scope.opt.name "></div>
+                      <span v-else>{{ scope.opt.name }}</span>
 
                       <div class="float-right">
+                      来源：  {{ scope.opt.sourceName }}-
                         {{ scope.opt.type }}
                         <span v-if="scope.opt.lang!==null && scope.opt.lang!==''">
                           -{{ scope.opt.lang }}
                         </span>
+
                       </div>
 
                     </q-item-label>
@@ -51,7 +56,7 @@
               </template>
 
               <template v-slot:before>
-                <q-btn-dropdown :label="searchType" rounded flat>
+                <q-btn-dropdown :label="searchType" rounded flat  >
                   <q-list>
                     <q-item clickable v-close-popup @click="selectSearchType('文章')">
                       <q-item-section>
@@ -59,7 +64,7 @@
                       </q-item-section>
                     </q-item>
 
-                    <q-item clickable v-close-popup @click="selectSearchType('影视')">
+                    <q-item clickable v-close-popup  @click="selectSearchType('影视')" >
                       <q-item-section>
                         <q-item-label>影视</q-item-label>
                       </q-item-section>
@@ -106,9 +111,8 @@ import config from '@/db/json'
 import {ipcRenderer} from "electron";
 
 import {INavMenu} from '@/domain/Menu'
-import Episode, {IEpisodes} from "@/domain/Episode";
+import {IEpisodes} from "@/domain/Episode";
 import {ChannelMessage} from '@/domain/Enums'
-import {logger} from "@/config/Log4jsConfig";
 
 @Component({
   // 其他组件列表
@@ -132,7 +136,6 @@ export default class LayoutHeader extends Vue {
     })
     ipcRenderer.on('episodes-result', ((event, args) => {
       this_.isEnd = false;
-      this_.loading = true;
       switch (args.status) {
         case 'success':
           args.data.forEach((value: IEpisodes) => {
@@ -151,20 +154,19 @@ export default class LayoutHeader extends Vue {
           break;
         case 'end':
           console.log('搜索完成')
-          this_.loading = false;
           if (this_.options.length > 0) {
             return;
           }
-          let episode: Episode = new Episode();
-          episode.name = `很抱歉没有搜索结果，请尝试 <a class=" text-blue "   href="/#/vip"  >VIP解析</a>`;
-          this_.options.push(episode)
-          this_.isEnd = true;
-          if (this_.$refs.searchInput !== undefined) {
-            //@ts-ignore
-            this_.$refs.searchInput.refresh(-1)
-            //@ts-ignore
-            this_.$refs.searchInput.showPopup();
-          }
+          // let episode: Episode = new Episode();
+          // episode.name = `很抱歉没有搜索结果，请尝试 <a class=" text-blue "   href="/#/vip"  >VIP解析</a>`;
+          // this_.options.push(episode)
+          // this_.isEnd = true;
+          // if (this_.$refs.searchInput !== undefined) {
+          //   //@ts-ignore
+          //   this_.$refs.searchInput.refresh(-1)
+          //   //@ts-ignore
+          //   this_.$refs.searchInput.showPopup();
+          // }
 
       }
 

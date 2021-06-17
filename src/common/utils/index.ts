@@ -1,6 +1,5 @@
 import {ITreeNode, TreeNode} from "@/domain/Tree";
 import axios from "axios";
-import {logger} from "@/config/Log4jsConfig";
 
 const fs = require('fs')
 const path = require('path')
@@ -42,25 +41,38 @@ async function extraResult(title: string, size: number = 5) {
 }
 
 async function html2M3u8(sourceUrl: string) {
-    console.log('待解析的url:'+sourceUrl)
+    console.log('待解析的url:' + sourceUrl)
     let playUrl = `https://m3u8.tv.janan.net/json.php?url=${sourceUrl}`;
     let result = {
         type: 'mp4',
         url: ''
     };
-    await axios.get(playUrl).then(resp => {
-        console.log('m3u8.tv', resp.data);
-
+    await axios.get(playUrl).then(async resp => {
+        if (resp.data.code === "404") {
+            console.log('m3u8.tv', resp.data.code);
+            // await axios.get(`http://vip.coder163.com/m3u8url?source=${sourceUrl}`).then(resp => {
+            //     console.log('coder163', resp.data.url);
+            //     if (resp.data.url !== 'coder163') {
+            //         result.url = resp.data.url;
+            //     }
+            // })
+            result.url =''
+            result.type = 'customHls'
+            return
+        }
         result.url = resp.data.url;
-        result.type = resp.data.type;
-
+        result.type = (resp.data.type === 'hls'|| resp.data.type ==='m3u8') ? 'customHls' : resp.data.type;
     }).catch(err => {
         // 请求失败后的处理函数
         console.log('请求失败！！', err);
     });
 
+
+    console.log('解析完成', result.url);
+
     return result;
 }
+
 
 export {
     listFile,

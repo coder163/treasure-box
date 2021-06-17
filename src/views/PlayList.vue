@@ -108,25 +108,20 @@ export default class PlayList extends Vue {
   private currentEpisodes: ICurrentEpisodes = new CurrentEpisodes();
 
   @Watch('$route', {immediate: true, deep: true})
-  onRouteChange(newVal: Route, oldVal: Route) {
+  async onRouteChange(newVal: Route, oldVal: Route) {
     logger.info('PlayList.vue')
     //当前剧集
     this.video = this.$store.getters.getEpisodes;
     //路径切换，初始化第一集
-    this.videoInit();
-
+    await this.changeVideo(0, this.video.src[0]);
   }
 
   @Watch('plotTab', {immediate: true, deep: true})
   async onPlotTabChange(newVal: string, oldVal: string) {
-
     if (newVal === 'other' && this.extraList.length <= 0) {
-
       this.extraList = await extraResult(this.video.name)
       logger.info('plotTab:' + this.extraList)
     }
-
-
   }
 
   //钩子函数
@@ -140,19 +135,12 @@ export default class PlayList extends Vue {
         false
     );
 
-    //当前剧集
-    this.video = this.$store.getters.getEpisodes;
-    //初始化第一集
-    this.videoInit();
-
-    ipcRenderer.on(ChannelMessage.TO_RENDERER_VIDEO_DATA, (event, args) => {
-
-      $vue.isClose = true;
-
-      $vue.video = args;
-      $vue.videoInit();
-
+    ipcRenderer.on(ChannelMessage.TO_RENDERER_VIDEO_DATA, async (event, args) => {
       console.log('*************TO_RENDERER_VIDEO_DATA')
+      $vue.isClose = true;
+      $vue.video = args;
+      await $vue.changeVideo(0, this.video.src[0]);
+
     });
 
     ipcRenderer.on(ChannelMessage.TO_RENDERER_DESTROY_PLAYER, () => {
@@ -166,47 +154,34 @@ export default class PlayList extends Vue {
 
   }
 
-  videoInit() {
-    this.currentEpisodes.src = this.video.src[0];
-    this.currentEpisodes.index = 0;
-
-  }
 
   async changeVideo(index: number, src: string) {
+
+
     this.currentEpisodes.index = index;
-
-
+    this.currentEpisodes.src = src;
+    this.currentEpisodes.videoType = 'customHls'
+    //解析处理，获取对应的类型
     if (src.endsWith('html')) {
       let result = await html2M3u8(src);
       this.currentEpisodes.src = result.url;
       this.currentEpisodes.videoType = result.type;
-    } else {
-      this.currentEpisodes.src = src;
     }
+    console.log(this.currentEpisodes);
   }
 
   async nextVideo() {
+
     if (this.currentEpisodes.index + 1 >= this.video.src.length) {
       console.log('最后一集了');
       return
     }
-    this.currentEpisodes.index = this.currentEpisodes.index + 1;
-
-    let currentUrl = this.video.src[this.currentEpisodes.index]
-
-    if (currentUrl.endsWith('html')) {
-      let result = await html2M3u8(currentUrl);
-      this.currentEpisodes.src = result.url;
-      this.currentEpisodes.videoType = result.type;
-    } else {
-      this.currentEpisodes.src = currentUrl;
-    }
+    await this.changeVideo(this.currentEpisodes.index + 1, this.video.src[this.currentEpisodes.index])
     console.log('播放下一集');
-
   }
 
+
   play() {
-    console.log('可以播放了')
     if (this.video.source !== 'iframe') {
       // @ts-ignore
       this.$refs.cplayer.player.play()
