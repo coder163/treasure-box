@@ -14,6 +14,7 @@
           <player ref="cplayer"
                   :style="{'height':(isStandalonePlayer?winHeight:winHeight-135)+'px'}"
                   :videoSrc="currentEpisodes.src"
+                  :video-type="currentEpisodes.videoType"
                   @play="play()"
                   @ended="nextVideo"/>
         </div>
@@ -23,7 +24,7 @@
         <q-fab v-model="fabRight" flat color="primary" icon="menu" active-icon="menu"/>
       </div>
       <div :class="fabRight?'':'col-4'">
-        <div  v-if="!fabRight">
+        <div v-if="!fabRight">
           <div class="text-h6 q-pl-md">{{ video.name }}</div>
           <q-separator/>
           <q-card flat>
@@ -47,16 +48,16 @@
                     <q-btn flat
                            :color="(index)===(currentEpisodes.index)?'primary':'secondary'"
                            :label="index+1<10?'0'+(index+1):index+1"
-                           @click="changeVideo(index,src)"/>
+                           @click="changeVideo(src,index)"/>
                   </div>
                 </div>
               </q-tab-panel>
               <q-tab-panel name="other" :style="{'max-height':winHeight-380+'px'}">
 
-                <q-list  separator>
+                <q-list separator>
                   <q-item clickable v-ripple v-for="(item,index) in extraList">
                     <q-item-section @click="extraListClick(item.url)">
-                      <span style="display: inline-block" >{{item.website}}</span>
+                      <span style="display: inline-block">{{ item.website }}</span>
                     </q-item-section>
                   </q-item>
 
@@ -88,7 +89,7 @@ import {ipcRenderer, shell} from "electron";
 import {ChannelMessage} from "@/domain/Enums";
 import {logger} from "@/config/Log4jsConfig";
 
-import {extraResult} from '@/common/utils'
+import {extraResult, html2M3u8} from '@/common/utils'
 
 @Component({
   components: {Player},
@@ -112,7 +113,7 @@ export default class PlayList extends Vue {
     //当前剧集
     this.video = this.$store.getters.getEpisodes;
     //路径切换，初始化第一集
-    this.videoInit();
+    this.changeVideo(this.video.src[0]);
 
   }
 
@@ -142,52 +143,58 @@ export default class PlayList extends Vue {
     //当前剧集
     this.video = this.$store.getters.getEpisodes;
     //初始化第一集
-    this.videoInit();
 
+    this.changeVideo(this.video.src[0]);
     ipcRenderer.on(ChannelMessage.TO_RENDERER_VIDEO_DATA, (event, args) => {
 
       $vue.isClose = true;
 
       $vue.video = args;
-      $vue.videoInit();
+      this.changeVideo($vue.video.src[0]);
 
-      console.log('*************TO_RENDERER_VIDEO_DATA')
+      // console.log('*************TO_RENDERER_VIDEO_DATA')
     });
 
     ipcRenderer.on(ChannelMessage.TO_RENDERER_DESTROY_PLAYER, () => {
-      console.log('*************TO_RENDERER_DESTROY_PLAYER')
+      // console.log('*************TO_RENDERER_DESTROY_PLAYER')
       $vue.isClose = false;
     })
   }
 
-  extraListClick(href:string){
-  shell.openExternal(href);
-
-  }
-  videoInit() {
-    this.currentEpisodes.src = this.video.src[0];
-    this.currentEpisodes.index = 0;
+  extraListClick(href: string) {
+    shell.openExternal(href);
 
   }
 
-  changeVideo(index: number, src: string) {
+
+  async changeVideo( src: string,index: number = 0) {
+
     this.currentEpisodes.index = index;
+
+    if (src.endsWith('html')) {
+      //请求解析接口
+      let resp = await html2M3u8(src);
+      if (resp.type !== "hls") {
+        this.currentEpisodes.videoType = resp.type;
+      }
+      this.currentEpisodes.src = resp.url;
+
+      return;
+    }
     this.currentEpisodes.src = src;
   }
 
   nextVideo() {
     if (this.currentEpisodes.index + 1 >= this.video.src.length) {
-      console.log('最后一集了');
+
       return
     }
-    this.currentEpisodes.index = this.currentEpisodes.index + 1;
-    this.currentEpisodes.src = this.video.src[this.currentEpisodes.index];
-    console.log('播放下一集');
+    this.changeVideo( this.video.src[this.currentEpisodes.index],this.currentEpisodes.index + 1)
 
   }
 
   play() {
-    console.log('可以播放了')
+
     if (this.video.source !== 'iframe') {
       // @ts-ignore
       this.$refs.cplayer.player.play()

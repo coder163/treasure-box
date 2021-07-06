@@ -3,6 +3,8 @@
 @Prop设置为required: true会导致默认值失效
 
 ## 视频资源站
+http://www.209zy.net/
+
 这些采集到的都是HTML
 
 {
@@ -17,9 +19,19 @@
     "name": "蘑菇资源网",
     "url": "http://www.moguzyw.com:520/moguzy.php/provide/vod/at/json/?"
 }
+
+api.php/provide/vod/at/json/?ac=detail&wd=龙虎山张天师
+
 ## VIP解析
 
+https://m3u8.tv.janan.net/json.php?url=https://v.youku.com/v_show/id_XNDc2NDUxNzk4MA==.html
+
+http://api.sgjxc.vip/index/api?uid=100003&token=fffda385582fdd65733681e4db624ea4&ver=V20210501&url=https://v.youku.com/v_show/id_XNDc2NDUxNzk4MA==.html
+
+https://m3u8.apibdzy.com/api.php/provide/vod/?ac=list
+
 - https://660e.com/
+  
 - https://jx.ap2p.cn/?url=
 
 - https://www.8090g.cn/?url=

@@ -39,7 +39,8 @@
                       <div v-if="isEnd" v-html=" scope.opt.name "></div>
 
                       <div class="float-right">
-                        {{ scope.opt.type }}
+                        <span >{{ scope.opt.sourceName }}</span>
+<!--                        {{ scope.opt.type }}-->
                         <span v-if="scope.opt.lang!==null && scope.opt.lang!==''">
                           -{{ scope.opt.lang }}
                         </span>
@@ -179,7 +180,7 @@ export default class LayoutHeader extends Vue {
   @Watch('model', {immediate: true, deep: true})
   onModelChange(newVal: any, oldVal: any) {
     let epi = newVal === null ? oldVal : newVal;
-    // console.log(epi);
+    console.log(epi);
     if (epi === undefined) {
       return;
     }

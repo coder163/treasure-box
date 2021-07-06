@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>Delphi下深入Windows编程之内存映像</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    body { background-color: transparent !important; }
+
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <p>我的理想是能够写出一个可以永不封号的游戏外G！</p>
+<p>虽然这个理想在很多科班出身的程序员眼中会变的不值一提甚至会被抵制或者鄙视，诚然如果是用来牟利当然不能够被提倡，因为是违法的，但是如果仅仅是作为网络游戏安全来学习的话我个人认为是值得深入学习的，当然这里不讨论这个东西的好与坏，它就像一把双刃剑，主要还是看你用来做什么</p>
+<p>我中间学习过各种语言按键精灵(甚至不能称为语言)、易语言、VB等等，中间甚至有一段时间在学习C++因为听一些前辈说，要想写一个好的外G需要驱动而C++是编写驱动程序的首选，但是学习C++的成本太高了，这其中有很多原因，例如因为C++的版本问题，它需要兼容C这时候会出来很多奇奇怪怪的写法，甚至有的人在cpp文件中编写纯C的代码，这其实我转战Delphi的一部分原因，因为实在是学不会</p>
+<p>Delphi很多API函数都是对WindowsAPI的二次封装，这样做的好处就是我们在调用的时候变的更容易，此外就是界面的编写，MFC太古老了，而且写起来超级费劲，高手或者大佬会对界面嗤之以鼻，也会有人提出什么像QT之类的界面库，但是这些东西个人感觉远远没有VCL来的轻松愉悦，虽然在高手眼里界面不值得一提，但是我们这些小白或者菜鸟很多时候都是从界面编写开始产生兴趣，从而坚持下去的！</p>
+<p>现如今大部分的网络游戏都是运行在windows操作系统下的，有的朋友可能会说手游，这个不在今天的讨论范围之内，那么既然在做windows下的游戏，我们就要搞明白游戏是怎么跑起来的，其实所谓的游戏就是通过调用大量的windows系统函数，而这些windows的系统函数我们称它为windowsAPI，我们需要做的就是熟悉这些API函数，此外在windows中充斥的大量的消息，比如说键盘消息、鼠标消息等等，所以我们还需要搞明白windows的消息机制是什么套路</p>
+<p>很多时候我们需要两个进程之间进行数据通讯，例如我们把一个DLL文件附加(或者称为注入)一个进程中，而我们需要一个独立的程序来查看或者观测DLL宿主进程中的运行情况！有朋友可以会提出通过Socket实现，诚然这种方式肯定可以，但是在同一台电脑上创建服务器端和服务器端稍微显得的有点杀鸡用牛刀的感觉，那么有没有其他方式能够解决这个需求，这就是我们今天要说的内存映像，前段时间看了一本书名字是【Delphi下深入Windows编程】虽然这本书很老了，但是里面的思想或者说思路还是值得我们借鉴的，特整理如下</p>
+<p>在win32中，通过使用映像文件在进程间实现共享文件或共享内存数据块,如果利用相同的映像名字或文件句柄，则不同的进程可以通过一个指针来读写一个文件或同一个内存数据块，并把它当做该进程内地址空间的一部分</p>
+<p>在Windows9x/NT/200 向内存中装载文件时，使用了特殊的全局内存区。在该区域内，应用程序的虚拟内存地址和文件中的响应位置对应，由于所有进程恭喜了一个用于存储映像文件的全局内存区域，因而当两个进程装载相同模块(应用程序exe或dll文件)时，他们实际上是在内存中共享其执行代码</p>
+<p>内存映像文件可以映射一个文件、一个文件中的指定区域或者指定的内存块，其中的数据就可以用内存读写指令直接访问，而不比频繁的调用ReadFile或WriteFIle这样的I/O系统函数，从而提高了文件存取速度和效率</p>
+<h2 id="toc_0">示例代码<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h2>
+<p>发送数据端</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">unit</span> Unit1;
+
+<span class="hljs-keyword">interface</span>
+
+<span class="hljs-keyword">uses</span>
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+
+<span class="hljs-keyword">const</span>
+  WM_DATA = WM_USER + <span class="hljs-number">1024</span>;
+
+<span class="hljs-keyword">type</span>
+  PShareMem = ^TPShareMem;
+
+  TPShareMem = <span class="hljs-keyword">record</span>
+    <span class="hljs-comment">//共享数据</span>
+    Data: <span class="hljs-keyword">array</span>[<span class="hljs-number">0</span>..<span class="hljs-number">255</span>] <span class="hljs-keyword">of</span> Char;
+  <span class="hljs-keyword">end</span>;
+
+  <span class="hljs-title">TForm1</span> = <span class="hljs-keyword">class</span>(TForm)
+    btn1: TButton;
+    <span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">btn1Click</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+    <span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">FormDestroy</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+    <span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">FormCreate</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+  <span class="hljs-keyword">private</span>
+    <span class="hljs-comment">{ Private declarations }</span>
+  <span class="hljs-keyword">public</span>
+    <span class="hljs-comment">{ Public declarations }</span>
+  <span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">var</span>
+  Form1: TForm1;
+  PShare: PShareMem;
+
+<span class="hljs-keyword">implementation</span>
+
+<span class="hljs-meta">{$R *.dfm}</span>
+
+<span class="hljs-keyword">var</span>
+  HMapping: THandle;
+  HMapMutex: THandle;
+
+<span class="hljs-keyword">const</span>
+  MAP_FILE_SIZE = <span class="hljs-number">1000</span>;
+  REQUEST_TIME_OUT = <span class="hljs-number">1000</span>;
+
+  <span class="hljs-comment">{打开建立共享内存}</span>
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">OpenMap</span>;</span>
+<span class="hljs-keyword">begin</span>
+  <span class="hljs-comment">{创建一个映像文件}</span>
+  HMapping := CreateFileMapping($FFFFFFFF, <span class="hljs-keyword">nil</span>, PAGE_READWRITE, <span class="hljs-number">0</span>, SizeOf(TPShareMem), PChar(<span class="hljs-string">'MapName'</span>));
+
+  <span class="hljs-keyword">if</span> HMapping = <span class="hljs-number">0</span> <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">begin</span>
+    ShowMessage(<span class="hljs-string">'不能创建内存映像文件'</span>);
+    <span class="hljs-keyword">Exit</span>
+  <span class="hljs-keyword">end</span>;
+    <span class="hljs-comment">{将映像文件映射到进程的地址空间}</span>
+  PShare := PShareMem(MapViewOfFile(HMapping, FILE_MAP_ALL_ACCESS, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>));
+  <span class="hljs-keyword">if</span> PShare = <span class="hljs-keyword">nil</span> <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">begin</span>
+    CloseHandle(HMapping);
+    ShowMessage(<span class="hljs-string">'映像文件在内存中不存在'</span>);
+    Application.Terminate;
+    <span class="hljs-keyword">Exit</span>
+  <span class="hljs-keyword">end</span>;
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-comment">{关闭共享内存}</span>
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">CloseMap</span>;</span>
+<span class="hljs-keyword">begin</span>
+  <span class="hljs-keyword">if</span> PShare &lt;&gt; <span class="hljs-keyword">nil</span> <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">begin</span>
+  <span class="hljs-comment">{从进程的地址空间中撤销映像文件}</span>
+    UnmapViewOfFile(PShare);
+  <span class="hljs-keyword">end</span>;
+
+  <span class="hljs-keyword">if</span> HMapping &lt;&gt; <span class="hljs-number">0</span> <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">begin</span>
+    <span class="hljs-comment">{关闭映像文件}</span>
+    CloseHandle(HMapping);
+  <span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-comment">{建立互斥对象}</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">LockMap</span>:</span> Boolean;
+<span class="hljs-keyword">begin</span>
+  Result := True;
+  HMapMutex := CreateMutex(<span class="hljs-keyword">nil</span>, False, PChar(<span class="hljs-string">'My MUTEX NAME COES HERE'</span>));
+  <span class="hljs-keyword">if</span> HMapMutex = <span class="hljs-number">0</span> <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">begin</span>
+    ShowMessage(<span class="hljs-string">'不能创建互斥对象'</span>);
+    Result := False;
+  <span class="hljs-keyword">end</span>
+  <span class="hljs-keyword">else</span>
+  <span class="hljs-keyword">begin</span>
+    <span class="hljs-keyword">if</span> WaitForSingleObject(HMapMutex, REQUEST_TIME_OUT) = WAIT_FAILED <span class="hljs-keyword">then</span>
+    <span class="hljs-keyword">begin</span>
+      ShowMessage(<span class="hljs-string">'不能对互斥对象枷锁'</span>);
+      Result := False;
+    <span class="hljs-keyword">end</span>;
+  <span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">UnlockMAP</span><span class="hljs-params">()</span>;</span>
+<span class="hljs-keyword">begin</span>
+  <span class="hljs-comment">{释放、关闭互斥对象}</span>
+  ReleaseMutex(HMapMutex);
+  CloseHandle(HMapMutex);
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">TForm1</span>.<span class="hljs-title">btn1Click</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+<span class="hljs-keyword">var</span>
+  str: PChar;
+<span class="hljs-keyword">begin</span>
+  str := PChar(<span class="hljs-string">'简单的共享内存示例'</span>);
+  <span class="hljs-comment">//把数据拷贝到共享内存</span>
+  CopyMemory(@(pshare^.Data), str, Length(str)*SizeOf(Char));
+  <span class="hljs-comment">//发送消息表明有数据</span>
+  PostMessage(FindWindowW(<span class="hljs-keyword">nil</span>, <span class="hljs-string">'Form2'</span>), WM_DATA, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>);
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">TForm1</span>.<span class="hljs-title">FormCreate</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+<span class="hljs-keyword">begin</span>
+  OpenMap();
+  LockMap();
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">TForm1</span>.<span class="hljs-title">FormDestroy</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+<span class="hljs-keyword">begin</span>
+  UnlockMAP();
+  CloseMap();
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">end</span>.
+</code></pre>
+<p>接收数据端</p>
+<pre><code class="lang-Pascal hljs"><span class="hljs-keyword">unit</span> Unit2;
+
+<span class="hljs-keyword">interface</span>
+
+<span class="hljs-keyword">uses</span>
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+
+<span class="hljs-keyword">const</span>
+  <span class="hljs-comment">//自定义消息</span>
+  WM_DATA = WM_USER + <span class="hljs-number">1024</span>;
+
+<span class="hljs-keyword">type</span>
+  PShareMem = ^TPShareMem;
+
+  TPShareMem = <span class="hljs-keyword">record</span>
+    <span class="hljs-comment">//共享数据    注意要与发送数据段的定义相同</span>
+    Data: <span class="hljs-keyword">array</span>[<span class="hljs-number">0</span>..<span class="hljs-number">255</span>] <span class="hljs-keyword">of</span> Char;
+  <span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">type</span>
+  <span class="hljs-title">TForm2</span> = <span class="hljs-keyword">class</span>(TForm)
+    mmo1: TMemo;
+    btn1: TButton;
+    <span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">FormCreate</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+    <span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">btn1Click</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+  <span class="hljs-keyword">private</span>
+    <span class="hljs-comment">{ Private declarations }</span>
+  <span class="hljs-keyword">public</span>
+    <span class="hljs-comment">{ Public declarations }</span>
+    <span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">getShareInfo</span><span class="hljs-params">(<span class="hljs-keyword">var</span> Msg: TMessage)</span>;</span> <span class="hljs-keyword">message</span> WM_DATA;
+  <span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">var</span>
+  Form2: TForm2;
+  PShare: PShareMem;
+  MapHandle: THandle;
+
+<span class="hljs-keyword">implementation</span>
+
+<span class="hljs-meta">{$R *.dfm}</span>
+
+<span class="hljs-comment">{ TForm2 }</span>
+
+<span class="hljs-comment">{处理wm_data 自定义消息}</span>
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">TForm2</span>.<span class="hljs-title">btn1Click</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+<span class="hljs-keyword">begin</span>
+  CloseHandle(MapHandle);
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">TForm2</span>.<span class="hljs-title">FormCreate</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+<span class="hljs-keyword">begin</span>
+  MapHandle := OpenFileMapping(FILE_MAP_WRITE, False, PChar(<span class="hljs-string">'MapName'</span>));
+  <span class="hljs-keyword">if</span> MapHandle = <span class="hljs-number">0</span> <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">begin</span>
+    ShowMessage(<span class="hljs-string">'不能定位内存映像文件块'</span>);
+
+  <span class="hljs-keyword">end</span>;
+  <span class="hljs-comment">{将映像文件映射到进程的地址空间}</span>
+  PShare := PShareMem(MapViewOfFile(MapHandle, FILE_MAP_ALL_ACCESS, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>));
+  <span class="hljs-keyword">if</span> PShare = <span class="hljs-keyword">nil</span> <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">begin</span>
+    CloseHandle(MapHandle);
+    ShowMessage(<span class="hljs-string">'不能显示映像文件'</span>);
+    Application.Terminate;
+    <span class="hljs-keyword">Exit</span>;
+  <span class="hljs-keyword">end</span>;
+  FillChar(PShare^, SizeOf(TPShareMem), <span class="hljs-number">0</span>);
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">TForm2</span>.<span class="hljs-title">getShareInfo</span><span class="hljs-params">(<span class="hljs-keyword">var</span> Msg: TMessage)</span>;</span>
+<span class="hljs-keyword">begin</span>
+  <span class="hljs-comment">{如果是发送数据端发过来的参数是1}</span>
+  <span class="hljs-keyword">if</span> Msg.LParam = <span class="hljs-number">2</span> <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">begin</span>
+
+    <span class="hljs-comment">//显示共享内存中的数据</span>
+    mmo1.Text := PShare^.Data;
+  <span class="hljs-keyword">end</span>;
+  PShare := PShareMem(MapViewOfFile(MapHandle, FILE_MAP_ALL_ACCESS, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>));
+  <span class="hljs-keyword">if</span> PShare = <span class="hljs-keyword">nil</span> <span class="hljs-keyword">then</span>
+  <span class="hljs-keyword">begin</span>
+    CloseHandle(MapHandle);
+    ShowMessage(<span class="hljs-string">'不能显示映像文件'</span>);
+    Application.Terminate;
+    <span class="hljs-keyword">Exit</span>;
+  <span class="hljs-keyword">end</span>;
+  FillChar(PShare^, SizeOf(TPShareMem), <span class="hljs-number">0</span>);
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">end</span>.
+
+</code></pre>
+<p>【Delphi下深入Windows编程】一书中CopyMemory使用的长度是Length(str)，但是在Delphi增加了Unicode字符支持以后这样会导致长度计算不够，只发送半截字符</p>
+<p>参考万一的博客中用ByteLength函数解决，但是也有人说，ByteLength函数只能对Unicode字符串求字节长度，如果要对Ansi字符串进行计算，那么结果会是正确值的两倍</p>
+<blockquote>
+<p>最终解决方案：Length(str)*SizeOf(Char)</p>
+</blockquote>
+<blockquote>
+<p>吐槽一下，在网上查资料的时候发现很多人的博客Delphi代码都没有高亮，看起来乱七八糟的，难道他们不知道Delphi使用的语言叫Pascal吗</p>
+</blockquote>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

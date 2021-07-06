@@ -56,7 +56,6 @@ import {IZfile} from "@/domain/Zfile";
 import {Route} from "vue-router";
 import {ipcRenderer} from "electron";
 import DownDaoImpl from "@/db/indexedDB/DownDao";
-import {AppConfig} from "@/db/lowdb";
 
 
 @Component({
@@ -127,14 +126,20 @@ export default class Content extends Vue {
 
   async fileListInit() {
     this.data.length = 0;
-    this.loading = true
+    // this.loading = true
 
     let rows: Array<IZfile> = this.$store.getters.getCloudDiskPath;
     //最后一个打开的文件夹+文件名字即为当前的文件夹
     let url=rows[rows.length-1]===undefined?'':rows[rows.length-1].path+rows[rows.length-1].name;
 
-    this.data = await ZfileApi.getName(url);
+    if (url === "" || url===undefined) {
+
+      this.data = await ZfileApi.getName();
+    }else {
+      this.data = await ZfileApi.getName(url);
+    }
     this.loading = false
+
   }
 
   download(row: any) {

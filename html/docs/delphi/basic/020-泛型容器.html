@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>020-泛型容器</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    body { background-color: transparent !important; }
+
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <p>Unit that implements generic container classes to group data items in arrays, dictionaries, lists, stacks, queues, and more.</p>
+<blockquote>
+<p>译文：实现泛型容器类的单元，以在数组中对数据项进行分组，词典，列表，堆栈，队列等。</p>
+</blockquote>
+<p>起初在接触到Delphi的时候我以为没有这一部分内容，所有的都要自己实现，此处请原谅我的无知。。。。</p>
+<p>关于从那个版本开始支持泛型的，我在官方文档上没有找到对应的说明，也可能是我英语太菜，在官网迷路了。</p>
+<p>根据百度得来的结果2007的版本没有（真百度的）支持2009的版本（万一老师的博客上引用的也是这个版本）开始出现，也就是最早支持泛型容器的版本应该是Delphi2009</p>
+<p>聊泛型容器避不开的就是泛型的概念，之前看哔哩哔哩的网友留言从泛型一节就是开始懵逼了。其实大可不必，泛型可以理解为一个变量，它的值是一个具体的类型</p>
+<blockquote>
+<p>嗯，其实也可以把它当作孙大圣，它可以变成任何东西</p>
+</blockquote>
+<h2 id="toc_0">Collections单元<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h2>
+<p>在这个单元内一共定义了13个容器类，我们在其中甚至可以看到线程队列。那么问题来了，我们需要精通或者学习所有的类吗？答案是否定的</p>
+<p>容器类就我个人的理解其实一共有两大表现形式，一种是列表形式的像数组，而另一种形式则以 Key,Value 成对的形式。也就是说我们从种选择两个比较有代表性的类进行学习即可。下面是我选择的两个类</p>
+<ul>
+<li>
+<p>System.Generics.Collections.TList：很明显这个是列表</p>
+</li>
+<li>
+<p>System.Generics.Collections.TDictionary：Dictionary这个单词翻译成中文是字典的意思，不知道为啥这么起名，它是K,V形式的代表</p>
+</li>
+</ul>
+<blockquote>
+<p>注意：在单元内我们还可以看到相似的类例如 System.Generics.Collections.TObjectList<code>&lt;T&gt;</code> 和  System.Generics.Collections.TList<code>&lt;T&gt;</code>区别在于带有Object的类会在删除元素时释放对象，而没有带Object的不会释放</p>
+</blockquote>
+<h2 id="toc_1">API代码<a class="vnote-anchor" href="#toc_1" data-anchor-icon="#"></a></h2>
+<p>针对容器类学习的总原则是围绕增、删、改、查这几个核心的API功能即可，其他的就只能现用现查了，不知道别人写代码是什么习惯，我写代码的时候帮助文档基本上都是开着的。。。</p>
+<blockquote>
+<p>下面是针对两个容器类的代码实现</p>
+</blockquote>
+<h3 id="toc_2">TList<a class="vnote-anchor" href="#toc_2" data-anchor-icon="#"></a></h3>
+<blockquote>
+<p>实体类（TStudent）代码</p>
+</blockquote>
+<pre><code class="lang-delphi hljs"><span class="hljs-keyword">type</span>
+
+    TStudent = <span class="hljs-keyword">class</span>
+    <span class="hljs-keyword">private</span>
+        FName: <span class="hljs-keyword">string</span>;
+    <span class="hljs-keyword">public</span>
+        <span class="hljs-keyword">property</span> <span class="hljs-keyword">Name</span>: <span class="hljs-keyword">string</span> <span class="hljs-keyword">read</span> FName <span class="hljs-keyword">write</span> FName;
+        <span class="hljs-comment">// 构造方法</span>
+        <span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">Create</span>;</span> <span class="hljs-keyword">overload</span>;
+        <span class="hljs-comment">// 有参构造方法</span>
+        <span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">Create</span><span class="hljs-params">(FName: <span class="hljs-keyword">string</span>)</span>;</span> <span class="hljs-keyword">overload</span>;
+    <span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">TStudent</span>.<span class="hljs-title">Create</span>;</span>
+<span class="hljs-keyword">begin</span>
+
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">TStudent</span>.<span class="hljs-title">Create</span><span class="hljs-params">(FName: <span class="hljs-keyword">string</span>)</span>;</span>
+<span class="hljs-keyword">begin</span>
+    Self.FName := FName;
+<span class="hljs-keyword">end</span>;
+
+</code></pre>
+<blockquote>
+<p>操作类（即增、删、改、查），我没有使用内联，几次想用都删了</p>
+</blockquote>
+<pre><code class="lang-delphi hljs"><span class="hljs-keyword">uses</span>
+    System.Generics.Collections, System.SysUtils;
+
+<span class="hljs-keyword">var</span>
+    <span class="hljs-comment">// 文档上的定义是TList&lt;T&gt;，而我们的定义尖括号中的是TStudent,这就是泛型的用法</span>
+    StudentList: TList&lt;TStudent&gt;;
+    <span class="hljs-comment">// 循环中使用获取TList成员</span>
+    Stu: TStudent;
+
+<span class="hljs-keyword">begin</span>
+    <span class="hljs-comment">// 初始化学生列表</span>
+    StudentList := TList&lt;TStudent&gt;.Create;
+    StudentList.add(TStudent.Create(<span class="hljs-string">'小强'</span>));
+    StudentList.add(TStudent.Create(<span class="hljs-string">'萧蔷'</span>));
+    StudentList.add(TStudent.Create(<span class="hljs-string">'小黑'</span>));
+    StudentList.add(TStudent.Create(<span class="hljs-string">'小白'</span>));
+    StudentList.add(TStudent.Create(<span class="hljs-string">'小黄'</span>));
+
+    <span class="hljs-comment">// 开始之前输出一次</span>
+    <span class="hljs-keyword">for</span> Stu <span class="hljs-keyword">in</span> StudentList <span class="hljs-keyword">do</span> <span class="hljs-keyword">begin</span>
+
+        Writeln(<span class="hljs-string">'学生信息是：'</span> + Stu.<span class="hljs-keyword">Name</span>);
+    <span class="hljs-keyword">end</span>;
+
+    <span class="hljs-comment">// 泛型容器自带的删除函数，偷个懒</span>
+    StudentList.Delete(<span class="hljs-number">0</span>);
+
+    <span class="hljs-comment">// 修改，查询到指定的学生，修改其值即可</span>
+    StudentList.Items[<span class="hljs-number">0</span>].<span class="hljs-keyword">Name</span> := <span class="hljs-string">'小白'</span>;
+
+
+    <span class="hljs-comment">// 查询，其实和数组的操作没有太大区别</span>
+    <span class="hljs-keyword">for</span> Stu <span class="hljs-keyword">in</span> StudentList <span class="hljs-keyword">do</span> <span class="hljs-keyword">begin</span>
+
+        Writeln(<span class="hljs-string">'学生信息是：'</span> + Stu.<span class="hljs-keyword">Name</span>);
+    <span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">end</span>.
+</code></pre>
+<h3 id="toc_3">TDictionary<a class="vnote-anchor" href="#toc_3" data-anchor-icon="#"></a></h3>
+<p>此类容器的特点是 key 唯一，并且几乎所有的操作都是根据 key 来的</p>
+<blockquote>
+<p>改造下实体类（TStudent）增加一个属性，代码如下</p>
+</blockquote>
+<pre><code class="lang-delphi hljs"><span class="hljs-keyword">type</span>
+
+    TStudent = <span class="hljs-keyword">class</span>
+    <span class="hljs-keyword">private</span>
+        FName: <span class="hljs-keyword">string</span>;
+        FId: <span class="hljs-keyword">string</span>;
+    <span class="hljs-keyword">public</span>
+        <span class="hljs-keyword">property</span> <span class="hljs-keyword">Name</span>: <span class="hljs-keyword">string</span> <span class="hljs-keyword">read</span> FName <span class="hljs-keyword">write</span> FName;
+        <span class="hljs-keyword">property</span> Id: <span class="hljs-keyword">string</span> <span class="hljs-keyword">read</span> FId <span class="hljs-keyword">write</span> FId;
+
+        <span class="hljs-comment">// 构造方法</span>
+        <span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">Create</span>;</span> <span class="hljs-keyword">overload</span>;
+        <span class="hljs-comment">// 有参构造方法</span>
+        <span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">Create</span><span class="hljs-params">(FName: <span class="hljs-keyword">string</span>; FId: <span class="hljs-keyword">string</span>)</span>;</span> <span class="hljs-keyword">overload</span>;
+    <span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">TStudent</span>.<span class="hljs-title">Create</span>;</span>
+<span class="hljs-keyword">begin</span>
+
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">TStudent</span>.<span class="hljs-title">Create</span><span class="hljs-params">(FName: <span class="hljs-keyword">string</span>; FId: <span class="hljs-keyword">string</span>)</span>;</span>
+<span class="hljs-keyword">begin</span>
+    Self.FName := FName;
+<span class="hljs-keyword">end</span>;
+</code></pre>
+<blockquote>
+<p>操作类（即增、删、改、查）</p>
+</blockquote>
+<pre><code class="lang-delphi hljs">
+<span class="hljs-comment">{注意单元的引用}</span>
+<span class="hljs-keyword">uses</span>
+    System.Generics.Collections, System.SysUtils;
+
+<span class="hljs-keyword">var</span>
+    <span class="hljs-comment">// 文档上的定义是TList&lt;T&gt;，而我们的定义尖括号中的是TStudent,这就是泛型的用法</span>
+    StudentMap: TDictionary&lt;<span class="hljs-keyword">string</span>, TStudent&gt;;
+    <span class="hljs-comment">// 循环中使用获取TList成员</span>
+    Key: <span class="hljs-keyword">string</span>;
+    Student,Stu: TStudent;
+
+<span class="hljs-keyword">begin</span>
+    <span class="hljs-comment">// 初始化学生列表</span>
+    StudentMap := TDictionary&lt;<span class="hljs-keyword">string</span>, TStudent&gt;.Create;
+    <span class="hljs-comment">// 此处的添加其实并不是太好，根据文档描述，当我们添加的元素的key已经存在会抛出异常</span>
+    <span class="hljs-comment">// 建议使用AddOrSetValue</span>
+    StudentMap.add(<span class="hljs-string">'1001'</span>, TStudent.Create(<span class="hljs-string">'1002'</span>, <span class="hljs-string">'小强'</span>));
+    StudentMap.add(<span class="hljs-string">'1002'</span>, TStudent.Create(<span class="hljs-string">'1001'</span>, <span class="hljs-string">'萧蔷'</span>));
+    StudentMap.add(<span class="hljs-string">'1003'</span>, TStudent.Create(<span class="hljs-string">'1003'</span>, <span class="hljs-string">'小黑'</span>));
+    StudentMap.add(<span class="hljs-string">'1004'</span>, TStudent.Create(<span class="hljs-string">'1004'</span>, <span class="hljs-string">'小白'</span>));
+    StudentMap.add(<span class="hljs-string">'1005'</span>, TStudent.Create(<span class="hljs-string">'1004'</span>, <span class="hljs-string">'小黄'</span>));
+
+    <span class="hljs-comment">// 注意此处获取是key,也就是1001 1002这些东西</span>
+    <span class="hljs-keyword">for</span> Key <span class="hljs-keyword">in</span> StudentMap.Keys <span class="hljs-keyword">do</span> <span class="hljs-keyword">begin</span>
+
+        <span class="hljs-comment">// 获取到key之后，再根据key获取对应value也就是学生对象</span>
+        <span class="hljs-comment">// 这里的获取方式有点儿任性居然要的是一个指针，而不是直接返回</span>
+        StudentMap.TryGetValue(Key, Student);
+        <span class="hljs-comment">// 最好判断一下，否则容易出现空指针</span>
+        <span class="hljs-keyword">if</span> (Student &lt;&gt; <span class="hljs-keyword">nil</span>) <span class="hljs-keyword">then</span>
+            Writeln(<span class="hljs-string">'学生信息是：'</span> + Student.<span class="hljs-keyword">Name</span>)
+    <span class="hljs-keyword">end</span>;
+
+    <span class="hljs-comment">// 删除元素，无论什么操作都是通过key去操作，因为key是不可以重复的</span>
+    StudentMap.Remove(<span class="hljs-string">'1005'</span>);
+
+    <span class="hljs-comment">// 修改，没有就添加，有就更新</span>
+    StudentMap.AddOrSetValue(<span class="hljs-string">'1004'</span>, TStudent.Create(<span class="hljs-string">'1004'</span>, <span class="hljs-string">'小黄'</span>));
+
+    <span class="hljs-comment">// 直接获取value</span>
+    <span class="hljs-keyword">for</span> Stu <span class="hljs-keyword">in</span> StudentMap.values <span class="hljs-keyword">do</span> <span class="hljs-keyword">begin</span>
+        <span class="hljs-comment">// 最好判断一下，否则容易出现空指针</span>
+        <span class="hljs-keyword">if</span> (Stu &lt;&gt; <span class="hljs-keyword">nil</span>) <span class="hljs-keyword">then</span>
+            Writeln(<span class="hljs-string">'学生信息是：'</span> + Student.<span class="hljs-keyword">Name</span>)
+
+    <span class="hljs-keyword">end</span>;
+<span class="hljs-keyword">end</span>.
+</code></pre>
+<h2 id="toc_4">参考资料<a class="vnote-anchor" href="#toc_4" data-anchor-icon="#"></a></h2>
+<blockquote>
+<ul>
+<li>万一的博客：<a href="https://www.cnblogs.com/del/category/113556.html">https://www.cnblogs.com/del/category/113556.html</a></li>
+</ul>
+</blockquote>
+<blockquote>
+<ul>
+<li>官方文档：<a href="http://docwiki.embarcadero.com/Libraries/Sydney/en/System.Generics.Collections">http://docwiki.embarcadero.com/Libraries/Sydney/en/System.Generics.Collections</a></li>
+</ul>
+</blockquote>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

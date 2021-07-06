@@ -40,8 +40,29 @@ async function extraResult(title: string, size: number = 5) {
     return sources;
 }
 
+async function html2M3u8(sourceUrl: string) {
+    console.log('待解析的url:' + sourceUrl)
+    // let playUrl = `https://json.m3u8.tv:7788/json.php?url=${sourceUrl}`;
+    let playUrl = `https://json.m3u8.tv:7788/json.php?url=${sourceUrl}`;
+    let result = {
+        type: 'mp4',
+        url: ''
+    };
+    await axios.get(playUrl).then(async resp => {
+        console.log('解析完成', resp.data);
+        result.url = resp.data.url;
+        result.type = (resp.data.type === 'hls' || resp.data.type === 'm3u8') ? 'customHls' : resp.data.type;
+    }).catch(err => {
+        // 请求失败后的处理函数
+        console.log('请求失败！！', err);
+    });
+    console.log('最后的地址：', result);
+    return result;
+}
+
+
 export {
     listFile,
-
+    html2M3u8,
     extraResult
 };

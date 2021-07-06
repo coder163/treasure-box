@@ -5,46 +5,72 @@ import {logger} from "@/config/Log4jsConfig";
 import Episodes, {IEpisodes} from "@/domain/Episode";
 // @ts-ignore
 import shortId from "shortid";
+
 const urlencode = require('urlencode');
+
+/**
+ * 解析src
+ * @param src 可以是m3u8的连接，也可以是html的原播放页
+ */
+function analysisSrc(src:string):any{
+
+
+    if (src.endsWith("m3u8") || src.endsWith("m3u8#")) {
+        return src.match(/https.*?\/index.m3u8/gi)
+    }
+
+    if (src.endsWith("html")) {
+
+        ///https?:\/\/[a-zA-Z0-9\.\?/%-_]*/gm
+        return   src.match(/https?:\/\/[a-zA-Z0-9\.\?/%-_]*/gm);
+    }
+}
 
 ipcMain.on("search-video", function (response, name) {
     let currentWin: Electron.BrowserWindow | null = BrowserWindow.getFocusedWindow();
     let resources = VideoApiConfig.get("resource-site").value();
     let episodesList: Array<IEpisodes> = new Array<IEpisodes>();
+
     axios.all(resources.map(function (value: any) {
             let url = `${value.url}ac=detail&wd=${urlencode(name)}`;
-            console.log(url, value.name)
-            return axios.get(url).then(function (resp) {
 
-                //Contents of collection 'episodesList' are updated, but never queried
+            return axios.get(url).then(function (resp) {
+                console.log(value.name, value.url)
                 if (resp.data.list.length > 0) {
                     for (let i = 0; i < resp.data.list.length; i++) {
-                        let {vod_play_note, vod_play_url, vod_time, vod_content, type_name, vod_lang, vod_name} = resp.data.list[i];
+                        let {vod_play_from, vod_play_note, vod_play_url, vod_time, vod_content, type_name, vod_lang, vod_name} = resp.data.list[i];
                         let episodes: Episodes = new Episodes();
+                        episodes.sourceName = value.name;
                         //剧情描述
-                        episodes.id=shortId.generate()
+                        episodes.id = shortId.generate()
                         episodes.desc = vod_content;
                         episodes.name = vod_name;
                         episodes.type = type_name;
                         episodes.lang = vod_lang
                         episodes.time = vod_time;
-                        episodes.source='m3u8'
+                        episodes.source = 'm3u8'
                         //按照指定的分隔符进行拆分,该数组内容的形式$https://vod.bunediy.com/share/zOBt4pGh3U47vXFe#$$$超清$https://vod.bunediy.com/20201119/vVYz7uzh/index.m3u8#
-                        let urls = vod_play_url.split(vod_play_note)
-                      
-                        urls.map((item: string) => {
-                            if (item.endsWith("m3u8") || item.endsWith("m3u8#")) {
-                                let list = item.match(/https.*?\/index.m3u8/gi)
-                                if (list !== null) {
-                                    episodes.src = list;
+                        let urls = vod_play_url;
+                        if ('' !== vod_play_note) {
+                            //播放平台 $$$
+                            let fromSource = vod_play_from.split('$$$');
+                            console.log('播放平台：', vod_play_note)
+                            //具体的剧集列表
+                            let sourceList = vod_play_url.split('$$$')[0];
+                            //选出集数最多的播放平台
+                            for (let i = 0; i < fromSource.length; i++) {
+                                urls = vod_play_url.split('$$$')[i];
+                                if (sourceList.length < urls.length) {
+                                    sourceList = urls;
                                 }
-
                             }
-                        })
-                        // console.log(episodes.src)
+                            urls = sourceList;
+                        }
+                        episodes.src = analysisSrc(urls);
+                        console.log(episodes.name, episodes.src)
                         episodesList.push(episodes);
                     }
-                   
+
                 }
 
                 if (currentWin !== null) {
@@ -53,7 +79,7 @@ ipcMain.on("search-video", function (response, name) {
                         status: 'success',
                         data: episodesList
                     }
-                  
+
                     currentWin.webContents.send('episodes-result', result);
                 }
 
@@ -72,9 +98,11 @@ ipcMain.on("search-video", function (response, name) {
 
         }
     )).then(
-        axios.spread((res1, res2) => {
+
+        axios.spread((res1) => {
                 // 两个请求现在都执行完成
-                logger.info("请求全部完成*********************************")
+            // @ts-ignore
+            logger.info("请求全部完成*********************************",res1.data)
                 let result = {
                     //成功
                     status: 'end',

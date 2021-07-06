@@ -65,7 +65,7 @@ export default {
         url: $vue.videoSrc,
         // url: 'https://helloblack2017.github.io/resources/video/火星人来过.mp4',
         //   pic: background,  图片地址。img4
-        type: 'customHls',//可选值:'customHls' 'auto', 'hls', 'flv', 'dash', 'webtorrent', 'normal' 或其他自定义类型
+        type: $vue.videoType,//可选值:'customHls' 'auto', 'hls', 'flv', 'dash', 'webtorrent', 'normal' 或其他自定义类型
         customType: {
           // @ts-ignore
           'customHls': function (video, player) {

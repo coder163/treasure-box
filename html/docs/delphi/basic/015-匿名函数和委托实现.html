@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>015-匿名函数和委托实现</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    body { background-color: transparent !important; }
+
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <h2 id="toc_0">匿名函数<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h2>
+<p>匿名函数即没有函数名称的函数，个人的理解匿名函数在一定程度上提升代码的复用性</p>
+<p>具体的使用方式如下（DelphiXE10.x环境）</p>
+<pre><code class="lang-delphi hljs">
+<span class="hljs-keyword">type</span>
+    <span class="hljs-comment">{用 reference 定义匿名方法类型}</span>
+    TFun = reference <span class="hljs-keyword">to</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(num: Integer)</span>:</span> Integer;
+
+    <span class="hljs-comment">// 该函数整体被作为一个参数传递</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo1</span><span class="hljs-params">(Age: Integer)</span>:</span> Integer;
+<span class="hljs-keyword">begin</span>
+
+    Writeln(Age);
+
+    Result := Age;
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-comment">// 把函数当做一个对象进行传递</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Demo2</span><span class="hljs-params">(num1, num2: Integer; fun: TFun)</span>:</span> Integer;
+<span class="hljs-keyword">begin</span>
+
+    Result := fun(num1 + num2);
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">var</span>
+    NumResult
+<span class="hljs-keyword">begin</span>
+
+    NumResult := Demo2(<span class="hljs-number">10</span>, <span class="hljs-number">20</span>,
+        <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(num: Integer)</span>:</span> Integer
+        <span class="hljs-keyword">begin</span>
+            Result := num;
+        <span class="hljs-keyword">end</span>);
+
+    Writeln(NumResult);
+    <span class="hljs-comment">//第二种方式</span>
+    Writeln(Demo2(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, Demo1));
+    Readln;
+
+<span class="hljs-keyword">end</span>.
+</code></pre>
+<h2 id="toc_1">委托实现<a class="vnote-anchor" href="#toc_1" data-anchor-icon="#"></a></h2>
+<p>委托其实不过是函数指针类型而已，在.NET因为没有了指针，就有了委托的概念.。在Delphi和C++中其实就是函数指针类型. Delphi还可以支持成员函数指针类型</p>
+<p>下面的代码实现了接口的委托实现，如果你玩的是函数，那么理论上是相通的，只需要改变对应的类型即可</p>
+<pre><code class="lang-Delphi hljs"><span class="hljs-keyword">type</span>
+    <span class="hljs-comment">{ 吃东西的接口 }</span>
+    IEat = <span class="hljs-keyword">interface</span>
+        <span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">EatIng</span><span class="hljs-params">()</span>;</span>
+    <span class="hljs-keyword">end</span>;
+    
+    <span class="hljs-comment">{狗是需要实现接口，重写其中的抽象函数}</span>
+    <span class="hljs-title">TDog</span> = <span class="hljs-keyword">class</span>(TInterfacedObject, IEat)
+        <span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">EatIng</span><span class="hljs-params">()</span>;</span>
+    <span class="hljs-keyword">end</span>;
+
+    <span class="hljs-comment">{ 猫类本来应该实现IEat接口中的抽象方法的，但是它没有实现而是委托给了狗实现 }</span>
+    <span class="hljs-title">TCat</span> = <span class="hljs-keyword">class</span>(TInterfacedObject, IEat)
+
+    <span class="hljs-keyword">private</span>
+        FEat: IEat;
+    <span class="hljs-keyword">public</span>
+        <span class="hljs-comment">{ 这一句是核心，即通过这种方式显示的委托 }</span>
+        <span class="hljs-keyword">property</span> Eat: IEat <span class="hljs-keyword">read</span> FEat <span class="hljs-keyword">write</span> FEat <span class="hljs-keyword">implements</span> IEat;
+    <span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">TDog</span>.<span class="hljs-title">EatIng</span>;</span>
+<span class="hljs-keyword">begin</span>
+    Writeln(<span class="hljs-string">'狗吃东西'</span>);
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">var</span>
+    Cat: TCat;
+
+<span class="hljs-keyword">begin</span>
+    Cat := TCat.Create();
+
+    <span class="hljs-comment">//这里必须要给 Eat 字段赋值否则就是空值</span>
+    <span class="hljs-comment">//同时可以理解为真正实现吃东西的那条狗</span>
+    Cat.Eat := TDog.Create();
+
+    Cat.Eat.EatIng;
+    Readln;
+
+<span class="hljs-keyword">end</span>.
+</code></pre>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>深入Windows编程之钩子原理一</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    body { background-color: transparent !important; }
+
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <p><strong>我的理想是能够写出一个可以永不封号的游戏外G</strong></p>
+<p>嗯，所以需要学习Windows下编程，最近好不容易有一点点空余时间，抓紧时间读书【Delphi下深入Windows编程】，人丑就该多读书</p>
+<h4 id="toc_0">钩子原理<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h4>
+<blockquote>
+<p>定义：</p>
+</blockquote>
+<p>消息钩子是创建钩子时在Windows的消息处理链中插入一个函数，一旦钩子安装成功，就可以监控消息，那么向所有应用程序发送的消息都会先经过此函数</p>
+<blockquote>
+<p>安装钩子之前的Windows消息执行流程</p>
+</blockquote>
+<p><img src="_v_images/20191120170249582_10281.png" alt="1" class="view-image"></p>
+<blockquote>
+<p>安装钩子之后</p>
+</blockquote>
+<p><img src="_v_images/20191120170312531_13687.png" alt="2" class="view-image"></p>
+<blockquote>
+<p>注意</p>
+</blockquote>
+<p><strong>系统钩子程序必须是动态链接库DLL</strong>，不能在可执行文件EXE中完成，这是因为可执行文件在其他进程(另一个可执行文件)中是不可见的，无法实现钩子功能，然而DLL却可以映射到其他进程的空间中去</p>
+<blockquote>
+<p>两个问题：钩子的分类、钩子安装的顺序</p>
+</blockquote>
+<ul>
+<li>
+<p>钩子有多种，分别用于捕获某一特定类型或某一范围的消息，例如键盘消息、鼠标消息等</p>
+</li>
+<li>
+<p>对于每种类型的钩子由系统来维护一个钩子链，最近安装的钩子放在链的开始，而最先安装的钩子放在最后，也就是后加入的钩子先获得控制权</p>
+</li>
+</ul>
+<h4 id="toc_1">挂钩<a class="vnote-anchor" href="#toc_1" data-anchor-icon="#"></a></h4>
+<p>这一步其实很容易实现，我们需要使用Windows API 函数，只是这个函数的参数有点多，但是万幸不需要我每一个都构造出来，挂钩函数SetWindowsHookEx 将安装应用程序定义的钩子过程到钩子链中</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SetWindowsHookEx</span><span class="hljs-params">(idHook: Integer; lpfn: TFNHookProc; hmod: HINST; dwThreadId: DWORD)</span>:</span> HHOOK; <span class="hljs-keyword">stdcall</span>;
+</code></pre>
+<blockquote>
+<p>参数说明</p>
+</blockquote>
+<ul>
+<li>idHook：指定安装钩子的类型，这是最麻烦的一个参数，其取值如下</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">取值</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">WH_CALLWNDPROC</td>
+<td style="text-align:left">窗口函数过滤，窗口函数收到消息时，调用这个挂钩函数</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_CALLWNDPROCRET</td>
+<td style="text-align:left">建立用于监视窗口函数处理过的消息的挂钩过程</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_CBT</td>
+<td style="text-align:left">处理大多数窗口管理，鼠标键盘消息前会调用这个挂钩函数</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_DEBUG</td>
+<td style="text-align:left">窗口函数过滤，窗口函数收到消息时，调用这个挂钩函数</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_GETMESSAGE</td>
+<td style="text-align:left">消息过滤器，在应用程序队列消息队列中检索到消息时调用这个挂钩函数</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_HARDWARE</td>
+<td style="text-align:left">硬件消息过滤器，在应用程序消息队列中检索到硬件消息时调用这个函数</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_JOURNALPLAYBACK</td>
+<td style="text-align:left">在系统消息队列检索到消息时调用这个挂钩函数，用于在消息队列中插入一个系统事件</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_JOURNALRECORD</td>
+<td style="text-align:left">一个事件从系统队列中被请求时调用这个挂钩函数，用于记录系统事件</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_MOUSE</td>
+<td style="text-align:left">鼠标过滤器，从应用程序消息队列中检索到WH_KEYDOWN和WH_KEYUO时调用这个函数</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_KEYBOARD_LL</td>
+<td style="text-align:left">一个低层的键盘过滤器</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_MOUSE_LL</td>
+<td style="text-align:left">一个低层的鼠标过滤器</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_MSGFILTER</td>
+<td style="text-align:left">特殊消息过滤器，应用程序的对话框，菜单，信息框处理一个消息时调用这个挂钩函数</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_SHELL</td>
+<td style="text-align:left">外壳应用过滤器，窗口被创建和释放或者外壳过程需要激活时，调用这个挂钩函数</td>
+</tr>
+<tr>
+<td style="text-align:left">WH_SYSMSGFILTER</td>
+<td style="text-align:left">是一个系统范围的钩子，发生在一个对话框、消息框或菜单已接收了一个消息之后，但是该消息真正被处理之前</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p>lpfn ：指定钩子函数的地址，与钩子函数类型有关</p>
+</li>
+<li>
+<p>hMod： 指定毁掉函数的实例，在Delphi中一般设置为HInstance</p>
+</li>
+<li>
+<p>dwThreadId：参数指定了线程ID。钩子函数能够监视由dwThreadId参数定义的线程，或者系统中所有的线程。使用它来过滤并在系统或窗口处理之前处理特定的消息。如果该值为零，表示这个挂钩可以在所有的线程内调用</p>
+</li>
+</ul>
+<h4 id="toc_2">钩子链<a class="vnote-anchor" href="#toc_2" data-anchor-icon="#"></a></h4>
+<p>得到控制权的钩子在得到控制权之后，如果想要改消息继续传递给下一个钩子，那么它必须调用CallNextHookEx函数来传递它，否则建议直接返回0</p>
+<p>挂钩函数的参数都与挂钩函数的类型有关，但是都有一个相同点：nCode 参数的值可以用来调用挂钩链中的下一个挂钩函数，调用下一个挂钩函数要用到 CallNextHookEx 函数，其声明如下：</p>
+<pre><code class="lang-pascal hljs">Result:=CallNextHookEx(hhk:HHook;nCode:Integer;wParam:WPARAM;lParam:LPARAM);
+</code></pre>
+<blockquote>
+<p>参数说明：</p>
+</blockquote>
+<ul>
+<li>
+<p>hhk 是当前钩子句柄，由建立钩子时SetWindowsHookEx的返回值</p>
+</li>
+<li>
+<p>nCode 用于调用下一个挂钩函数</p>
+</li>
+<li>
+<p>wParam、lParam都是挂钩类型和挂钩函数有关的参数</p>
+</li>
+</ul>
+<h4 id="toc_3">摘钩<a class="vnote-anchor" href="#toc_3" data-anchor-icon="#"></a></h4>
+<p>如果要撤销当前已安装的钩子，则要调用另外一个函数 UnhookWindowsHookEx。函数声明如下：</p>
+<pre><code class="lang-pascal hljs">UnhookWindowsHookEx(
+    hhk:HHook<span class="hljs-comment">{待撤销的钩子句柄}</span>
+):BOOL;
+</code></pre>
+<blockquote>
+<p>如果主程序调用 UnhookWindowsHookEx 函数把DLL 注入其他进程后，在不同的操作系统下有可能并不会立即退出某些不活动的进程，因此，建议使用SendMessage 向所有进程广播一条消息，从而使DLL完全退出所有的进程，如：SendMessage(HWND,BROADCAST,WM_SETINGCNANGE,0,0)</p>
+</blockquote>
+<blockquote>
+<p><strong>此次分享没有代码实现，所有的技术都是先有理论，后有技术实现，代码实现后续篇章补上</strong></p>
+</blockquote>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

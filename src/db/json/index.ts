@@ -33,15 +33,20 @@ export default {
             menuList: [
                 {
                     id: shortId.generate(),
-                    bel: 'Delphi文档',
+                    bel: 'Delphi篇',
                     //此字段为路由跳转时使用的动态名称
                     name: 'delphi',
                 },
                 {
                     id: shortId.generate(),
-                    bel: 'Java文档',
+                    bel: 'Java篇',
                     name: 'java',
                 },
+                {
+                    id: shortId.generate(),
+                    bel: '番外篇',
+                    name: 'fanwai',
+                }
 
             ]
         }, {
@@ -81,6 +86,13 @@ export default {
 
     ],
     docs: {
+        fanwai: [
+            {
+                label: '公众号文章',
+                children: listFile(`./html/docs/fanwai/articles`, [])
+            }
+
+        ],
         java: [
             {
                 label: '基础语法',
@@ -90,13 +102,17 @@ export default {
         ],
         delphi: [
             {
-                label: 'Delphi百集',
+                label: '基础编程',
                 children: listFile(`./html/docs/delphi/basic`, [])
 
             },
             {
-                label: '官方案例',
-                children: listFile(`./html/docs/delphi/basic`, [])
+                label: '设计模式',
+                children: listFile(`./html/docs/delphi/design`, [])
+            },
+            {
+                label: '附录',
+                children: listFile(`./html/docs/delphi/appendix`, [])
             }
         ],
         cloudDisk: [

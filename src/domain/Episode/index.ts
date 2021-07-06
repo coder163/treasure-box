@@ -19,19 +19,22 @@ export interface IEpisodes {
     lang:string;
     //时间
     time: string;
+    //采集站名称
+    sourceName:string
 
 }
 
 export interface ICurrentEpisodes {
     //当前集数
     index: number,
-    src:string
+    src:string,
+    videoType:string
 }
 export class CurrentEpisodes implements ICurrentEpisodes{
     index: number=0;
     src: string = '';
     name: string = '';
-
+    videoType:string='customHls'
 }
 export default class implements IEpisodes {
     id: string = "";
@@ -43,6 +46,6 @@ export default class implements IEpisodes {
     source: string = "";
     lang:string="";
     time: string="";
-
+    sourceName: string = '';
 
 }

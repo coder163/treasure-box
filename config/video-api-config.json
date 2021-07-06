@@ -1,6 +1,10 @@
 {
   "resource-site": [
     {
+      "name": "蘑菇资源网",
+      "url": "http://www.moguzyw.com:520/moguzy.php/provide/vod/at/json/?"
+    },
+    {
       "name": "天空资源",
       "url": "http://tiankongzy.cc/api.php/provide/vod/at/json/?"
     },

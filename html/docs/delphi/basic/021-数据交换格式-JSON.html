@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>021-数据交换格式-JSON</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    body { background-color: transparent !important; }
+
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <p>定义：不同的地理信息系统或<strong>地理信息系统与其他信息系统之间实施数据双向交换时采用的数据格式</strong></p>
+<blockquote>
+<p>引自百度百科</p>
+</blockquote>
+<p>据百度百科上的描述数据交换这个词最早是在《地理信息系统名词》第二版，很明显不是用来做编程的。在编程方面数据交换格式仅仅是一种格式，当前主流使用的格式有 3 种 ： XML、JSON、YAML</p>
+<p>既然是一种格式，那么它就需要标准，因为通过标准可以限定各个格式中的具体内容</p>
+<h2 id="toc_0">XML<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h2>
+<p>XML（全称EXtensible Markup Language）,在我看来它是一种古老的数据交换格式，因为从我接触到编程开始它就已经存在了</p>
+<p>标准所在网址：<a href="https://www.w3.org/TR/1998/REC-xml-19980210">https://www.w3.org/TR/1998/REC-xml-19980210</a></p>
+<p>最新文档地址：<a href="https://www.w3.org/TR/REC-xml/">https://www.w3.org/TR/REC-xml/</a></p>
+<p>其实XML的标准一直是1.0，至少我没有见过其他的，一般情况下我们在编写XML文档的时候都需要遵循一个约束文件，这个约束文件中规定了你可以编写的内容。约束文件存在的方式也有两种，原来是 DTD 格式现在主流的是 Schema</p>
+<blockquote>
+<p>XML 如果想完整的学习还是比较费劲的，不过一般情况下要求约束文档能看懂，XML内容会编写即可</p>
+</blockquote>
+<p>参考网址：<a href="https://www.w3school.com.cn/x.asp">https://www.w3school.com.cn/x.asp</a></p>
+<p>Delphi解析可使用 TXMLDocument（Delphi自带），此外也可以使用微软的 MSXML2 我没有这种需求所以并没有深入研究</p>
+<p>官方文档：<a href="http://docwiki.embarcadero.com/Libraries/Sydney/en/Xml">http://docwiki.embarcadero.com/Libraries/Sydney/en/Xml</a></p>
+<h2 id="toc_1">JSON<a class="vnote-anchor" href="#toc_1" data-anchor-icon="#"></a></h2>
+<p>JSON(JavaScript Object Notation) 是一种轻量级的数据交换格式。相比与XML格式JSON更为简单明了</p>
+<p>标准文档地址：<a href="http://www.json.org/json-zh.html">http://www.json.org/json-zh.html</a></p>
+<p>具体的语法规则可以参考上面网址的文档内容，中文的</p>
+<p>Delphi官方（当前最新版本DelphiXE10.4.2）已经支持对于JSON的解析了，官方文档地址</p>
+<p><a href="http://docwiki.embarcadero.com/Libraries/Sydney/en/System.JSON">http://docwiki.embarcadero.com/Libraries/Sydney/en/System.JSON</a></p>
+<p>需要注意的是有些类是Tokyo 10.2新增的，在使用的时候需要检查一下自己的版本</p>
+<h2 id="toc_2">YAML<a class="vnote-anchor" href="#toc_2" data-anchor-icon="#"></a></h2>
+<p>YAML （全称YAML Ain’t Markup Language），YAML不是标记语言的意思，YAML是便于人阅读基于unicode 编码的各种语言的序列号标准。</p>
+<p>YAML语言的设计参考了JSON，XML和SDL等语言。YAML 强调以数据为中心,简洁易读,编写简单</p>
+<p>官网地址：<a href="http://yaml.org">http://yaml.org</a></p>
+<blockquote>
+<p>一个让人头皮发麻的站点</p>
+</blockquote>
+<p>学习的话可以参考 阮一峰 老师的博客内容，地址：<a href="https://www.ruanyifeng.com/blog/2016/07/yaml.html">https://www.ruanyifeng.com/blog/2016/07/yaml.html</a></p>
+<p>没有找到官方支持，不过在GitHub上有一个开源库是支持Delphi解析YAML格式数据的，有兴趣的朋友可以去研究</p>
+<p>地址：<a href="https://github.com/neslib/Neslib.Yaml">https://github.com/neslib/Neslib.Yaml</a></p>
+<blockquote>
+<p>最后我想说我非常讨厌这种数据格式，和python一样依靠缩进和空格控制语法。。。</p>
+</blockquote>
+<h2 id="toc_3">JSON解析案例<a class="vnote-anchor" href="#toc_3" data-anchor-icon="#"></a></h2>
+<p>将原来视频中讲解的代码在DelphiXE10.4.2上进行了重构</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">uses</span>
+    System.JSON, System.Generics.Collections, System.JSON.Serializers,
+    System.SysUtils;
+
+<span class="hljs-keyword">type</span>
+    <span class="hljs-comment">{ 实体类，主要是用于JSON字符串和类对象的互相转换 }</span>
+    <span class="hljs-title">TStudent</span> = <span class="hljs-keyword">class</span>(TObject)
+    <span class="hljs-keyword">private</span>
+        FName: <span class="hljs-keyword">string</span>;
+        FAge: Integer;
+    <span class="hljs-keyword">public</span>
+        <span class="hljs-keyword">property</span> <span class="hljs-keyword">Name</span>: <span class="hljs-keyword">string</span> <span class="hljs-keyword">read</span> FName <span class="hljs-keyword">write</span> FName;
+        <span class="hljs-keyword">property</span> Age: Integer <span class="hljs-keyword">read</span> FAge <span class="hljs-keyword">write</span> FAge;
+        <span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">Create</span>;</span> <span class="hljs-keyword">overload</span>;
+        <span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">Create</span><span class="hljs-params">(FName: <span class="hljs-keyword">string</span>; FAge: Integer)</span>;</span> <span class="hljs-keyword">overload</span>;
+
+    <span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">TStudent</span>.<span class="hljs-title">Create</span>;</span>
+<span class="hljs-keyword">begin</span>
+
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">constructor</span> <span class="hljs-title">TStudent</span>.<span class="hljs-title">Create</span><span class="hljs-params">(FName: <span class="hljs-keyword">string</span>; FAge: Integer)</span>;</span>
+<span class="hljs-keyword">begin</span>
+    Self.FName := FName;
+    Self.FAge := FAge;
+<span class="hljs-keyword">end</span>;
+
+<span class="hljs-keyword">begin</span>
+    <span class="hljs-comment">{ 定义一个JSON字符串 }</span>
+    <span class="hljs-keyword">var</span>
+    UserJson := <span class="hljs-string">'{"FName":"小黑","FAge":18}'</span>;
+    <span class="hljs-comment">{ 创建序列化对象 }</span>
+    <span class="hljs-keyword">var</span>
+    Serializer := TJsonSerializer.Create();
+
+    <span class="hljs-comment">{ 反序列化，其实就将字符串转为对象 }</span>
+    <span class="hljs-keyword">var</span>
+    Student := Serializer.Deserialize&lt;TStudent&gt;(UserJson);
+    Writeln(<span class="hljs-string">'反序列化：'</span> + Student.<span class="hljs-keyword">Name</span> + <span class="hljs-string">','</span> + Student.Age.ToString);
+
+    <span class="hljs-comment">{ 列表转换，将TLIst容器转为字符串，也可以说是数组转换 }</span>
+
+    <span class="hljs-keyword">var</span>
+    List := TList&lt;TStudent&gt;.Create;
+    List.Add(TStudent.Create(<span class="hljs-string">'小白'</span>, <span class="hljs-number">30</span>));
+    List.Add(TStudent.Create(<span class="hljs-string">'萧蔷'</span>, <span class="hljs-number">30</span>));
+    <span class="hljs-comment">// 创建序列化对象</span>
+    Serializer := TJsonSerializer.Create();
+
+    Writeln(<span class="hljs-string">'序列化：'</span> + Serializer.Serialize &lt; TList &lt; TStudent &gt;&gt; (List));
+
+    <span class="hljs-keyword">var</span>
+        <span class="hljs-comment">{ 一个比较复杂的json字符串 }</span>
+    Users := <span class="hljs-string">'{"FListHelper":{"FCount":2},"FItems":[{"FName":"小白","FAge":30},{"FName":"萧蔷","FAge":30}],"FComparer":{}}'</span>;
+    <span class="hljs-comment">// 创建序列化对象</span>
+    Serializer := TJsonSerializer.Create();
+    <span class="hljs-comment">{ 可以尝试下这里会不会有问题，当字段匹配时居然可以直接转换 }</span>
+    <span class="hljs-keyword">var</span>
+    UserList := Serializer.Deserialize &lt; TList &lt; TStudent &gt;&gt; (Users);
+
+    <span class="hljs-keyword">for</span> <span class="hljs-keyword">var</span> Stu <span class="hljs-keyword">in</span> UserList <span class="hljs-keyword">do</span> <span class="hljs-keyword">begin</span>
+        Writeln(<span class="hljs-string">'反序列化：'</span> + Stu.<span class="hljs-keyword">Name</span> + <span class="hljs-string">','</span> + Stu.Age.ToString);
+    <span class="hljs-keyword">end</span>;
+
+    <span class="hljs-comment">{ 获取指定字段 }</span>
+    Writeln(TJSONObject.ParseJSONValue(Users).GetValue&lt;TJSONObject&gt;
+      (<span class="hljs-string">'FListHelper'</span>).GetValue&lt;<span class="hljs-keyword">string</span>&gt;(<span class="hljs-string">'FCount'</span>));
+
+    Writeln(TJSONObject.ParseJSONValue(Users).GetValue&lt;TJSONArray&gt;(<span class="hljs-string">'FItems'</span>)
+      .Count.ToString);
+
+    Readln;
+
+<span class="hljs-keyword">end</span>.
+</code></pre>
+<p>其实Delphi自带的JSON解析已经够用了，如果不能满足你的话有一个开源库你可以尝试，不过我看它最近一次更新代码是 3 年前....</p>
+<p>Github地址：<a href="https://github.com/hgourvest/superobject">https://github.com/hgourvest/superobject</a></p>
+<p>学习资料（万一老师的博客）：<a href="https://www.cnblogs.com/del/category/215158.html">https://www.cnblogs.com/del/category/215158.html</a></p>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

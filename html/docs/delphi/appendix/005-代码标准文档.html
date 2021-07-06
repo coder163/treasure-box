@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>005-代码标准文档</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    /* STYLE_GLOBAL_PLACE_HOLDER */
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <p>本文档主要是为Delphi开发人员提供一个源代码书写标准，以及程序和文件的命名标准，使他们在编程时有一致格式可遵循。这样，每个编程人员编写的代码能够被其他人理解。</p>
+<hr>
+<h2 id="toc_0">通用源代码格式规则<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h2>
+<h3 id="toc_1">缩进<a class="vnote-anchor" href="#toc_1" data-anchor-icon="#"></a></h3>
+<p>缩进就是每级间有两个空格。不要在源代码中放置制表符。这是因为，制表符的宽度随着不同的设置和代码管理实用程序(打印、文档及版本控制等)而不同。</p>
+<p>通过使用Tools|Environment 菜单，在Environment Options 对话框的General页上，不要选中Use Tab Character 和Optional Fill 复选框，这样，制表符就不会被保存。</p>
+<h3 id="toc_2">边距<a class="vnote-anchor" href="#toc_2" data-anchor-icon="#"></a></h3>
+<p>边距设置为80个字符。源代码一般不会因写一个单词而超过边距，但本规则比较灵活。只要可能，长度超过一行的语句应当用逗号或运算符换行。换行后，应缩进两个字符。</p>
+<p>begin...end 语句</p>
+<p>begin 语句必须单独占一行。例如，下面第一行是错误的，而第二行正确：</p>
+<pre><code class="lang-pascal hljs">
+<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span> <span class="hljs-keyword">to</span> <span class="hljs-number">10</span> <span class="hljs-keyword">do</span> <span class="hljs-keyword">begin</span> <span class="hljs-comment">// 错, begin 与f o r 在同一行</span>
+
+<span class="hljs-keyword">for</span> i:=<span class="hljs-number">0</span> <span class="hljs-keyword">to</span> <span class="hljs-number">10</span> <span class="hljs-keyword">do</span> <span class="hljs-comment">// 对, begin 在另外一行中</span>
+<span class="hljs-keyword">begin</span>
+
+</code></pre>
+<p>本规则的一个特殊情况是，当begin 为else 语句的一部分时，例如：</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">if</span> some statement = <span class="hljs-keyword">then</span>
+<span class="hljs-keyword">begin</span>
+ . . .
+<span class="hljs-keyword">end</span>
+<span class="hljs-keyword">else</span> <span class="hljs-keyword">begin</span>
+ Some Other Statement;
+<span class="hljs-keyword">end</span>;
+</code></pre>
+<blockquote>
+<p>注意：end 语句总单独一行。当begin 不为else 语句的一部分时，相应的end 语句与begin 语句的缩进量相同。</p>
+</blockquote>
+<h3 id="toc_3">注释<a class="vnote-anchor" href="#toc_3" data-anchor-icon="#"></a></h3>
+<p>我们通常使用“{...}”类型的块注释，以前的“(<em>...</em>)”类型的块注释用于临时注释掉暂不使用的代码，从Delphi 2开始支持“//”行注释，如果决定不在支持Delphi 2.0以下的版本，可以使用“//”注释。</p>
+<p>Object Pascal语句格式语句书写规范与用法</p>
+<h3 id="toc_4">括号<a class="vnote-anchor" href="#toc_4" data-anchor-icon="#"></a></h3>
+<p>在左括号与下一字符之间没有空格。同样，右括号与前一字符也没有空格。下面的例子演示了正确与不正确的空格。</p>
+<pre><code class="lang-pascal hljs">CallProc( Aparameter ); <span class="hljs-comment">// 错!</span>
+CallProc(Aparameter); <span class="hljs-comment">// 正确!</span>
+
+</code></pre>
+<p>不要在语句中包含多余的括号。在源代码中，括号只有在确实需要时才使用。下面的例子演示了正确与不正确用法：</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">if</span> (I=<span class="hljs-number">42</span>) <span class="hljs-keyword">then</span> <span class="hljs-comment">// 错，括号是多余的</span>
+<span class="hljs-keyword">if</span> (I=<span class="hljs-number">42</span>) <span class="hljs-keyword">or</span> (J=<span class="hljs-number">42</span>) <span class="hljs-keyword">then</span> <span class="hljs-comment">// 正确，必须使用括号</span>
+
+</code></pre>
+<h2 id="toc_5">类型<a class="vnote-anchor" href="#toc_5" data-anchor-icon="#"></a></h2>
+<p>Object Pascal 语言的保留字和关键字总是完全的小写。</p>
+<h3 id="toc_6">大小写规则<a class="vnote-anchor" href="#toc_6" data-anchor-icon="#"></a></h3>
+<p>类型标识符是保留字，应当全部小写。Win32 API 类型常常全部大写，并且遵循诸如Windows.pas或其他API单元中关于特定类型名的规则。对于其他变量名，第一个字母应大写，其他字母则大小写交错。下面是一些例子：</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">var</span>
+ MyString: <span class="hljs-keyword">string</span>; <span class="hljs-comment">// 保留字</span>
+ WindowsHandle: HWND; <span class="hljs-comment">// Win32 API 类型</span>
+ I: Integer; <span class="hljs-comment">//在System单元中引入的类型标识</span>
+
+</code></pre>
+<h3 id="toc_7">浮点型<a class="vnote-anchor" href="#toc_7" data-anchor-icon="#"></a></h3>
+<p>不鼓励使用Real类型，因为它只是为了与老的Pascal代码兼容而保留的。通常情况下，对于浮点数应当使用Double。Double可被处理器优化，是IEEE定义的标准的数据格式。当需要比Double提供的范围更大时，可以使用Extend。Extend是intel专用的类型，Java不支持。当浮点变量的物理字节数很重要时(可能使用其他语言编写DLL)，则应当使用Single。</p>
+<p>Variant和OleVariant</p>
+<p>一般不建议使用Variant和OleVariant。但是，当数据类型只有在运行期才知道时(常常是在COM和数据库应用的程序中)，这两个类型对编程就有必要。当进行诸如自动化ActiveX控件的COM编程时，应当使用OleVariant；而对于非COM编程，则应当使用Variant。这是因为，Variant能够有效地保存Delphi的原生字符串，而OleVariant则将所有字符串转换为OLE字符串(即WideChar字符串)，且没有引用计数功能。</p>
+<h3 id="toc_8">枚举型<a class="vnote-anchor" href="#toc_8" data-anchor-icon="#"></a></h3>
+<p>枚举类型名必须代表枚举的用途。名称前要加T字符作为前缀，表示这是个数据类型。枚举类型的标识符列表的前缀应包含2 - 3 个小写字符，来彼此关联。例如：</p>
+<p><code>TSongType=(stRock, stClassical, stCountry, stAlternative, stHeavyMetal, stRB);</code></p>
+<p>枚举类型的变量实例的名称与类型相同，但没有前缀T ，也可以给变量一个更加特殊名称，诸如：FavoriteSongTypel、FavoriteSongType2等等。</p>
+<h3 id="toc_9">数组类型<a class="vnote-anchor" href="#toc_9" data-anchor-icon="#"></a></h3>
+<p>数组类型名应表达出该数组的用途。类型名必须加字母“T”为前缀。如果要声明一个指向数组类型的指针，则必须加字母P 为前缀，且声明在类型声明之前。例如：</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">type</span>
+ PCycleArray = ^TCycleArray;
+ TCycleArray=<span class="hljs-keyword">array</span>[<span class="hljs-number">1</span>..<span class="hljs-number">100</span>] <span class="hljs-keyword">of</span> integer;
+
+</code></pre>
+<p>实际上，数组类型的变量实例与类型名称相同，但没有“T”前缀。</p>
+<h3 id="toc_10">记录类型<a class="vnote-anchor" href="#toc_10" data-anchor-icon="#"></a></h3>
+<p>记录类型名应表达出记录的用途。类型名必须加字母T为前缀。如果要声明一个指向记录类型的指计，则必须加字母P为前缀，且其声明在类型声明之前。例如：</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">type</span>
+ PEmployee = ^TEmployee;
+ TEmployee = <span class="hljs-keyword">record</span>
+   EmployeeName: <span class="hljs-keyword">string</span>;
+   EmployeeRate: Double;
+ <span class="hljs-keyword">end</span>;
+
+</code></pre>
+<h2 id="toc_11">语句<a class="vnote-anchor" href="#toc_11" data-anchor-icon="#"></a></h2>
+<h3 id="toc_12">if 语句<a class="vnote-anchor" href="#toc_12" data-anchor-icon="#"></a></h3>
+<p>在if/then/else语句中，最有可能执行的情况应放在then子句中，不太可能的情况放在else子句中。为了避免出现许多if语句，可以使用case语句代替。如果多于5级，不要使用if语句。请改用更清楚的方法。不要在if语句中使用多余的括号。</p>
+<p>如果在if语句中有多个条件要测试，应按照计算的复杂程度从右向左排。这样，可以使代码充分利用编译器的短路估算逻辑。例如，如果Condition1比Condition2快，Condition2比Condition3快，则if语句一般应这样构造：</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">if</span> Condition1 <span class="hljs-keyword">and</span> Condition2 <span class="hljs-keyword">and</span> Condition3 <span class="hljs-keyword">then</span>
+</code></pre>
+<p>如果Condition3为False的机会很大，利用短路估算逻辑，我们也可以将Condition3放在最前面：</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">if</span> Condition3 <span class="hljs-keyword">and</span> Condition1 <span class="hljs-keyword">and</span> Condition2 <span class="hljs-keyword">then</span>
+</code></pre>
+<h3 id="toc_13">case 语句<a class="vnote-anchor" href="#toc_13" data-anchor-icon="#"></a></h3>
+<p>概述</p>
+<p>case语句中每种情况的常量应当按数字或字母的顺序排列。每种情况的动作语句应当简短且通常不超过4 - 5 行代码。如果动作太复杂，应将代码单独放在一个过程或函数中。Case语句的else子句只用于默认情况或错误检测。</p>
+<p>格式</p>
+<p>case语句遵循一般的缩进和命名规则。</p>
+<h3 id="toc_14">while 语句<a class="vnote-anchor" href="#toc_14" data-anchor-icon="#"></a></h3>
+<p>建议不要使用Exit过程来退出while循环。如果需要的话，应当使用循环条件退出循环。所有对while循环进行初始化的代码应当位于while入口前，且不要被无关的语句隔开。任何业务的辅助工作都应在循环后立即进行。</p>
+<h3 id="toc_15">for 语句<a class="vnote-anchor" href="#toc_15" data-anchor-icon="#"></a></h3>
+<p>如果循环次数是确定的，应当用for语句代替while语句。</p>
+<h3 id="toc_16">repeat 语句<a class="vnote-anchor" href="#toc_16" data-anchor-icon="#"></a></h3>
+<p>repeat语句类似于while循环，且遵循同样的规则。</p>
+<h3 id="toc_17">with 语句<a class="vnote-anchor" href="#toc_17" data-anchor-icon="#"></a></h3>
+<p>概述</p>
+<p>with语句应小心使用。要避免过度使用with语句，尤其是在with语句中使用多个对象或记录。例如：</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">with</span> Record1,Record2 <span class="hljs-keyword">do</span>
+</code></pre>
+<p>这些情况很容易迷惑编程人员，且导致调试困难。</p>
+<p>格式</p>
+<p>with语句也遵循本章关于命名和缩进的规则。</p>
+<p>结构化异常处理</p>
+<p>概述</p>
+<p>异常处理主要用于纠正错误和保护资源。这意味着，凡是分配资源的地方，都必须使用try...finally来保证资源得到释放。不过，如果是在单元的初始/结束部分或者对象的构造器/析构器中来分配/释放资源则例外。</p>
+<h3 id="toc_18">try...finally<a class="vnote-anchor" href="#toc_18" data-anchor-icon="#"></a></h3>
+<p>在可能的情况下，每个资源分配应当与try...finally结构匹配，例如，下面代码可能导致错误：</p>
+<pre><code class="lang-pascal hljs">SomeClass1 := TSomeClass.Create;
+SomeClass2 := TSomeClass.Create;
+<span class="hljs-keyword">try</span>
+ <span class="hljs-comment">{ do some code }</span>
+<span class="hljs-keyword">finally</span>
+ SomeClass1.Free;
+ SomeClass2.Free;
+<span class="hljs-keyword">end</span>;
+</code></pre>
+<p>上述资源分配的一个安全方案是：</p>
+<pre><code class="lang-pascal hljs">SomeClass1 := TSomeClass.Create;
+<span class="hljs-keyword">try</span>
+ SomeClass2 := TSomeClass.Create;
+ <span class="hljs-keyword">try</span>
+   <span class="hljs-comment">{ do some code }</span>
+ <span class="hljs-keyword">finally</span>
+   SomeClass2.Free;
+ <span class="hljs-keyword">end</span>;
+<span class="hljs-keyword">finally</span>
+ SomeClass1.Free;
+<span class="hljs-keyword">end</span>;
+
+</code></pre>
+<p>try...except的用法</p>
+<p>如果你希望在发生异常时执行一些任务，可以使用try...except。通常，没有必要为了简单地显示一个错误信息而使用try...except，因为Application对象能够自动根据上下文做到这一点。如果要在子句中激活默认的异常处理，可以再次触发异常。</p>
+<p>try...except...else的用法</p>
+<p>不鼓励使用带else子句的try...except，因为这将阻塞所有的异常，包括你没有准备处理的异常。</p>
+<h2 id="toc_19">过程和函数<a class="vnote-anchor" href="#toc_19" data-anchor-icon="#"></a></h2>
+<p>命名</p>
+<p>过程与函数名应当有意义。进行一个动作的过程最好在名称前加上表示动作的动词为前缀。例如：<code>procedure FormatHardDrive;</code></p>
+<p>设置输入参数值的过程名应当以Set 为其前缀，例如：<code>procedure SetUserName;</code></p>
+<p>获取数值的过程名应当以Get 为其前缀，例如：<code>function GetUserName:string;</code></p>
+<h3 id="toc_20">形参<a class="vnote-anchor" href="#toc_20" data-anchor-icon="#"></a></h3>
+<p>所有形参的名称都应当表达出它的用途。如果合适的话，形参的名称最好以字母a 为前缀，例如：</p>
+<p><code>procedure SomeProc(aUserName:string; aUserAge:integer);</code></p>
+<p>当参数名与类的特性或字段同名时，前缀a 就有必要了。</p>
+<h3 id="toc_21">命名冲突<a class="vnote-anchor" href="#toc_21" data-anchor-icon="#"></a></h3>
+<p>当两个单元中含有相同名称的过程时，如果调用该过程，实际被调用的是Uses 子句中较后出现的那个单元中的过程。为避免这种情况，可在方法名前加想要的单元名，例如：</p>
+<p><code>SysUtils.FindClose(SR);</code></p>
+<p><code>或Windows.FindClose(Handle);</code></p>
+<h2 id="toc_22">变量(Variable)<a class="vnote-anchor" href="#toc_22" data-anchor-icon="#"></a></h2>
+<p>变量的名称应当能够表达出它的用途。循环控制变量常常为单个字母，诸如I 、J 或K 。也可以使用更有意义的名称，例如UserIndex。布尔变量名必须能清楚表示出True 和False 值的意义。</p>
+<h3 id="toc_23">局部变量<a class="vnote-anchor" href="#toc_23" data-anchor-icon="#"></a></h3>
+<p>局部变量遵循其他变量的命名规则。</p>
+<h3 id="toc_24">全局变量<a class="vnote-anchor" href="#toc_24" data-anchor-icon="#"></a></h3>
+<p>全局变量以大写字母“G”打头，并遵循其他变量的命名规则。</p>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

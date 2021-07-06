@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>019-反射机制</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    body { background-color: transparent !important; }
+
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <p>在Java中存在着一种强大的功能就是反射，所以我在考虑Delphi出来这么多年了，难道没有支持反射机制吗？经过翻山越岭的一顿搜索终于找到了反射的身影！</p>
+<p>在Delphi中反射称为RTTI(Run-Time Type Information) 翻译过来的名称是"运行期类型信息"，也就是说可以在运行期获得数据类型或类(class)的信息</p>
+<p>反射在我们普通程序开发中基本使用不到，但是在我们底层的程序设计中使用特别广泛，例如代理模式、工厂模式等一些设计模式，包括我们使用的开发工具以及各大开源框架底层都使用到了反射的原理。</p>
+<h2 id="toc_0">运行期类型信息概述<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h2>
+<p>运行期类型信息(RTTI)是一种语言特征，能使应用程序在运行时得到关于对象的信息</p>
+<p>运行期类型信息(RTTI)是一种语言特征，能使应用程序在运行时得到关于对象的信息。RTTI是Delphi的组件能够融合到IDE中的关键。它在IDE中不仅仅是一个纯学术的过程。</p>
+<p>由于对象都是从TObject继承下来的，因此，对象都包含一个指向它们的RTTI的指针以及几个内建的方法。下面的表列出了TObject的一些方法，用这些方法能获得某个对象实例的信息。</p>
+<table style="WIDTH: 574px; HEIGHT: 192px" cellspacing="1" cellpadding="1" width="574" summary="" border="1" class="table table-bordered">
+   <tbody>
+    <tr>
+     <td>函数&nbsp;&nbsp;</td>
+     <td>返回类型</td>
+     <td>返回值</td>
+    </tr>
+    <tr>
+     <td>ClassName( )&nbsp;&nbsp;</td>
+     <td>string</td>
+     <td>对象的类名</td>
+    </tr>
+    <tr>
+     <td>ClassType()&nbsp;</td>
+     <td>boolean</td>
+     <td>对象的类型<br></td>
+    </tr>
+    <tr>
+     <td>InheritsFrom&nbsp;</td>
+     <td>boolean&nbsp;&nbsp;&nbsp;&nbsp; </td>
+     <td>判断对象是否继承于一个指定的类</td>
+    </tr>
+    <tr>
+     <td>ClassParent()&nbsp;</td>
+     <td>TClass</td>
+     <td>对象的祖先类型<br></td>
+    </tr>
+    <tr>
+     <td>Instancesize()&nbsp;</td>
+     <td>word&nbsp;</td>
+     <td>对象实例的长度(字节数)</td>
+    </tr>
+    <tr>
+     <td>ClassInfo()</td>
+     <td>Pointer&nbsp;</td>
+     <td>指向RTTI的指针</td>
+    </tr>
+   </tbody>
+  </table>
+<h2 id="toc_1">初识反射<a class="vnote-anchor" href="#toc_1" data-anchor-icon="#"></a></h2>
+<p>反射，从这个"反"字可以看出与我们平时正常的使用逻辑肯定不一样，那么到底什么地方不一样了？想要了解"反"，就得先了解一下"正"的概念。</p>
+<p>在正常情况下，如果要使用一个类，必须要经过以下几个步骤：</p>
+<ul>
+<li>
+<p>使用uses导入类所在的单元</p>
+</li>
+<li>
+<p>通过构造方法(Create)进行类对象实例化</p>
+</li>
+<li>
+<p>产生对象可以使用"对象.属性"进行类中属性的调用</p>
+</li>
+<li>
+<p>通过"对象.函数()"调用类中的函数</p>
+</li>
+</ul>
+<p>在反射中，使用一个类并不需要导入类的所在单元，只要知道类的完整路径就可以知道该类中的所有信息</p>
+<p>此外在Delphi中并不是所有的类都会存储到Rtti中的.只有那些在函数或类中被引用过的对象才会被自动添加到Rtti中，如果你想强制将所有的类都加入到Rtti中，那么只需要一个简单的预编译命令就可以了<code>{$STRONGLINKTYPES ON}</code></p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">uses</span> rtti, System.StrUtils;
+<span class="hljs-meta">{$R *.dfm}</span>
+
+<span class="hljs-function"><span class="hljs-keyword">procedure</span> <span class="hljs-title">TForm1</span>.<span class="hljs-title">Button1Click</span><span class="hljs-params">(Sender: TObject)</span>;</span>
+<span class="hljs-keyword">var</span>
+  Ctx: TRttiContext;
+  list: TArray&lt;TRttiType&gt;;
+  typ: TRttiType;
+  instance: TRttiInstanceType;
+  QRClass: TClass;
+  metodo: TRttiMethod;
+<span class="hljs-keyword">begin</span>
+  Self.Memo1.Clear;
+  Ctx := TRttiContext.Create;
+  <span class="hljs-comment">//该方法需要{$STRONGLINKTYPES ON}指令的支持</span>
+  <span class="hljs-comment">//Ctx.FindType('Unit2.TPersion').Name;</span>
+  <span class="hljs-comment">//获取运行期类型</span>
+  typ := Ctx.GetType(TPersion);
+  <span class="hljs-comment">// 获取运行期类型实例</span>
+  instance := typ.AsInstance;
+  <span class="hljs-comment">//通过运行期实例获取引用类型</span>
+  QRClass := instance.MetaclassType;
+  <span class="hljs-comment">//获取构造方法</span>
+  metodo := instance.GetMethod(<span class="hljs-string">'Create'</span>);
+  <span class="hljs-comment">//通过构造方法获取对象</span>
+  Self.Memo1.Lines.Add(metodo.Invoke(QRClass, []).ToString);
+  <span class="hljs-comment">//调用方法</span>
+  typ.GetMethod(<span class="hljs-string">'show'</span>).Invoke(metodo.Invoke(QRClass, []), []);
+
+  Ctx.Free;
+<span class="hljs-keyword">end</span>;
+</code></pre>
+<blockquote>
+<p>上面的代码仅仅是作为一个示例，演示了反射的方式调用对象中函数的过程，更多的功能需要我们自己去摸索学习</p>
+</blockquote>
+<p>RTTI相关信息并不多，我在调用其他单元类创建对象的时候一直在报错，翻遍无数的网页才在一个老外提问的答案中查到需要添加预编译指令，反射这种技术初学的时候很可能会感觉没什么用，但是一旦当你需要编写一个具有通用性质的工具时就会发现它绝对是一把利器</p>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

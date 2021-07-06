@@ -105,5 +105,5 @@ dist
 .idea/
 build/
 dist_electron/
-public/html/
+html/
 package-lock.json

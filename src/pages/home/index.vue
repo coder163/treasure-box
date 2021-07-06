@@ -5,7 +5,7 @@
     <q-page-container>
       <layout-side />
       <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" :style="{'height': (winHeight-50)+'px'} ">
-        <!--        <button @click="dycLoad">aaaa</button>-->
+
         <router-view />
       </q-scroll-area>
     </q-page-container>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="generator" content="VNote">
+
+    <title>010-初识面向对象</title>
+    <link rel="icon" href="https://github.com/tamlok/vnote/raw/master/src/resources/icons/vnote.ico">
+
+    <style type="text/css">
+    body { background-color: transparent !important; }
+
+    </style>
+
+    <style type="text/css">
+    /* STYLE_OUTLINE_PLACE_HOLDER */
+    /* STYLE_PLACE_HOLDER */
+    </style>
+
+    <!-- EXTRA_PLACE_HOLDER -->
+
+<!-- HEAD_PLACE_HOLDER -->
+</head>
+<body>
+<div class="container-fluid">
+<div class="row flex-xl-nowrap">
+    <div id="outline-panel" style="display:none;" class="d-none d-md-block d-xl-block col-md-3 col-xl-2 bd-toc">
+        <div id="outline-content" class="section-nav"></div>
+    </div>
+    <div id="post-content" class="col-12 col-md-9 col-xl-10 py-md-3 pl-md-5 bd-content">
+    <h2 id="toc_0">面向对象介绍<a class="vnote-anchor" href="#toc_0" data-anchor-icon="#"></a></h2>
+<p>面向对象编程是最近几年很火的概念，甚至都已经立足了神坛。</p>
+<p>我个人的理解面向对象是一种解决问题的思路而不是一个具体的东西。面向对象是在解决问题时的粒度和思维方式发生了变化，相比以前(面向过程)粒度更大</p>
+<p>虽然面向对象不能使得代码容易编写，但是它能够使得代码易于维护。将数据和代码结合在一起，能够使定位和修复错误的工作简单化，并最大限度地减少对其他对象的影响，提高代码的性能</p>
+<ul>
+<li>
+<p>封装：把相关的数据和代码结合在一起，并隐藏了实现细节。封装的好处是有利于程序的模块化，并把代码和其他代码分开</p>
+</li>
+<li>
+<p>继承：很多书中对于继承直接引用的是现实世界中的继承，其实这种说法是错误的。继承指的是对象和对象之间的关系，而在编程中对象和对象之间是不存在继承关系的，如果非要做类比的话，现实世界中的派生(生物中的概念)和这里的继承更为相近</p>
+</li>
+<li>
+<p>多态性：从字面上看，是指多种形状。调用一个对象变量的方法时，实际被调用的代码与实际在变量中的对象的实例有关</p>
+</li>
+</ul>
+<blockquote>
+<p>千万不要以为面向对象仅仅是上面3个特征，这3个仅仅是主要特征。虽然我极其不乐意在说面向对象的时候提面向过程，但是无奈任何东西都是演变而来的</p>
+</blockquote>
+<h2 id="toc_1">五大基本原则<a class="vnote-anchor" href="#toc_1" data-anchor-icon="#"></a></h2>
+<p>前面提到了面向对象仅仅是解决问题的思路，那么以面向对象的方式去解决问题时我们应该遵循什么样的设计规则呢？</p>
+<h3 id="toc_2">单一职责原则SRP(Single Responsibility Principle)<a class="vnote-anchor" href="#toc_2" data-anchor-icon="#"></a></h3>
+<p>是指一个类的功能要单一，不能包罗万象。如同一个人一样，分配的工作不能太多，否则一天到晚虽然忙忙碌碌的，但效率却高不起来。</p>
+<p>这种原则在现实生活中也有所体现，就像我们平时说的：专业的事情应该交给专业的人做</p>
+<h3 id="toc_3">开放封闭原则OCP(Open－Close Principle)<a class="vnote-anchor" href="#toc_3" data-anchor-icon="#"></a></h3>
+<p>一个模块在扩展性方面应该是开放的而在更改性方面应该是封闭的。比如：一个网络模块，原来只服务端功能，而现在要加入客户端功能，</p>
+<p>那么应当在不用修改服务端功能代码的前提下，就能够增加客户端功能的实现代码，这要求在设计之初，就应当将服务端和客户端分开，公共部分抽象出来。</p>
+<h3 id="toc_4">替换原则(the Liskov Substitution Principle LSP)<a class="vnote-anchor" href="#toc_4" data-anchor-icon="#"></a></h3>
+<p>子类应当可以替换父类并出现在父类能够出现的任何地方。比如：公司搞年度晚会，所有员工可以参加抽奖，那么不管是老员工还是新员工，也不管是总部员工还是外派员工，都应当可以参加抽奖，否则这公司就不和谐了。</p>
+<h3 id="toc_5">依赖原则(the Dependency Inversion Principle DIP)<a class="vnote-anchor" href="#toc_5" data-anchor-icon="#"></a></h3>
+<p>具体依赖抽象，上层依赖下层。假设B是较A低的模块，但B需要使用到A的功能，这个时候，B不应当直接使用A中的具体类： 而应当由B定义一抽象接口，并由A来实现这个抽象接口，B只使用这个抽象接口：这样就达到了依赖倒置的目的，B也解除了对A的依赖，反过来是A依赖于B定义的抽象接口。通过上层模块难以避免依赖下层模块，假如B也直接依赖A的实现，那么就可能造成循环依赖。一个常见的问题就是编译A模块时需要直接包含到B模块的cpp文件，而编译B时同样要直接包含到A的cpp文件。</p>
+<h3 id="toc_6">接口分离原则(the Interface Segregation Principle ISP)<a class="vnote-anchor" href="#toc_6" data-anchor-icon="#"></a></h3>
+<p>模块间要通过抽象接口隔离开，而不是通过具体的类强耦合起来</p>
+<blockquote>
+<p>耦合性(Coupling)，也叫耦合度，是对模块间关联程度的度量。耦合的强弱取决于模块间接口的复杂性、调用模块的方式以及通过界面传送数据的多少。模块间的耦合度是指模块之间的依赖关系，包括控制关系、调用关系、数据传递关系。模块间联系越多，其耦合性越强，同时表明其独立性越差( 降低耦合性，可以提高其独立性)。软件设计中通常用耦合度和内聚度作为衡量模块独立程度的标准。划分模块的一个准则就是高内聚低耦合。</p>
+</blockquote>
+<blockquote>
+<p>注意：我们是不可能做到零耦合的，所有的模块之间没有关联的话也就实现不了任何功能</p>
+</blockquote>
+<h2 id="toc_7">Delphi面向对象相关的三个术语<a class="vnote-anchor" href="#toc_7" data-anchor-icon="#"></a></h2>
+<ul>
+<li>
+<p>域（field），也被称为域定义或者实例变量，域是包含在对象中的数据变量。在对象中的一个域就像是在Delphi记录一个域，在C++中它被称为数据成员</p>
+</li>
+<li>
+<p>方法（method），属于一个对象的过程和函数名，在C++中它被称为成员函数</p>
+</li>
+<li>
+<p>属性（property），属性是外部代码访问对象中的数据和代码的访问器，属性隐藏了一个对象的具体实现的细节</p>
+</li>
+</ul>
+<blockquote>
+<p>在初次接触Delphi的时候一直认为域这个东西是脱了裤子放屁。其实不然，最好不要直接访问对象的域，因为实现对象的细节可能改变。相反用访问器属性来访问对象，它不受对象细节的影响</p>
+</blockquote>
+<h2 id="toc_8">Delphi不支持多继承<a class="vnote-anchor" href="#toc_8" data-anchor-icon="#"></a></h2>
+<p>Delphi不像C++那样支持多继承，多继承是指一个对象能够继承两个不同的对象，并包含有两个父类对象的所有数据和代码</p>
+<p>Delphi提供了两种方法来解决这个问题</p>
+<ul>
+<li>
+<p>在一个父类中包含其他的类，你能从Delphi的VCL中看到这种解决方法。</p>
+</li>
+<li>
+<p>使用接口</p>
+</li>
+</ul>
+<h2 id="toc_9">基于对象和面向对象的编程<a class="vnote-anchor" href="#toc_9" data-anchor-icon="#"></a></h2>
+<p>在某些语言中，你能操作对象但是不能创建对象，例如Javascript、Visual Basic中的ActiveX控件。我知道有人会抬杠JavaScript能创建对象(不接收抬杠，抬就是你赢)</p>
+<p>Delphi是完全的面向对象的环境，这表示在Delphi中你能用已经存在的组件创建新的对象，这些对象是可视的或者不可视的，甚至可以是设计时的窗体</p>
+<h2 id="toc_10">创建对象<a class="vnote-anchor" href="#toc_10" data-anchor-icon="#"></a></h2>
+<p>在使用一个对象之前，用class关键字声明一个对象。可以在一个程序或单元的type部分声明一个对象类型：</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">type</span>
+    TFooObject = <span class="hljs-keyword">class</span>;
+</code></pre>
+<p>除了声明一个对象类型，通常还需要一个对象的变量，即实例。实例定义在var部分</p>
+<pre><code class="lang-pascal hljs"><span class="hljs-keyword">var</span>
+    FooObject:TFooObject;
+</code></pre>
+<p>在Delphi中通过调用它的一个构造器来建立一个对象的实例，构造器主要是用来为对象创建实例并为对象中的域分配内存进行初始化使得对象处于可使用的状态。</p>
+<p>Delphi的对象至少有一个构造器称为create()，但是一个对象可以有多个构造器。根据不同的对象类型，Create()可以有不同的参数。</p>
+<p>调用构造器的语法如下</p>
+<pre><code class="lang-pascal hljs">FooObject:= TFooObject.Create;
+</code></pre>
+<p>注意这里调用构造器的语法有一点特殊，是通过类型来引用一个对象的Create()方法，而不是像其他方法那样通过实例来引用。</p>
+<p>变量FooObject在调用时还没有被定义，而TFooObject已经静态地存在于内存之中，静态调用它的Create()方法是合法的。</p>
+<p>通过调用构造器来创建对象的实例，这就是所谓的实例化</p>
+<p>当一个对象实例用构造器创建的时候，编译器将对对象的每一个域经行初始化，你可以放心地认为所有数字被赋值为0，所有指针赋值为NIL，所有字符串为空</p>
+<h2 id="toc_11">销毁对象<a class="vnote-anchor" href="#toc_11" data-anchor-icon="#"></a></h2>
+<p>当用完对象，应该调用这个实例的Free()方法来释放它。Free()首选进行检查保证这个对象实例不为NIL，然后调用对象的析构方法Destroy()。</p>
+<p>析构进行与构造相反的工作，它释放所有分配的空间，并执行一些其他操作以保证对象能够适当地移除内存。</p>
+<pre><code class="lang-pascal hljs">FooObject.free;
+</code></pre>
+<p>不像调用Create()，这里是调用对象实例的Free()方法，记住不要直接调用Destroy()，而调用更安全的Free()方法，因为Free()首选进行检查保证这个对象实例不为NIL，然后调用对象的析构方法Destroy()。</p>
+<p>在C++中，一个静态声明的对象在离开它的作用域时自动调用它的析构方法，但是要对动态生成的对象手动调用析构方法。这个规则在Delphi里面也适用，所有使用Create()动态声明创建的对象即使离开创建它时候的作用域，它也不会被自动释放，必须使用Free()方法来动态的析构，除了在Delphi中的隐式动态创建的对象，所以一定要记住这个规则：<strong>凡是创建的，都需要释放</strong>。这个规则有两个重要的特例</p>
+<ul>
+<li>
+<p>当对象被其他对象拥有时，它将替你释放对象。</p>
+</li>
+<li>
+<p>引用技术的对象，当最后一个引用释放时，它将被析构。</p>
+</li>
+</ul>
+<blockquote>
+<p>其实有一种比较特殊的对象不需要我们手动释放，手动创建的控件同时指定它的父容器，此时的释放由父容器完成</p>
+</blockquote>
+
+    </div>
+</div>
+</div>
+
+<div id="container-floating" style="display:none;" class="d-none d-md-block d-xl-block">
+    <div id="floating-button" onclick="toggleMore()">
+        <p id="floating-more" class="more">&gt;</p>
+    </div>
+</div>
+
+<!--
+<div class="footer" id="vnote-footer">
+    <p>Generated by <em><a href="https://tamlok.github.io/vnote/">VNote</a></em>.</p>
+</div>
+-->
+</body>
+</html>

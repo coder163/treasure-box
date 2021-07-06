@@ -11,7 +11,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     // 驱动应用的数据源
     state: {
-        nodeType: 'java',
+        nodeType: 'delphi',
         //网盘路径
         cloudDiskPath: new Array<IZfile>(),
 
