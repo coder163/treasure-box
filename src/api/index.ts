@@ -31,7 +31,7 @@ export default class {
     public getTicket(): Promise<any> {
 
         return new Promise<any>(async (resolve, reject) => {
-            await axios.get('http://281244ia88.qicp.vip/getTicket').then(resp => {
+            await axios.get('https://vip.coder163.com/getTicket').then(resp => {
                 console.log(resp.data)
                 resolve(resp.data)
             }).catch(err => {
@@ -45,7 +45,7 @@ export default class {
     public userinfo(uid: string): Promise<any> {
 
         return new Promise<any>(async (resolve, reject) => {
-            await axios.get(`http://281244ia88.qicp.vip/userinfo?uid=${uid}`).then(resp => {
+            await axios.get(`https://vip.coder163.com/userinfo?uid=${uid}`).then(resp => {
                 resolve(resp.data)
             }).catch(err => {
                 reject('userinfo获取失败');
@@ -56,7 +56,7 @@ export default class {
     public getUserByOid(openid: string): Promise<any> {
 
         return new Promise(async (resolve, reject) => {
-            await axios.get(`http://281244ia88.qicp.vip/getUserByOid?oid=${openid}`).then(resp => {
+            await axios.get(`https://vip.coder163.com/getUserByOid?oid=${openid}`).then(resp => {
                 resolve(resp.data)
             }).catch(err => {
                 reject('userinfo获取失败');

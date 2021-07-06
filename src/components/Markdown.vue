@@ -16,11 +16,9 @@ const path = require('path')
 // import marked from 'marked';
 // import hljs from "highlight.js";
 import 'highlight.js/styles/darcula.css';
+// let AutocJS = require('autocjs');
 
 const cheerio = require('cheerio')
-
-// let AutocJS = require('autocjs');
-import {generateTree} from '@/common'
 
 
 export default {

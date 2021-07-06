@@ -19,16 +19,15 @@
     "dexie": "^3.0.3",
     "dplayer": "^1.26.0",
     "electron-updater": "^4.3.8",
-    "highlight.js": "^9.18.1",
     "hls.js": "^1.0.2",
     "log4js": "^6.3.0",
     "lowdb": "^1.0.0",
     "quasar": "^1.0.0",
     "shortid": "^2.2.16",
     "urlencode": "^1.1.0"
-
   },
   "devDependencies": {
+    "highlight.js": "^9.18.1",
     "vue": "^2.6.11",
     "vue-carousel-3d": "^1.0.1",
     "vue-class-component": "^7.2.3",

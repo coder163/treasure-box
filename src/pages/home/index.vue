@@ -5,11 +5,14 @@
     <q-page-container>
       <layout-side />
       <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" :style="{'height': (winHeight-50)+'px'} ">
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
         <router-view />
       </q-scroll-area>
     </q-page-container>
-    <!--    <login />-->
+
     <update />
   </q-layout>
 </template>
@@ -18,14 +21,14 @@
 
 import LayoutHeader from '@/components/LayoutHeader.vue';
 import LayoutSide from "@/components/LayoutSide.vue";
-import Login from '@/views/Login.vue'
+
 import Update from '@/views/Update.vue'
 import { ipcRenderer } from "electron";
 
 export default {
   name: "LayoutDefault",
   components: {
-    LayoutHeader, LayoutSide, Login, Update
+    LayoutHeader, LayoutSide, Update
   },
   data() {
     return {

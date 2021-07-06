@@ -62,7 +62,6 @@ let {
 } = AppConfig.get("app").value();
 
 Vue.prototype.$AppCofig = new Setting(downDir, isAutoUpdate, isDownTool, isKeepDiskPath, isStandalonePlayer,isSkipTitle,titleDuration,creditDuration);
-
 new Vue({
   router,
   store,

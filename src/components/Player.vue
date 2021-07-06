@@ -30,7 +30,7 @@ export default {
         this.player.switchVideo(
             {
               url: val,
-              type: 'customHls'
+              type:this.videoType
             }
         );
       },
@@ -42,7 +42,7 @@ export default {
 
     let $vue = this;
     ipcRenderer.on(ChannelMessage.TO_RENDERER_DESTROY_PLAYER, () => {
-      logger.info('销毁播放器');
+
       // @ts-ignore
       $vue.stopPlayer();
     })
@@ -53,6 +53,7 @@ export default {
         },
         false
     );
+
     //播放配置项
     let options = {
       container: document.getElementById('dplayer'),
@@ -63,7 +64,7 @@ export default {
       volume: 0.7,//音量播放器会记忆用户设置
       video: {
         url: $vue.videoSrc,
-        // url: 'https://helloblack2017.github.io/resources/video/火星人来过.mp4',
+        // url: "https://m3u8.tv.janan.net/m3u8cache/iqiyi/d5c1dfa4c225fbaf6366e3dd2074634e.m3u8",
         //   pic: background,  图片地址。img4
         type: $vue.videoType,//可选值:'customHls' 'auto', 'hls', 'flv', 'dash', 'webtorrent', 'normal' 或其他自定义类型
         customType: {
@@ -91,7 +92,7 @@ export default {
         this.player.seek(this.$AppCofig.titleDuration);
       }
       this.$emit('play');
-      // this.player.play();
+      this.player.play();
 
     })
     this.player.on('progress', () => {

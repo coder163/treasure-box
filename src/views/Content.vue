@@ -34,8 +34,6 @@ export default class Content extends Vue {
   private mounted() {
     // console.log('内容显示页：', this.filePath, this.$route.params.type)
 
-
-
   }
 
 }

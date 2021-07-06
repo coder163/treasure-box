@@ -14,9 +14,13 @@
           <player ref="cplayer"
                   :style="{'height':(isStandalonePlayer?winHeight:winHeight-135)+'px'}"
                   :videoSrc="currentEpisodes.src"
-                  :video-type="currentEpisodes.videoType"
-                  @play="play()"
-                  @ended="nextVideo"/>
+          <<<<<<< HEAD
+          :video-type="currentEpisodes.videoType"
+          =======
+          :videoType="currentEpisodes.videoType"
+          >>>>>>> origin/main
+          @play="play()"
+          @ended="nextVideo"/>
         </div>
 
       </div>
@@ -108,25 +112,23 @@ export default class PlayList extends Vue {
   private currentEpisodes: ICurrentEpisodes = new CurrentEpisodes();
 
   @Watch('$route', {immediate: true, deep: true})
-  onRouteChange(newVal: Route, oldVal: Route) {
+  async onRouteChange(newVal: Route, oldVal: Route) {
     logger.info('PlayList.vue')
     //当前剧集
     this.video = this.$store.getters.getEpisodes;
     //路径切换，初始化第一集
+
     this.changeVideo(this.video.src[0]);
+
 
   }
 
   @Watch('plotTab', {immediate: true, deep: true})
   async onPlotTabChange(newVal: string, oldVal: string) {
-
     if (newVal === 'other' && this.extraList.length <= 0) {
-
       this.extraList = await extraResult(this.video.name)
       logger.info('plotTab:' + this.extraList)
     }
-
-
   }
 
   //钩子函数
@@ -140,6 +142,7 @@ export default class PlayList extends Vue {
         false
     );
 
+
     //当前剧集
     this.video = this.$store.getters.getEpisodes;
     //初始化第一集
@@ -147,27 +150,36 @@ export default class PlayList extends Vue {
     this.changeVideo(this.video.src[0]);
     ipcRenderer.on(ChannelMessage.TO_RENDERER_VIDEO_DATA, (event, args) => {
 
-      $vue.isClose = true;
 
-      $vue.video = args;
-      this.changeVideo($vue.video.src[0]);
+      ipcRenderer.on(ChannelMessage.TO_RENDERER_VIDEO_DATA, async (event, args) => {
+        console.log('*************TO_RENDERER_VIDEO_DATA')
 
-      // console.log('*************TO_RENDERER_VIDEO_DATA')
-    });
+        $vue.isClose = true;
+        $vue.video = args;
 
-    ipcRenderer.on(ChannelMessage.TO_RENDERER_DESTROY_PLAYER, () => {
-      // console.log('*************TO_RENDERER_DESTROY_PLAYER')
-      $vue.isClose = false;
+        this.changeVideo($vue.video.src[0]);
+
+        // console.log('*************TO_RENDERER_VIDEO_DATA')
+
+        await $vue.changeVideo(0, this.video.src[0]);
+
+      });
+
+      ipcRenderer.on(ChannelMessage.TO_RENDERER_DESTROY_PLAYER, () => {
+        // console.log('*************TO_RENDERER_DESTROY_PLAYER')
+        $vue.isClose = false;
+      })
     })
   }
+
 
   extraListClick(href: string) {
     shell.openExternal(href);
 
   }
 
+  async changeVideo(src: string, index: number = 0) {
 
-  async changeVideo( src: string,index: number = 0) {
 
     this.currentEpisodes.index = index;
 
@@ -182,19 +194,30 @@ export default class PlayList extends Vue {
       return;
     }
     this.currentEpisodes.src = src;
+    this.currentEpisodes.videoType = 'customHls'
+    //解析处理，获取对应的类型
+    if (src.endsWith('html')) {
+      let result = await html2M3u8(src);
+      this.currentEpisodes.src = result.url;
+      this.currentEpisodes.videoType = result.type;
+    }
+    console.log(this.currentEpisodes);
   }
 
-  nextVideo() {
+  async nextVideo() {
+
     if (this.currentEpisodes.index + 1 >= this.video.src.length) {
 
       return
     }
-    this.changeVideo( this.video.src[this.currentEpisodes.index],this.currentEpisodes.index + 1)
+
+    await   this.changeVideo(this.video.src[this.currentEpisodes.index], this.currentEpisodes.index + 1)
+    console.log('播放下一集');
 
   }
 
-  play() {
 
+  play() {
     if (this.video.source !== 'iframe') {
       // @ts-ignore
       this.$refs.cplayer.player.play()

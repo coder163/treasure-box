@@ -105,6 +105,7 @@
 
 <span class="hljs-keyword">end</span>.
 </code></pre>
+<<<<<<< HEAD
 <h3 id="toc_2">Interface<a class="vnote-anchor" href="#toc_2" data-anchor-icon="#"></a></h3>
 <p>（1）接口部分声明常量、类型、变量、过程和函数,这些声明对引用单元就像自己的声明一样</p>
 <p>（2）在接口部分声明的过程和函数,就像使用了forward关键字(一般称为前置声明)</p>
@@ -117,6 +118,20 @@
 <p><strong>Initialization是可选的</strong>。 它从保留字初始化开始，一直持续到<strong>finalization</strong> 的开始，如果没有 <strong>finalization</strong> 部分，则一直持续到单元结束。 <strong>Initialization</strong> 部分包含在程序启动时按照它们出现的顺序执行的语句。</p>
 <p>在其他单元中引用的话单元的初始化部分将按照其在uses语句中出现的顺序执行。</p>
 <h3 id="toc_5">Finalization<a class="vnote-anchor" href="#toc_5" data-anchor-icon="#"></a></h3>
+=======
+<h3 id="toc_2">Interface 部分<a class="vnote-anchor" href="#toc_2" data-anchor-icon="#"></a></h3>
+<p>（1）接口部分声明常量、类型、变量、过程和函数,这些声明对引用单元就像自己的声明一样</p>
+<p>（2）在接口部分声明的过程和函数,就像使用了forward关键字(一般称为前置声明)</p>
+<p>（3）接口部分可以包含其自己的uses子句，该语句必须立即出现在关键字interface之后。</p>
+<h3 id="toc_3">Implementation 部分<a class="vnote-anchor" href="#toc_3" data-anchor-icon="#"></a></h3>
+<p>（1）如果包含uses字句,必须紧跟关键字implementation</p>
+<p>（2）在这里实现interface中定义的过程和函数,可以任意顺序的定义和调用.</p>
+<p>（3）可以定义单元私有的常量、类型(包括类)、变量、过程和函数,但这些对引用单元的客户是不可见的</p>
+<h3 id="toc_4">Initialization 部分<a class="vnote-anchor" href="#toc_4" data-anchor-icon="#"></a></h3>
+<p><strong>Initialization是可选的</strong>。 它从保留字初始化开始，一直持续到<strong>finalization</strong> 的开始，如果没有 <strong>finalization</strong> 部分，则一直持续到单元结束。 <strong>Initialization</strong> 部分包含在程序启动时按照它们出现的顺序执行的语句。</p>
+<p>在其他单元中引用的话单元的初始化部分将按照其在uses语句中出现的顺序执行。</p>
+<h3 id="toc_5">Finalization 部分<a class="vnote-anchor" href="#toc_5" data-anchor-icon="#"></a></h3>
+>>>>>>> origin/main
 <p><strong>finalization部分是可选的，并且只能在具有Initialization部分的单元中使用</strong>。 finalization部分从保留字终结开始，一直持续到单元结束。 它包含在主程序终止时执行的语句（除非使用Halt程序终止程序）。 使用finalization部分释放在Initialization部分中分配的资源。</p>
 <p>finalization部分的执行顺序与Initialization部分相反。 例如，如果在应用程序以该顺序初始化单元A、B和C，它将以C、B和A的顺序完成它们的释放。</p>
 
