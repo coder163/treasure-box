@@ -1,19 +1,26 @@
 <template>
   <q-layout view="hHh Lpr lff" container :style="{'height': winHeight+'px'}" class="shadow-2 ">
-    <layout-header />
+    <layout-header/>
     <!-- 内容 -->
     <q-page-container>
-      <layout-side />
-      <q-scroll-area :thumb-style="thumbStyle" :bar-style="barStyle" :style="{'height': (winHeight-50)+'px'} ">
-<<<<<<< HEAD
+      <layout-side/>
+      <q-scroll-area
+          ref="scrollArea"
+          :thumb-style="thumbStyle"
+          :bar-style="barStyle"
+          :style="{'height': (winHeight-50)+'px'} "
 
-=======
->>>>>>> origin/main
-        <router-view />
+      >
+        <router-view/>
+        <q-page-sticky position="bottom-right" :offset="[15,20]">
+
+          <q-fab-action color="secondary" icon="keyboard_arrow_up" @click="scroll"/>
+
+        </q-page-sticky>
       </q-scroll-area>
     </q-page-container>
 
-    <update />
+    <update/>
   </q-layout>
 </template>
 
@@ -23,15 +30,23 @@ import LayoutHeader from '@/components/LayoutHeader.vue';
 import LayoutSide from "@/components/LayoutSide.vue";
 
 import Update from '@/views/Update.vue'
-import { ipcRenderer } from "electron";
+import {ipcRenderer} from "electron";
 
 export default {
   name: "LayoutDefault",
   components: {
     LayoutHeader, LayoutSide, Update
   },
+  watch: {
+    '$route.path': function (newVal, oldVal) {
+      console.log(newVal + ' --- ' + oldVal)
+      this.winHeight = document.documentElement.clientHeight;
+      this.$refs.scrollArea.setScrollPosition(20)
+    }
+  },
   data() {
     return {
+      scrollArea:20,
       winHeight: document.documentElement.clientHeight,
       thumbStyle: {
         right: '4px',
@@ -53,11 +68,11 @@ export default {
   mounted() {
     let $vue = this;
     window.addEventListener(
-      "resize",
-      function () {
-        $vue.winHeight = document.documentElement.clientHeight;
-      },
-      false
+        "resize",
+        function () {
+          $vue.winHeight = document.documentElement.clientHeight;
+        },
+        false
     );
 
 
@@ -67,6 +82,10 @@ export default {
   methods: {
     dycLoad() {
       ipcRenderer.send('open-video');
+    },
+    scroll () {
+      this.$refs.scrollArea.setScrollPosition(this.position)
+      this.position =  20
     }
   }
 };

@@ -54,7 +54,7 @@ ipcMain.on("search-video", function (response, name) {
                         if ('' !== vod_play_note) {
                             //播放平台 $$$
                             let fromSource = vod_play_from.split('$$$');
-                            console.log('播放平台：', vod_play_note)
+                            // console.log('播放平台：', vod_play_note)
                             //具体的剧集列表
                             let sourceList = vod_play_url.split('$$$')[0];
                             //选出集数最多的播放平台
@@ -102,7 +102,7 @@ ipcMain.on("search-video", function (response, name) {
         axios.spread((res1) => {
                 // 两个请求现在都执行完成
             // @ts-ignore
-            logger.info("请求全部完成*********************************",res1.data)
+            // logger.info("请求全部完成*********************************",res1.data)
                 let result = {
                     //成功
                     status: 'end',

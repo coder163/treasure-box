@@ -118,7 +118,8 @@ let tocToTree = function(p_toc, p_baseLevel) {
 };
 
 let itemToHtml = function(item) {
-    return '<a href="#' + item.anchor + '" data="' + item.anchor + '">' + item.title + '</a>';
+    let title=item.title.length>21?item.title.substring(0,20)+'...':item.title
+    return '<a href="#' + item.anchor + '" data="' + item.anchor + '">' + title + '</a>';
 };
 
 

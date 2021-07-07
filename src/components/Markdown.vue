@@ -17,6 +17,7 @@ const path = require('path')
 // import hljs from "highlight.js";
 import 'highlight.js/styles/darcula.css';
 // let AutocJS = require('autocjs');
+import {generateTree} from '@/common'
 
 const cheerio = require('cheerio')
 
@@ -41,22 +42,30 @@ export default {
 
   },
   methods: {
+
+
     getContent() {
 
       const pathToDbFile = path.join(process.cwd(), `${decodeURIComponent(this.filePath)}`,);
       console.log(pathToDbFile)
       let temp = fs.readFileSync(pathToDbFile).toString()
       let $ = cheerio.load(temp);
-      let fictitious = document.getElementById('fictitious');
-      //TODO 生成目录，好像很丑
-      // fictitious.innerHTML = $('#post-content').html();
-      // let headers = fictitious.querySelectorAll("h1, h2, h3, h4, h5, h6");
-      // let fictitiousToc = generateTree(headers, fictitious)
-      // $('#outline-content').html(fictitiousToc)
 
+
+      let fictitious = document.getElementById('fictitious');
+      fictitious.innerHTML = $('#post-content').html();
+      let headers = fictitious.querySelectorAll("h1,h2, h3");
+      let fictitiousToc = generateTree(headers, fictitious)
+      $('#outline-content').html(fictitiousToc)
+      $("#outline-panel").css({
+        "display": "block",
+        "float": "right"
+
+      })
       fictitious.innerHTML = "";
-      $("#outline-panel").css('display', 'block')
+
       this.code = $.html()
+
     }
   },
   computed: {}
@@ -93,8 +102,6 @@ export default {
   code, kbd, pre, samp
     font-family: Consolas, "Segoe UI", Helvetica, sans-serif, Tahoma, Arial, Geneva, Georgia, Palatino, "Times New Roman", "Hiragino Sans GB", 冬青黑体, "Microsoft YaHei", 微软雅黑, "Microsoft YaHei UI", "WenQuanYi Micro Hei", 文泉驿雅黑, Dengxian, 等线体, STXihei, 华文细黑, "Liberation Sans", "Droid Sans", NSimSun, 新宋体, SimSun, 宋体
 
-  #outline-panel
-    display: block
 
   .container-fluid
     width: 100%
@@ -104,17 +111,17 @@ export default {
     margin-left: auto
 
   .col, .col-1, .col-10, .col-11, .col-12, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-auto, .col-lg, .col-lg-1, .col-lg-10, .col-lg-11, .col-lg-12, .col-lg-2, .col-lg-3, .col-lg-4, .col-lg-5, .col-lg-6, .col-lg-7, .col-lg-8, .col-lg-9, .col-lg-auto, .col-md, .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-auto, .col-sm, .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-auto, .col-xl, .col-xl-1, .col-xl-10, .col-xl-11, .col-xl-12, .col-xl-2, .col-xl-3, .col-xl-4, .col-xl-5, .col-xl-6, .col-xl-7, .col-xl-8, .col-xl-9, .col-xl-auto
-      position: relative
-      width: 93%
-      min-height: 1px
-      padding-right: 15px
-      padding-left: 15px
+    position: relative
+    width: 80%
+    min-height: 1px
+    padding-right: 15px
+    padding-left: 15px
 
   .col-12
-      -webkit-box-flex: 0
-      -ms-flex: 0 0 93%
-      flex: 0 0 93%
-      max-width: 93%
+    -webkit-box-flex: 0
+    -ms-flex: 0 0 80%
+    flex: 0 0 80%
+    max-width: 80%
 
   .outline-bold
     font-weight: bolder !important
@@ -124,18 +131,20 @@ export default {
     -ms-flex-order: 0
     order: 0
 
+  img
+    zoom: 70%
+
   .bd-toc
-    position: -webkit-sticky
+
     position: sticky
     top: 4rem
     height: calc(100vh - 10rem)
     overflow-y: auto
-    -webkit-box-ordinal-group: 2
-    -ms-flex-order: 1
     order: 1
     padding-top: 1.5rem
     padding-bottom: 1.5rem
     font-size: .875rem
+    max-width: 250px
 
 
   h1, h2, h3, h4, h5, h6
@@ -381,6 +390,24 @@ export default {
     font-weight: 300
 
 
+  .hljs ul
+    list-style: decimal
+    margin: 0 0 0 40px !important
+    padding: 0
+
+  .hljs li
+    list-style: decimal-leading-zero
+    border-left: 1px solid #111 !important
+    padding: 2px 5px !important
+    margin: 0 !important
+    line-height: 14px
+    width: 100%
+    box-sizing: border-box
+
+  .hljs li:nth-of-type(even)
+    background-color: rgba(255, 255, 255, .015)
+    color: inherit
+
 //@media (min-width: 1200px)
 //    #article
 //        .col-md-9
@@ -392,5 +419,4 @@ export default {
 //        .col-md-3
 //            flex: 0 0 17%
 //            max-width: 17%
-
 </style>

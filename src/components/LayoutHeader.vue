@@ -3,12 +3,12 @@
   <q-header class="q-electron-drag">
     <q-toolbar class="row ">
       <!--logo处理 -->
-      <div class="col-lg-1   gt-md position-relative">
-        <img alt="logo" src='@/assets/logo.png' class="float-left" style="height: 25px"/>
-        <span class="text-weight-bold float-left" style="line-height: 25px;">码农宝典</span>
-      </div>
+     <div class="col-lg-2   gt-md position-relative">
+       <img alt="logo" src='@/assets/logo.png' class="float-left" style="height: 20px"/>
+           <span class="text-weight-bold float-left " style="line-height: 20px;margin-left:15px;">码农宝典</span>
+          </div>
       <!--中间搜索-->
-      <div class="col-lg-10 col-md-10 col-sm-10 col-xs-8 ">
+      <div class="col-lg-9 col-md-10 col-sm-10 col-xs-8 ">
         <div class="row">
 
           <div class="col-lg-8 col-md-8 col-sm-12 col-xs-11">
@@ -45,8 +45,6 @@
 
                         <span >{{ scope.opt.sourceName }}</span>
 
-                      来源：  {{ scope.opt.sourceName }}-
-                        {{ scope.opt.type }}
                         <span v-if="scope.opt.lang!==null && scope.opt.lang!==''">
                           -{{ scope.opt.lang }}
                         </span>
@@ -61,11 +59,11 @@
               <template v-slot:before>
                 <q-btn-dropdown :label="searchType" rounded flat  >
                   <q-list>
-                    <q-item clickable v-close-popup @click="selectSearchType('文章')">
+<!--                    <q-item clickable v-close-popup @click="selectSearchType('文章')">
                       <q-item-section>
                         <q-item-label>文章</q-item-label>
                       </q-item-section>
-                    </q-item>
+                    </q-item>-->
 
                     <q-item clickable v-close-popup  @click="selectSearchType('影视')" >
                       <q-item-section>
@@ -153,10 +151,10 @@ export default class LayoutHeader extends Vue {
           }
           break;
         case 'err':
-          console.log('搜索失败');
+          // console.log('搜索失败');
           break;
         case 'end':
-          console.log('搜索完成')
+          // console.log('搜索完成')
           if (this_.options.length > 0) {
             return;
           }
@@ -184,7 +182,7 @@ export default class LayoutHeader extends Vue {
   @Watch('model', {immediate: true, deep: true})
   onModelChange(newVal: any, oldVal: any) {
     let epi = newVal === null ? oldVal : newVal;
-    console.log(epi);
+
     if (epi === undefined) {
       return;
     }
@@ -199,7 +197,7 @@ export default class LayoutHeader extends Vue {
 
   //下拉菜单选择对应的影视
   selectEpisodes(curEpi: IEpisodes) {
-    console.log('选择：', curEpi.name)
+    // console.log('选择：', curEpi.name)
     //更新剧集列表
     this.$store.commit('updateEpisodes', curEpi);
     //不是独立播放才跳转
@@ -316,6 +314,8 @@ export default class LayoutHeader extends Vue {
   opacity: 0.75
 
 #header
+  color: #cce5f9
+
   .q-field--auto-height .q-field__control
     height: 30px
 
@@ -328,9 +328,12 @@ export default class LayoutHeader extends Vue {
 .q-field__native, .q-field__prefix, .q-field__suffix, .q-field__input
   color: #fff !important
 
+//.q-field--outlined .q-field__control
+
 .q-field--outlined .q-field__control:before
-//border: 1px solid #fff !important
-.q-field--outlined .q-field__control:after
-//border: 1px solid #fff !important
+  border: 1px solid #000 !important
+
+//.q-field--outlined .q-field__control:after
+  //border: 1px solid #ff9b00 !important
 
 </style>

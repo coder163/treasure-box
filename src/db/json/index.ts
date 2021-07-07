@@ -37,11 +37,11 @@ export default {
                     //此字段为路由跳转时使用的动态名称
                     name: 'delphi',
                 },
-                {
-                    id: shortId.generate(),
-                    bel: 'Java篇',
-                    name: 'java',
-                },
+                // {
+                //     id: shortId.generate(),
+                //     bel: 'Java篇',
+                //     name: 'java',
+                // },
                 {
                     id: shortId.generate(),
                     bel: '番外篇',
@@ -93,13 +93,13 @@ export default {
             }
 
         ],
-        java: [
-            {
-                label: '基础语法',
-                children: listFile(`./html/docs/java/basic`, [])
-            }
-
-        ],
+        // java: [
+        //     {
+        //         label: '基础语法',
+        //         children: listFile(`./html/docs/java/basic`, [])
+        //     }
+        //
+        // ],
         delphi: [
             {
                 label: '基础编程',

@@ -14,11 +14,11 @@
           <player ref="cplayer"
                   :style="{'height':(isStandalonePlayer?winHeight:winHeight-135)+'px'}"
                   :videoSrc="currentEpisodes.src"
-          <<<<<<< HEAD
+
           :video-type="currentEpisodes.videoType"
-          =======
+
           :videoType="currentEpisodes.videoType"
-          >>>>>>> origin/main
+
           @play="play()"
           @ended="nextVideo"/>
         </div>
@@ -113,7 +113,7 @@ export default class PlayList extends Vue {
 
   @Watch('$route', {immediate: true, deep: true})
   async onRouteChange(newVal: Route, oldVal: Route) {
-    logger.info('PlayList.vue')
+    // logger.info('PlayList.vue')
     //当前剧集
     this.video = this.$store.getters.getEpisodes;
     //路径切换，初始化第一集
@@ -152,7 +152,7 @@ export default class PlayList extends Vue {
 
 
       ipcRenderer.on(ChannelMessage.TO_RENDERER_VIDEO_DATA, async (event, args) => {
-        console.log('*************TO_RENDERER_VIDEO_DATA')
+        // console.log('*************TO_RENDERER_VIDEO_DATA')
 
         $vue.isClose = true;
         $vue.video = args;
@@ -161,7 +161,7 @@ export default class PlayList extends Vue {
 
         // console.log('*************TO_RENDERER_VIDEO_DATA')
 
-        await $vue.changeVideo(0, this.video.src[0]);
+        await $vue.changeVideo(this.video.src[0]);
 
       });
 

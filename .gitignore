@@ -105,11 +105,5 @@ dist
 .idea/
 build/
 dist_electron/
-<<<<<<< HEAD
 html/
 package-lock.json
-=======
-public/html/
-package-lock.json
-./地址列表.txt
->>>>>>> origin/main

@@ -41,14 +41,14 @@ module.exports = {
                     output: 'build' // 打包产物的位置
                 },
                 linux: {
-                    "icon": "./logo.ico", // 包含各种尺寸图标的文件夹
+                    "icon": "./favicon.ico", // 包含各种尺寸图标的文件夹
                     target: [
                         "AppImage"
                     ],
 
                 },
                 win: {//win相关配置
-                    "icon": "./logo.ico",//图标，当前图标在根目录下，注意这里有两个坑
+                    "icon": "./favicon.ico",//图标，当前图标在根目录下，注意这里有两个坑
                     "requestedExecutionLevel": "highestAvailable", // 申请高级权限
                     "target": [
                         {
