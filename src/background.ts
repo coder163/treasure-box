@@ -164,17 +164,21 @@ ipcMain.on('login-info', function (event, userInfo) {
 
 ipcMain.on('open-update-dialog', () => {
     //测试环境下使用自动更新
-    if (isDevelopment) {
-        autoUpdater.updateConfigPath = path.join(__dirname, '../dev-app-update.yml');
-    }
-    autoUpdater.checkForUpdates().then((r: UpdateCheckResult) => {
-
-    })
-
 
     win.webContents.send('update-dialog');
 })
+ipcMain.on('start-update', (event, args) => {
+    if (isDevelopment) {
+        autoUpdater.updateConfigPath = path.join(__dirname, '../dev-app-update.yml');
+    }
+    if (args === 0) {
+        autoUpdater.checkForUpdates().then((r: UpdateCheckResult) => {
 
+        })
+    }
+
+
+})
 app.commandLine.appendSwitch('--ignore-certificate-errors', 'true')
 
 

@@ -67,13 +67,13 @@ export default {
             id: shortId.generate(),
             icon: 'help',
             menuList: [
-                {
-                    id: shortId.generate(),
-                    bel: '关于作者',
-                    name: 'about',
-                    //此种为md文件，但又不是树形菜单中的文档
-                    href: `/content/${encodeURIComponent('html/about/index.html')}`
-                },
+                // {
+                //     id: shortId.generate(),
+                //     bel: '关于作者',
+                //     name: 'about',
+                //     //此种为md文件，但又不是树形菜单中的文档
+                //     href: `/content/${encodeURIComponent('html/about/index.html')}`
+                // },
                 {
                     id: shortId.generate(),
                     bel: '检查更新',

@@ -5,7 +5,7 @@
       <q-card-section>
         <div class="doc-note doc-note--tip">
           <p class="doc-note__title">温馨提示：</p>
-          <p>- 选择第三方下载之后将不再直接下载而是显示文件的下载路径，同时其他的下载设置将失效</p>
+<!--          <p>- 选择第三方下载之后将不再直接下载而是显示文件的下载路径，同时其他的下载设置将失效</p>-->
           <p>- 启用独立播放器之后在观看视频时将以独立的窗口进行播放</p>
           <p>- 跳过片头在看电视剧时下建议勾选，因为每一部时长不同所以需要单独设置,单位为秒</p>
         </div>
@@ -24,13 +24,13 @@
 
 
 
-        <span class="text-subtitle1 subtitle">更新设置</span>
+<!--        <span class="text-subtitle1 subtitle">更新设置</span>-->
 
-        <q-space style="height: 10px"/>
-        <q-separator/>
-        <q-checkbox v-model="appConfig.isAutoUpdate" label="自动更新"/>
-        <span class="text-subtitle1 subtitle">下载设置</span>
-        <q-separator/>
+<!--        <q-space style="height: 10px"/>-->
+<!--        <q-separator/>-->
+<!--        <q-checkbox v-model="appConfig.isAutoUpdate" label="自动更新"/>-->
+<!--        <span class="text-subtitle1 subtitle">下载设置</span>-->
+<!--        <q-separator/>-->
 
 
         <q-input filled v-model="appConfig.downDir" style=";max-width: 300px" placeholder="请选择下载目录">
@@ -42,7 +42,7 @@
 
         <q-checkbox v-model="appConfig.isKeepDiskPath" label="保留网盘路径"/>
 
-        <q-checkbox v-model="appConfig.isDownTool" label="第三方工具下载"/>
+<!--        <q-checkbox v-model="appConfig.isDownTool" label="第三方工具下载"/>-->
 
       </q-card-section>
 

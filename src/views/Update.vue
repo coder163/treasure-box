@@ -9,7 +9,10 @@
           </q-avatar>
           <div>
             <span class="text-subtitle2">更新详情</span></div>
-
+          <q-space />
+          <q-btn dense flat icon="close" v-close-popup>
+            <q-tooltip>后台更新</q-tooltip>
+          </q-btn>
         </q-bar>
 
         <q-card-section>
@@ -17,7 +20,7 @@
             {{updateMessage}}
 
           </div>
-          <q-linear-progress stripe rounded size="25px" :value="percent" color="secondary">
+          <q-linear-progress v-if="statusCode=== 3" stripe rounded size="25px" :value="percent" color="secondary">
             <div class="absolute-full flex flex-center">
               <q-badge style="background: transparent;color:#1D1D1D " :label="schedule"/>
             </div>
@@ -47,17 +50,25 @@ export default class Update extends Vue {
 
   private updateMessage: string = '正在连接服务器...';
 
+  private statusCode: UpdateStatusCode = UpdateStatusCode.CHECKING_FOR_UPDATE;
+
+  private count:number=0;
+
   private mounted() {
+
     let _this = this;
     ipcRenderer.on('update-dialog', () => {
       logger.info('打开对话框')
       _this.persistent = true;
-
+      console.log(_this.count)
+      ipcRenderer.send('start-update',_this.count)
+      _this.count++;
     })
 
     ipcRenderer.on('UpdateMsg', (event, args) => {
-
+      _this.statusCode = args.state;
       switch (args.state) {
+
         case UpdateStatusCode.CHECKING_FOR_UPDATE:
           _this.updateMessage='正在检查更新';
           break
@@ -77,6 +88,7 @@ export default class Update extends Vue {
         case UpdateStatusCode.DOWNLOAD_COMPLETED:
           ipcRenderer.send('confirm-update')
           _this.persistent = false;
+          _this.count = 0;
           break;
       }
     })

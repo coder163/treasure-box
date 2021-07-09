@@ -80,7 +80,7 @@ export default {
   font-family: Consolas, "Segoe UI", Helvetica, sans-serif, Tahoma, Arial, Geneva, Georgia, Palatino, "Times New Roman", "Hiragino Sans GB", 冬青黑体, "Microsoft YaHei", 微软雅黑, "Microsoft YaHei UI", "WenQuanYi Micro Hei", 文泉驿雅黑, Dengxian, 等线体, STXihei, 华文细黑, "Liberation Sans", "Droid Sans", NSimSun, 新宋体, SimSun, 宋体
   color: rgb(34, 34, 34)
   line-height: 1.5
-  padding: 15px
+  //padding: 15px
   font-size: 16px
   display: block
   text-align: left
@@ -144,7 +144,7 @@ export default {
     padding-top: 1.5rem
     padding-bottom: 1.5rem
     font-size: .875rem
-    max-width: 250px
+    max-width: 240px
 
 
   h1, h2, h3, h4, h5, h6
@@ -408,15 +408,17 @@ export default {
     background-color: rgba(255, 255, 255, .015)
     color: inherit
 
-//@media (min-width: 1200px)
-//    #article
-//        .col-md-9
-//            -webkit-box-flex: 0
-//            -ms-flex: 0 0 83%
-//            flex: 0 0 83%
-//            max-width: 83%
-//    #article
-//        .col-md-3
-//            flex: 0 0 17%
-//            max-width: 17%
+@media screen and (max-width: 1300px)
+
+    #article
+        .col-md-9
+            -webkit-box-flex: 0
+            -ms-flex: 0 0 93%
+            flex: 0 0 93%
+            max-width: 93%
+    #article
+        #outline-panel
+            display: none !important
+            //flex: 0 0 17%
+            //max-width: 17%
 </style>
